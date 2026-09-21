@@ -307,6 +307,12 @@ p:last-child { margin-bottom: 0; }
   overflow: hidden;
   position: relative;
   transition: border-color var(--dur) var(--gerak), box-shadow var(--dur) var(--gerak), transform var(--dur) var(--gerak);
+  /* Kartu di luar layar tidak digambar dulu. Katalog berisi 67 kartu,
+     jadi ini menghemat kerja render tanpa perlu virtualisasi JS.
+     contain-intrinsic-size menjaga tinggi cadangan supaya gulir tidak
+     meloncat saat kartu baru masuk layar. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 320px;
 }
 .kartu:hover {
   border-color: oklch(0.80 0.03 155);

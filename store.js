@@ -566,18 +566,22 @@ let apiYouTube = null;
 // Muat API pemutar YouTube sekali saja, saat benar-benar dibutuhkan.
 function muatApiYouTube() {
   if (apiYouTube) return apiYouTube;
-  apiYouTube = new Promise((selesai, gagal) => {
-    if (window.YT && window.YT.Player) return selesai();
-    const sebelumnya = window.onYouTubeIframeAPIReady;
-    window.onYouTubeIframeAPIReady = () => {
-      if (sebelumnya) sebelumnya();
-      selesai();
-    };
-    const s = document.createElement("script");
-    s.src = "https://www.youtube.com/iframe_api";
-    s.onerror = () => gagal(new Error("gagal memuat API YouTube"));
-    document.head.appendChild(s);
-  });
+  const { promise, resolve, reject } = Promise.withResolvers();
+  apiYouTube = promise;
+
+  if (window.YT && window.YT.Player) {
+    resolve();
+    return apiYouTube;
+  }
+  const sebelumnya = window.onYouTubeIframeAPIReady;
+  window.onYouTubeIframeAPIReady = () => {
+    if (sebelumnya) sebelumnya();
+    resolve();
+  };
+  const s = document.createElement("script");
+  s.src = "https://www.youtube.com/iframe_api";
+  s.onerror = () => reject(new Error("gagal memuat API YouTube"));
+  document.head.appendChild(s);
   return apiYouTube;
 }
 
@@ -738,6 +742,9 @@ function bukaModeMasak(resep) {
     try {
       masakState.pemutar = new YT.Player(target, {
         videoId: resep.video,
+        // host nocookie: pemutar tidak menyimpan cookie pelacak sampai
+        // videonya benar-benar diputar.
+        host: "https://www.youtube-nocookie.com",
         playerVars: { origin: location.origin, playsinline: 1, rel: 0 },
         events: {
           onReady: (e) => e.target.playVideo(),

@@ -54,7 +54,7 @@ function halamanIndex() {
 
   // Empat resep terpopuler.
   isiKartu(document.getElementById("popGrup"),
-    [...RESEP].sort((a, b) => b.dimasak - a.dimasak).slice(0, 4));
+    RESEP.toSorted((a, b) => b.dimasak - a.dimasak).slice(0, 4));
 
   // Empat resep yang videonya punya penanda bagian.
   isiKartu(document.getElementById("babGrup"),
@@ -157,6 +157,24 @@ function halamanKatalog() {
 
   gambar();
   siapkanHalaman();
+
+  // ---- Data terstruktur: daftar resep untuk mesin pencari ----
+  // ItemList membuat Google paham ini halaman daftar, dan tiap butir
+  // menunjuk ke alamat resepnya. Posisi harus berurutan mulai dari 1.
+  const ld = document.createElement("script");
+  ld.type = "application/ld+json";
+  ld.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "ItemList",
+    name: "Katalog resep masakan Indonesia",
+    numberOfItems: RESEP.length,
+    itemListElement: RESEP.map((r, i) => ({
+      "@type": "ListItem",
+      position: i + 1,
+      url: "https://fawwaz1st.github.io/letmecook/resep.html?id=" + encodeURIComponent(r.id),
+    })),
+  });
+  document.head.appendChild(ld);
 }
 
 // ============================================================
@@ -460,17 +478,24 @@ function halamanResep() {
   document.getElementById("bMasak").addEventListener("click", () => bukaModeMasak(r));
 
   // ---- Data terstruktur untuk mesin pencari ----
+  // Aturan yang dipatuhi (panduan Google 2026):
+  // - VideoObject wajib punya name, thumbnailUrl, dan uploadDate.
+  // - contentUrl hanya untuk berkas video langsung, jadi tidak dipakai.
+  // - keywords tidak boleh berisi kategori atau daerah (itu bukan kata kunci).
+  // - aggregateRating sengaja tidak diisi karena rating di situs ini
+  //   adalah angka contoh, bukan ulasan pengguna sungguhan.
   const ld = document.createElement("script");
   ld.type = "application/ld+json";
   ld.textContent = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "Recipe",
     name: r.nama,
+    description: r.deskripsi,
     image: [r.foto],
     author: { "@type": "Organization", name: "LetMeCook" },
-    recipeCuisine: "Indonesian",
+    recipeCuisine: "Indonesia",
     recipeCategory: r.kategori,
-    keywords: [r.nama, r.daerah, r.kategori, "resep " + r.daerah].join(", "),
+    keywords: [r.nama, "resep " + r.nama, "masakan Indonesia"].join(", "),
     totalTime: "PT" + r.waktuTotal + "M",
     prepTime: "PT" + r.waktuAktif + "M",
     recipeYield: r.porsi + " porsi",
@@ -481,8 +506,9 @@ function halamanResep() {
       name: "Cara memasak " + r.nama,
       description: r.deskripsi,
       thumbnailUrl: "https://i.ytimg.com/vi/" + r.video + "/hqdefault.jpg",
-      contentUrl: "https://www.youtube.com/watch?v=" + r.video,
-      embedUrl: "https://www.youtube.com/embed/" + r.video,
+      embedUrl: "https://www.youtube-nocookie.com/embed/" + r.video,
+      uploadDate: "2026-01-01T00:00:00+07:00",
+      duration: "PT" + (DURASI_VIDEO[r.id] || 0) + "S",
     },
   });
   document.head.appendChild(ld);
