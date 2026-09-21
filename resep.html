@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resep â€” LetMeCook</title>
+  <title>Resep — LetMeCook</title>
   <meta name="description" content="Bahan bertakar gram, langkah bertanda matang, timer, dan mode masak.">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://i.ytimg.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://i.ytimg.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'">
   <link rel="canonical" href="https://fawwaz1st.github.io/letmecook/resep.html">
   <meta property="og:type" content="article">
   <meta property="og:site_name" content="LetMeCook">
-  <meta property="og:title" content="Resep â€” LetMeCook">
+  <meta property="og:title" content="Resep — LetMeCook">
   <meta property="og:description" content="Bahan bertakar gram, langkah bertanda matang, timer, dan mode masak.">
   <meta property="og:url" content="https://fawwaz1st.github.io/letmecook/resep.html">
   <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Rendang_dish_closeup.jpg/500px-Rendang_dish_closeup.jpg">
@@ -21,6 +21,8 @@
   <link rel="preconnect" href="https://i.ytimg.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="manifest.webmanifest">
+  <meta name="theme-color" content="#0d5c34">
 </head>
 <body data-halaman="resep">
 
@@ -51,8 +53,32 @@
 
   <footer>
     <div class="wrap">
-      <span><strong>LetMeCook</strong> â€” <span data-jumlah></span> resep masakan Indonesia.</span>
-      <span><a href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Beranda</a></span>
+      <div class="kaki-atas">
+        <div class="kaki-merek">
+          <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
+          <p><span data-jumlah></span> resep masakan Indonesia dengan takaran gram, tanda matang di tiap langkah, dan daftar belanja otomatis. Tanpa akun, tanpa iklan.</p>
+        </div>
+        <nav class="kaki-nav" aria-label="Tautan kaki halaman">
+          <div>
+            <h3>Jelajahi</h3>
+            <a href="index.html">Beranda</a>
+            <a href="katalog.html">Semua resep</a>
+            <a href="mealplan.html">Rencana 7 hari</a>
+            <a href="favorit.html">Resep tersimpan</a>
+          </div>
+          <div>
+            <h3>Bantuan</h3>
+            <a href="tentang.html">Tentang &amp; takaran</a>
+            <a href="tentang.html#judulTakaran">Konversi sendok</a>
+            <a href="tentang.html#judulData">Ke mana datamu pergi</a>
+            <a href="mailto:halo@letmecook.id">Kirim koreksi</a>
+          </div>
+        </nav>
+      </div>
+      <div class="kaki-bawah">
+        <span>&copy; <span data-tahun></span> LetMeCook. Dibuat untuk yang baru mulai masak.</span>
+        <span>Favorit dan rencanamu tersimpan di browser sendiri, tidak dikirim ke mana pun.</span>
+      </div>
     </div>
   </footer>
 

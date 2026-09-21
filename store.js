@@ -1004,8 +1004,13 @@ function pasangKeAtas() {
   tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-panah-atas"/></svg>';
   document.body.appendChild(tombol);
 
+  // Tombol muncul setelah digulir, tapi disembunyikan lagi saat kaki
+  // halaman masuk layar supaya tidak menutupi teksnya di layar sempit.
+  const kaki = document.querySelector("footer");
   const atur = () => {
-    tombol.classList.toggle("tampil", window.scrollY > 600);
+    const lewat = window.scrollY > 600;
+    const kakiTerlihat = kaki && kaki.getBoundingClientRect().top < window.innerHeight - 40;
+    tombol.classList.toggle("tampil", lewat && !kakiTerlihat);
   };
   window.addEventListener("scroll", atur, { passive: true });
   tombol.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));
@@ -1024,6 +1029,13 @@ const JUMLAH_RESEP = RESEP.length;
 function segarkanAngka() {
   document.querySelectorAll("[data-jumlah]").forEach((el) => {
     el.textContent = JUMLAH_RESEP;
+  });
+
+  // Tahun di kaki halaman ikut berjalan sendiri, tidak perlu disunting.
+  // Cara pakai di HTML: <span data-tahun></span>
+  const tahun = new Date().getFullYear();
+  document.querySelectorAll("[data-tahun]").forEach((el) => {
+    el.textContent = tahun;
   });
 
   // Judul halaman dan deskripsi juga ikut menyesuaikan.

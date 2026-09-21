@@ -1426,18 +1426,74 @@ select:focus-visible {
   outline-color: var(--tinta);
 }
 
-footer { background: var(--tinta); color: oklch(0.88 0.01 155); margin-top: var(--s8); }
+/* ---------- 18) KAKI HALAMAN ------------------------------ */
+footer {
+  background: var(--tinta);
+  color: oklch(0.88 0.01 155);
+  margin-top: var(--s8);
+}
 footer .wrap {
-  display: flex;
-  gap: var(--s4);
-  flex-wrap: wrap;
-  justify-content: space-between;
-  align-items: center;
-  font-size: 0.85rem;
-  padding-top: var(--s5);
+  padding-top: var(--s6);
   padding-bottom: var(--s5);
 }
-footer a { color: var(--aksen); text-decoration: none; display: inline-flex; align-items: center; gap: var(--s1); }
+
+/* Baris atas: merek di kiri, dua kolom tautan di kanan. */
+.kaki-atas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s6);
+  justify-content: space-between;
+}
+.kaki-merek { max-width: 320px; }
+.kaki-merek .merek { color: #fff; font-size: 1.05rem; }
+.kaki-merek p {
+  margin-top: var(--s3);
+  font-size: 0.85rem;
+  line-height: 1.6;
+  color: oklch(0.75 0.012 155);
+}
+
+/* Kolom tautan. */
+.kaki-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s6) var(--s8);
+}
+.kaki-nav h3 {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: oklch(0.65 0.012 155);
+  margin-bottom: var(--s3);
+}
+.kaki-nav a {
+  display: block;
+  color: oklch(0.88 0.01 155);
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 3px 0;
+}
+.kaki-nav a:hover { color: #fff; text-decoration: underline; }
+
+/* Baris bawah: hak cipta dan catatan penyimpanan. */
+.kaki-bawah {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2) var(--s5);
+  justify-content: space-between;
+  align-items: center;
+  margin-top: var(--s6);
+  padding-top: var(--s4);
+  border-top: 1px solid oklch(0.35 0.015 155);
+  font-size: 0.78rem;
+  color: oklch(0.65 0.012 155);
+}
+.kaki-bawah a { color: oklch(0.88 0.01 155); text-decoration: none; }
+.kaki-bawah a:hover { text-decoration: underline; }
+
+/* Tautan tunggal lama yang masih dipakai halaman dalam. */
+footer a { text-decoration: none; display: inline-flex; align-items: center; gap: var(--s1); }
 footer a:hover { text-decoration: underline; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -1543,6 +1599,11 @@ footer a:hover { text-decoration: underline; }
   .kotak { margin-left: var(--s3); margin-right: var(--s3); }
   .masak { padding: var(--s3); }
   .masak-nav button { font-size: 0.9rem; min-height: 52px; }
+
+  /* Kaki halaman ditumpuk supaya tetap enak dibaca di layar sempit. */
+  .kaki-atas { flex-direction: column; gap: var(--s5); }
+  .kaki-nav { gap: var(--s5); }
+  .kaki-bawah { flex-direction: column; align-items: flex-start; }
 }
 
 /* Layar sangat sempit. */
