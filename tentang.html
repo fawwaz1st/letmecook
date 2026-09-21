@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tentang — LetMeCook</title>
+  <meta name="description" content="Cara membaca takaran di LetMeCook, konversi sendok ke gram, dan ke mana datamu disimpan.">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <a class="skip" href="#main">Lewati ke konten</a>
+
+  <header class="topbar">
+    <div class="topbar-in">
+      <a class="logo" href="index.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
+      <nav class="iconnav" aria-label="Navigasi utama">
+        <a href="favorit.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg>Favorit <span class="badge" id="favCount">0</span></a>
+        <a href="mealplan.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap" id="main">
+    <section class="panel" aria-labelledby="judul">
+      <div class="panel-head">
+        <h1 id="judul"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>Tentang LetMeCook</h1>
+      </div>
+      <div class="pad">
+        <p>44 resep Indonesia, ditulis untuk orang yang baru mulai masak. Tiap bahan punya angka gram atau mililiter, dan tiap langkah menyebut tanda matang yang bisa kamu periksa sendiri.</p>
+        <p>Halaman ini jalan tanpa server. Semua data resep ada di dalam berkas <code>store.js</code>.</p>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="judul-takaran">
+      <div class="panel-head">
+        <h2 id="judul-takaran"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-gauge"/></svg>Cara membaca takaran</h2>
+      </div>
+      <div class="pad">
+        <p>Angka gram dan mililiter itu patokan utama. Sendok dipakai kalau kamu tidak punya timbangan, dan hasilnya bisa beda tipis.</p>
+
+        <!-- Tabel konversi: lebih cepat dibaca daripada kalimat. -->
+        <table class="tabel-takaran">
+          <caption>Konversi sendok ke mililiter</caption>
+          <thead>
+            <tr><th scope="col">Ukuran</th><th scope="col">Mililiter</th><th scope="col">Contoh bahan</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1 sdm</td><td>15 ml</td><td>kecap, minyak</td></tr>
+            <tr><td>1 sdt</td><td>5 ml</td><td>garam, merica</td></tr>
+            <tr><td>1 cup</td><td>240 ml</td><td>santan, air</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Kalau porsi diubah</h3>
+        <p>Tombol porsi di halaman resep mengubah semua bahan sekaligus. Bahan yang dihitung per butir, seperti telur dan siung bawang, dibulatkan dan diberi tanda ± karena tidak bisa dibelah dua.</p>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="judul-data">
+      <div class="panel-head">
+        <h2 id="judul-data"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-basket"/></svg>Ke mana datamu pergi</h2>
+      </div>
+      <div class="pad">
+        <p>Favorit, rencana makan, centang belanja, dan centang langkah disimpan di browser kamu sendiri, di bawah kunci <code>letmecook:*</code>. Tidak ada yang dikirim ke mana pun.</p>
+        <p>Konsekuensinya: kalau kamu hapus riwayat browser, data itu ikut hilang. Kamu juga tidak bisa membukanya dari perangkat lain.</p>
+      </div>
+    </section>
+
+    <section class="panel" aria-labelledby="judul-kontak">
+      <div class="panel-head">
+        <h2 id="judul-kontak"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-share"/></svg>Koreksi dan usulan</h2>
+      </div>
+      <div class="pad">
+        <p>Kalau ada takaran yang salah atau langkah yang membingungkan, kirim ke <a href="mailto:halo@letmecook.id">halo@letmecook.id</a>. Sebutkan nama resepnya.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <span><strong>LetMeCook</strong> — 44 panduan masak.</span>
+      <span><a href="index.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Beranda</a></span>
+    </div>
+  </footer>
+
+  <script src="store.js"></script>
+  <script>segarkanBadge();</script>
+</body>
+</html>
