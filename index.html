@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LetMeCook — Resep Masakan Indonesia Bertakar Gram</title>
   <meta name="description" content="Resep masakan Indonesia dengan takaran gram, tanda matang di tiap langkah, timer, dan daftar belanja otomatis.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://i.ytimg.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <link rel="canonical" href="https://fawwaz1st.github.io/letmecook/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LetMeCook">
+  <meta property="og:title" content="LetMeCook — Resep Masakan Indonesia Bertakar Gram">
+  <meta property="og:description" content="Takaran gram, tanda matang di tiap langkah, timer, dan daftar belanja otomatis. 67 resep seluruh Indonesia.">
+  <meta property="og:url" content="https://fawwaz1st.github.io/letmecook/">
+  <meta property="og:image" content="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Rendang_dish_closeup.jpg/1280px-Rendang_dish_closeup.jpg">
+  <meta property="og:locale" content="id_ID">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,7 +22,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-halaman="index">
 
   <a class="skip" href="#main">Lewati ke konten</a>
 
@@ -42,7 +52,7 @@
   <main class="wrap" id="main">
 
     <section class="hero">
-      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Rendang_dish_closeup.jpg/1280px-Rendang_dish_closeup.jpg" alt="Rendang sapi yang kuahnya sudah menyusut dan berminyak" fetchpriority="high" width="1280" height="1011" onerror="imgFallback(this)">
+      <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Rendang_dish_closeup.jpg/1280px-Rendang_dish_closeup.jpg" alt="Rendang sapi yang kuahnya sudah menyusut dan berminyak" fetchpriority="high" width="1280" height="1011">
       <div class="teks">
         <span class="kicker"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg><span data-jumlah></span>&nbsp;resep · takaran gram</span>
         <h1>Setiap langkah bilang apa yang harus kamu lihat.</h1>
@@ -103,56 +113,6 @@
 
   <script src="resep-data.js"></script>
   <script src="store.js"></script>
-  <script>
-    segarkanBadge();
-
-    // Pencarian: kalau ada saran yang disorot, biarkan saran yang jalan.
-    document.getElementById("formCari").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const q = document.getElementById("inputCari").value.trim();
-      if (q) location.href = "katalog.html?q=" + encodeURIComponent(q);
-    });
-
-    // 1) Resep untuk tanggal ini, berganti tiap tanggal.
-    const hari = RESEP[new Date().getDate() % RESEP.length];
-    document.getElementById("hariIni").innerHTML =
-      '<div class="sorot">'
-      + '<img src="' + esc(hari.foto) + '" alt="" width="440" height="330" onerror="imgFallback(this)">'
-      + '<div class="teks">'
-      + "<h3>" + esc(hari.nama) + "</h3>"
-      + '<p class="lega">' + esc(hari.deskripsi) + "</p>"
-      + '<p class="meta">'
-      + '<span><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>' + fmtWaktu(hari.waktuTotal) + "</span>"
-      + '<span><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-users"/></svg>' + hari.porsi + " porsi</span>"
-      + '<span><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-pin"/></svg>' + esc(hari.daerah) + "</span>"
-      + "</p>"
-      + '<a class="tb tb-isi" href="resep.html?id=' + esc(hari.id) + '">Masak resep ini</a>'
-      + "</div></div>";
-
-    // 2) Empat kategori.
-    const kategori = [
-      ["sarapan", "Sarapan", "Bubur, uduk, lontong.", "i-soup"],
-      ["siang", "Makan siang", "Rendang, soto, gudeg.", "i-utensils"],
-      ["malam", "Makan malam", "Rawon, betutu, ikan bakar.", "i-flame"],
-      ["camilan", "Camilan", "Klepon, martabak, cendol.", "i-star"],
-    ];
-    document.getElementById("katGrup").innerHTML = kategori.map(([kode, nama, ket, ikon]) => {
-      const jumlah = RESEP.filter((r) => r.kategori === kode).length;
-      return '<a class="panel kat" href="katalog.html?kat=' + kode + '">'
-        + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#' + ikon + '"/></svg>'
-        + "<span><strong>" + nama + " · " + jumlah + "</strong>"
-        + "<small>" + ket + "</small></span></a>";
-    }).join("");
-
-    // 3) Empat resep terpopuler.
-    isiKartu(document.getElementById("popGrup"),
-      [...RESEP].sort((a, b) => b.dimasak - a.dimasak).slice(0, 4));
-
-    // 4) Empat resep yang videonya punya penanda bagian.
-    isiKartu(document.getElementById("babGrup"),
-      RESEP.filter((r) => Array.isArray(r.bab) && r.bab.length).slice(0, 4));
-
-    siapkanHalaman();
-  </script>
+  <script src="halaman.js"></script>
 </body>
 </html>

@@ -151,15 +151,27 @@ function imgFallback(el) {
   const tahap = Number(el.dataset.stage || 0);
   if (tahap === 0) {
     el.dataset.stage = 1;
-    el.onerror = null;
     el.src = GAMBAR_CADANGAN;
     return;
   }
   el.dataset.stage = 2;
-  el.onerror = null;
   el.style.display = "none";
   if (el.parentElement) el.parentElement.classList.add("img-solid");
 }
+
+// Satu pendengar untuk SEMUA gambar di halaman. Galat gambar tidak
+// menggelembung, jadi dipasang di fase tangkap (capture) supaya tetap
+// tertangkap. Cara ini menggantikan atribut onerror di tiap <img>,
+// yang akan diblokir oleh Content-Security-Policy.
+document.addEventListener("error", (e) => {
+  if (e.target && e.target.tagName === "IMG") imgFallback(e.target);
+}, true);
+
+// Gambar yang telanjur gagal SEBELUM pendengar terpasang (koneksi putus
+// sejak awal) tidak memicu kejadian apa pun lagi, jadi diperiksa manual.
+document.querySelectorAll("img").forEach((img) => {
+  if (img.complete && img.naturalWidth === 0) imgFallback(img);
+});
 
 // ============================================================
 // BACA LANGKAH
@@ -204,27 +216,20 @@ function parseLangkah(teks) {
   return { teknik, api, matang, sisa };
 }
 
-// [latar, teks, ikon] per teknik. Warnanya mengikuti token di style.css.
-const WARNA_TEKNIK = {
-  tumis: ["oklch(0.97 0.045 85)", "oklch(0.40 0.09 75)", "i-cooking-pot"],
-  masak: ["oklch(0.97 0.045 85)", "oklch(0.40 0.09 75)", "i-cooking-pot"],
-  goreng: ["oklch(0.97 0.045 85)", "oklch(0.40 0.09 75)", "i-flame"],
-  sangrai: ["oklch(0.97 0.045 85)", "oklch(0.40 0.09 75)", "i-flame"],
-  rebus: ["oklch(0.97 0.015 250)", "oklch(0.42 0.13 250)", "i-soup"],
-  ungkep: ["oklch(0.97 0.015 250)", "oklch(0.42 0.13 250)", "i-soup"],
-  kukus: ["oklch(0.97 0.02 290)", "oklch(0.44 0.13 290)", "i-cooking-pot"],
-  tunggu: ["oklch(0.97 0.02 290)", "oklch(0.44 0.13 290)", "i-timer"],
-  bakar: ["oklch(0.96 0.03 27)", "oklch(0.45 0.16 27)", "i-flame-kindling"],
-  panggang: ["oklch(0.96 0.03 27)", "oklch(0.45 0.16 27)", "i-flame-kindling"],
-  haluskan: ["oklch(0.96 0.028 155)", "oklch(0.33 0.082 155)", "i-list-checks"],
-  sajikan: ["oklch(0.96 0.028 155)", "oklch(0.33 0.082 155)", "i-check"],
-  simpan: ["oklch(0.96 0.028 155)", "oklch(0.33 0.082 155)", "i-basket"],
-  campur: ["oklch(0.95 0.005 155)", "oklch(0.42 0.02 155)", "i-utensils"],
+// Ikon per teknik masak. Warnanya diatur di style.css lewat
+// pemilih [data-teknik="..."], jadi JS hanya perlu tahu nama ikonnya.
+const IKON_TEKNIK = {
+  tumis: "i-cooking-pot", masak: "i-cooking-pot",
+  goreng: "i-flame", sangrai: "i-flame",
+  rebus: "i-soup", ungkep: "i-soup",
+  kukus: "i-cooking-pot", tunggu: "i-timer",
+  bakar: "i-flame-kindling", panggang: "i-flame-kindling",
+  haluskan: "i-list-checks", sajikan: "i-check",
+  simpan: "i-basket", campur: "i-utensils",
 };
 
 function badgeTeknikHTML(urai) {
   if (!urai.teknik) return "";
-  const w = WARNA_TEKNIK[urai.teknik] || ["oklch(0.95 0.005 155)", "oklch(0.42 0.02 155)", "i-cooking-pot"];
 
   let meter = "";
   if (urai.api) {
@@ -236,8 +241,8 @@ function badgeTeknikHTML(urai) {
     }
   }
 
-  return '<span class="badge" style="background:' + w[0] + ";color:" + w[1] + '">' +
-    '<svg class="ikon" aria-hidden="true"><use href="icons.svg#' + w[2] + '"/></svg>' +
+  return '<span class="badge" data-teknik="' + esc(urai.teknik) + '">' +
+    '<svg class="ikon" aria-hidden="true"><use href="icons.svg#' + (IKON_TEKNIK[urai.teknik] || "i-cooking-pot") + '"/></svg>' +
     urai.teknik + (urai.api ? " · api " + urai.api : "") + "</span>" + meter;
 }
 
@@ -261,7 +266,7 @@ function kartuResepHTML(r, opsi, daftarSimpan) {
   return '<article class="kartu">'
     + '<a class="kartu-tautan" href="resep.html?id=' + esc(r.id) + '">'
     + '<span class="kartu-foto">'
-    + '<img src="' + esc(r.foto) + '" alt="" loading="lazy" width="600" height="400" onerror="imgFallback(this)">'
+    + '<img src="' + esc(r.foto) + '" alt="" loading="lazy" width="600" height="400">'
     + '<span class="kartu-level">' + esc(r.level) + "</span>"
     + "</span>"
     + '<span class="kartu-teks">'
@@ -427,7 +432,7 @@ function pasangSaranPencarian(input) {
     }
     kotak.innerHTML = daftar.map((r) =>
       '<a class="saran-item" href="resep.html?id=' + esc(r.id) + '">'
-      + '<img src="' + esc(r.foto) + '" alt="" loading="lazy" width="44" height="44" onerror="imgFallback(this)">'
+      + '<img src="' + esc(r.foto) + '" alt="" loading="lazy" width="44" height="44">'
       + "<span><strong>" + esc(r.nama) + "</strong>"
       + "<small>" + esc(r.daerah) + " · " + fmtWaktu(r.waktuTotal) + "</small></span></a>"
     ).join("");

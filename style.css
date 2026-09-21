@@ -474,6 +474,18 @@ p:last-child { margin-bottom: 0; }
 }
 .baris-info button:hover { background: var(--merek-muda); }
 
+/* Jarak antar bagian di halaman resep. Dulu ditulis sebagai atribut
+   style di HTML; dipindah ke class supaya halaman tetap rapi saat
+   Content-Security-Policy ketat dipasang. */
+.jarak-atas { margin-top: var(--s4); }
+
+/* Teks "3 dari 8 langkah" di kepala panel Langkah. */
+.kepala-prog {
+  margin-left: auto;
+  border: 0;
+  padding: 0;
+}
+
 /* Kalimat penutup. Tanpa garis tepi samping. */
 .pesan {
   font-family: var(--judul);
@@ -771,7 +783,25 @@ p:last-child { margin-bottom: 0; }
   padding: 3px var(--s2);
   border-radius: var(--pil);
   text-transform: capitalize;
+  background: oklch(0.95 0.005 155);
+  color: oklch(0.42 0.02 155);
 }
+/* Warna badge per teknik masak. Dipilih lewat data-teknik supaya
+   JS tidak perlu menulis atribut style (ramah CSP). */
+.badge[data-teknik="tumis"],
+.badge[data-teknik="masak"],
+.badge[data-teknik="goreng"],
+.badge[data-teknik="sangrai"] { background: oklch(0.97 0.045 85); color: oklch(0.40 0.09 75); }
+.badge[data-teknik="rebus"],
+.badge[data-teknik="ungkep"] { background: oklch(0.97 0.015 250); color: oklch(0.42 0.13 250); }
+.badge[data-teknik="kukus"],
+.badge[data-teknik="tunggu"] { background: oklch(0.97 0.02 290); color: oklch(0.44 0.13 290); }
+.badge[data-teknik="bakar"],
+.badge[data-teknik="panggang"] { background: oklch(0.96 0.03 27); color: oklch(0.45 0.16 27); }
+.badge[data-teknik="haluskan"],
+.badge[data-teknik="sajikan"],
+.badge[data-teknik="simpan"] { background: oklch(0.96 0.028 155); color: oklch(0.33 0.082 155); }
+.badge[data-teknik="campur"] { background: oklch(0.95 0.005 155); color: oklch(0.42 0.02 155); }
 .badge-matang {
   background: var(--merek-muda);
   color: var(--merek-tua);

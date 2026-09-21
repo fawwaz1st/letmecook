@@ -5,13 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Katalog Resep — LetMeCook</title>
   <meta name="description" content="Cari resep masakan Indonesia, saring menurut level, waktu, dan pantangan.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://i.ytimg.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <link rel="canonical" href="https://fawwaz1st.github.io/letmecook/katalog.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="LetMeCook">
+  <meta property="og:title" content="Katalog Resep — LetMeCook">
+  <meta property="og:description" content="Cari resep masakan Indonesia, saring menurut level, waktu, dan pantangan.">
+  <meta property="og:url" content="https://fawwaz1st.github.io/letmecook/katalog.html">
+  <meta property="og:locale" content="id_ID">
+  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body data-halaman="katalog">
 
   <a class="skip" href="#main">Lewati ke konten</a>
 
@@ -100,97 +109,6 @@
 
   <script src="resep-data.js"></script>
   <script src="store.js"></script>
-  <script>
-    segarkanBadge();
-
-    const param = new URLSearchParams(location.search);
-    const kat = param.get("kat") || "";
-    const q = (param.get("q") || "").trim();
-
-    const fLevel = document.getElementById("fLevel");
-    const fWaktu = document.getElementById("fWaktu");
-    const fDiet = document.getElementById("fDiet");
-    const grup = document.getElementById("grup");
-    const kosong = document.getElementById("kosong");
-    const jumlahTeks = document.getElementById("jumlahTeks");
-    const tombolReset = document.getElementById("tombolReset");
-
-    document.getElementById("inputCari").value = q;
-
-    // Tandai chip kategori yang sedang aktif.
-    document.querySelectorAll("#chipKategori a").forEach((a) => {
-      if (a.dataset.kat === kat) a.classList.add("aktif");
-    });
-
-    // Pencarian berikutnya tetap membawa kategori yang sedang dipilih.
-    document.getElementById("formCari").addEventListener("submit", (e) => {
-      e.preventDefault();
-      const v = document.getElementById("inputCari").value.trim();
-      const bagian = [];
-      if (v) bagian.push("q=" + encodeURIComponent(v));
-      if (kat) bagian.push("kat=" + kat);
-      location.href = "katalog.html" + (bagian.length ? "?" + bagian.join("&") : "");
-    });
-
-    // Kata kunci dicocokkan ke nama, daerah, deskripsi, dan nama bahan.
-    function cocokKata(r, kata) {
-      if (!kata) return true;
-      const tumpuk = [r.nama, r.daerah, r.deskripsi, r.rasa, r.bahan.map((b) => b.nama).join(" ")]
-        .join(" ").toLowerCase();
-      return kata.toLowerCase().split(/\s+/).every((k) => tumpuk.includes(k));
-    }
-
-    const NAMA_KAT = {
-      "": "Semua resep",
-      sarapan: "Resep sarapan",
-      siang: "Resep makan siang",
-      malam: "Resep makan malam",
-      camilan: "Resep camilan",
-    };
-
-    function saring() {
-      let daftar = RESEP.filter((r) => !kat || r.kategori === kat);
-      daftar = daftar.filter((r) => cocokKata(r, q));
-
-      if (fLevel.value) daftar = daftar.filter((r) => r.level === fLevel.value);
-      if (fWaktu.value) daftar = daftar.filter((r) => r.waktuTotal <= Number(fWaktu.value));
-      if (fDiet.value === "veg") daftar = daftar.filter((r) => r.veg);
-      if (fDiet.value === "anak") daftar = daftar.filter((r) => r.anak);
-      if (fDiet.value === "nopedas") daftar = daftar.filter((r) => r.pedas === 0);
-      if (fDiet.value === "bab") daftar = daftar.filter((r) => Array.isArray(r.bab) && r.bab.length);
-      return daftar;
-    }
-
-    function gambar() {
-      const daftar = saring();
-
-      document.getElementById("judul").textContent =
-        (NAMA_KAT[kat] || NAMA_KAT[""]) + (q ? ' untuk "' + q + '"' : "");
-      jumlahTeks.textContent = "Menampilkan " + daftar.length + " dari " + RESEP.length + " resep";
-
-      const adaSaringan = Boolean(q || fLevel.value || fWaktu.value || fDiet.value || kat);
-      tombolReset.hidden = !adaSaringan;
-
-      isiKartu(grup, daftar);
-
-      const takAda = daftar.length === 0;
-      kosong.hidden = !takAda;
-      if (takAda) {
-        document.getElementById("kosongJudul").textContent =
-          q ? 'Tidak ada hasil untuk "' + q + '"' : "Tidak ada resep yang cocok";
-      }
-    }
-
-    function hapusSemua() {
-      location.href = "katalog.html";
-    }
-
-    tombolReset.addEventListener("click", hapusSemua);
-    document.getElementById("kosongAksi").addEventListener("click", hapusSemua);
-    [fLevel, fWaktu, fDiet].forEach((el) => el.addEventListener("change", gambar));
-
-    gambar();
-    siapkanHalaman();
-  </script>
+  <script src="halaman.js"></script>
 </body>
 </html>
