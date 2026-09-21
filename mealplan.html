@@ -15,43 +15,40 @@
 
   <a class="skip" href="#main">Lewati ke konten</a>
 
-  <header class="topbar">
-    <div class="topbar-in">
-      <a class="logo" href="index.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
-      <nav class="iconnav" aria-label="Navigasi utama">
-        <a href="favorit.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg>Favorit <span class="badge" id="favCount">0</span></a>
-        <a href="mealplan.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
+  <header class="kepala">
+    <div class="kepala-in">
+      <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="favorit.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg>Favorit <span class="badge-hitung" id="favCount">0</span></a>
+        <a href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
       </nav>
     </div>
   </header>
 
   <main class="wrap" id="main">
 
-    <section class="panel" aria-labelledby="judul-rencana">
-      <div class="panel-head">
-        <h1 id="judul-rencana"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana 7 hari</h1>
-        <a href="#" id="cetakLink">Cetak <svg class="icon" aria-hidden="true"><use href="icons.svg#i-printer"/></svg></a>
+    <section class="panel" aria-labelledby="judulRencana">
+      <div class="panel-kepala">
+        <h1 id="judulRencana"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana 7 hari</h1>
+        <a href="#" id="tautanCetak">Cetak <svg class="ikon" aria-hidden="true"><use href="icons.svg#i-printer"/></svg></a>
       </div>
-      <div class="hasil-bar">
-        <span id="isiTeks">0 dari 21 slot terisi</span>
-      </div>
-      <div class="meal-grid" id="mealGrid"></div>
+      <div class="baris-info"><span id="isiTeks">0 dari 21 slot terisi</span></div>
+      <div class="meal-grup" id="mealGrup"></div>
     </section>
 
-    <section class="panel" aria-labelledby="judul-belanja">
-      <div class="panel-head">
-        <h2 id="judul-belanja"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-basket"/></svg>Daftar belanja</h2>
+    <section class="panel" aria-labelledby="judulBelanja">
+      <div class="panel-kepala">
+        <h2 id="judulBelanja"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-basket"/></svg>Daftar belanja</h2>
       </div>
-      <div class="hasil-bar">
-        <span id="belanjaTeks">Belum ada bahan</span>
-      </div>
-      <ul class="grocery" id="grocery"></ul>
-      <form class="sederhana form-tambah" id="manualForm">
+      <div class="baris-info"><span id="belanjaTeks">Belum ada bahan</span></div>
+      <ul class="belanja" id="belanja"></ul>
+
+      <form class="isian" id="formManual">
         <div>
           <label for="mNama">Tambahkan bahan sendiri</label>
           <input id="mNama" placeholder="misal: kecap manis" aria-label="Nama bahan">
         </div>
-        <div class="baris-dua">
+        <div class="dua">
           <div>
             <label for="mJumlah">Jumlah</label>
             <input id="mJumlah" placeholder="250" inputmode="decimal" aria-label="Jumlah">
@@ -61,29 +58,27 @@
             <input id="mSatuan" placeholder="gram" aria-label="Satuan">
           </div>
         </div>
-        <button class="btn btn-solid" type="submit"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-plus"/></svg>Tambah ke daftar</button>
+        <button class="tb tb-isi" type="submit"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-plus"/></svg>Tambah ke daftar</button>
       </form>
     </section>
   </main>
 
-  <!-- Pemilih resep. Lebih enak dipakai daripada mengetik nomor. -->
-  <div class="cook" id="pilih" role="dialog" aria-modal="true" aria-label="Pilih resep">
-    <div class="bar">
-      <span id="pilihJudul">Pilih resep</span>
-      <button class="tutup" id="pilihTutup" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>Tutup</button>
+  <!-- Pemilih resep, memakai kerangka yang sama dengan mode masak. -->
+  <div class="masak" id="pilih" role="dialog" aria-modal="true" aria-label="Pilih resep">
+    <div class="masak-baris">
+      <span class="masak-hitung" id="pilihJudul">Pilih resep</span>
+      <button class="masak-tombol" id="pilihTutup" type="button"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>Tutup</button>
     </div>
-    <div class="langkah-besar pilih-isi">
-      <label for="pilihCari" class="kicker kicker-terang">Cari resep</label>
-      <input id="pilihCari" type="search" placeholder="Ketik nama, misal: soto"
-             aria-label="Cari resep untuk diisi" class="pilih-cari">
+    <div class="masak-isi pilih-isi">
+      <input id="pilihCari" type="search" class="pilih-cari" placeholder="Ketik nama, misal: soto" aria-label="Cari resep untuk diisi">
       <ul class="pilih-daftar" id="pilihDaftar"></ul>
     </div>
   </div>
 
   <footer>
     <div class="wrap">
-      <span><strong>LetMeCook</strong> — 44 panduan masak.</span>
-      <span><a href="index.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Beranda</a></span>
+      <span><strong>LetMeCook</strong> — 44 resep masakan Indonesia.</span>
+      <span><a href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Beranda</a></span>
     </div>
   </footer>
 
@@ -108,69 +103,62 @@
     // ---- Rencana 7 hari ----
     function gambarRencana() {
       const rencana = ambilRencana();
-      const grid = document.getElementById("mealGrid");
-      grid.innerHTML = "";
-
+      const grup = document.getElementById("mealGrup");
       let terisi = 0;
+      grup.innerHTML = "";
 
       HARI.forEach((hari) => {
         const kotak = document.createElement("div");
-        kotak.className = "meal-hari";
-
-        const judul = document.createElement("h3");
-        judul.innerHTML = '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>' + hari;
-        kotak.appendChild(judul);
+        kotak.className = "hari";
+        kotak.innerHTML = '<h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>' + hari + "</h3>";
 
         SLOT.forEach(([kode, label]) => {
-          const idResep = rencana[hari] && rencana[hari][kode];
-          const resep = idResep ? cariResep(idResep) : null;
+          const id = rencana[hari] && rencana[hari][kode];
+          const resep = id ? cariResep(id) : null;
           if (resep) terisi++;
 
           const baris = document.createElement("div");
-          baris.className = "meal-slot";
+          baris.className = "slot";
 
           const waktu = document.createElement("span");
           waktu.className = "waktu";
           waktu.textContent = label;
 
           const isi = document.createElement("span");
-          isi.className = "isi" + (resep ? "" : " kosong-teks");
+          isi.className = "isi-slot" + (resep ? "" : " kosong-teks");
           if (resep) {
             const tautan = document.createElement("a");
             tautan.href = "resep.html?id=" + encodeURIComponent(resep.id);
             tautan.textContent = resep.nama;
-            tautan.style.color = "inherit";
-            tautan.style.fontWeight = "600";
             isi.appendChild(tautan);
           } else {
             isi.textContent = "belum diisi";
           }
 
-          const tombolPilih = document.createElement("button");
-          tombolPilih.type = "button";
-          tombolPilih.textContent = resep ? "Ganti" : "Isi";
-          tombolPilih.addEventListener("click", () => bukaPemilih(hari, kode, label));
+          const tombol = document.createElement("button");
+          tombol.type = "button";
+          tombol.textContent = resep ? "Ganti" : "Isi";
+          tombol.addEventListener("click", () => bukaPemilih(hari, kode, label));
 
-          baris.append(waktu, isi, tombolPilih);
+          baris.append(waktu, isi, tombol);
 
-          // Tombol hapus hanya berguna kalau slotnya sudah terisi.
           if (resep) {
-            const tombolHapus = document.createElement("button");
-            tombolHapus.type = "button";
-            tombolHapus.innerHTML = '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>';
-            tombolHapus.setAttribute("aria-label", "Kosongkan " + hari + " " + label);
-            tombolHapus.addEventListener("click", () => {
+            const hapus = document.createElement("button");
+            hapus.type = "button";
+            hapus.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>';
+            hapus.setAttribute("aria-label", "Kosongkan " + hari + " " + label);
+            hapus.addEventListener("click", () => {
               const baru = ambilRencana();
               if (baru[hari]) delete baru[hari][kode];
               simpanRencana(baru);
             });
-            baris.appendChild(tombolHapus);
+            baris.appendChild(hapus);
           }
 
           kotak.appendChild(baris);
         });
 
-        grid.appendChild(kotak);
+        grup.appendChild(kotak);
       });
 
       document.getElementById("isiTeks").textContent = terisi + " dari 21 slot terisi";
@@ -178,25 +166,25 @@
 
     // ---- Pemilih resep ----
     const pilih = document.getElementById("pilih");
-    const pilihDaftar = document.getElementById("pilihDaftar");
-    const pilihCari = document.getElementById("pilihCari");
+    const daftarPilih = document.getElementById("pilihDaftar");
+    const cariPilih = document.getElementById("pilihCari");
     let slotSasaran = null;
 
     function gambarPilihan() {
-      const kata = pilihCari.value.trim().toLowerCase();
-      const daftar = RESEP.filter((r) => {
+      const kata = cariPilih.value.trim().toLowerCase();
+      const hasil = RESEP.filter((r) => {
         if (!kata) return true;
         return (r.nama + " " + r.daerah + " " + r.kategori).toLowerCase().includes(kata);
-      }).slice(0, 30);
+      }).slice(0, 40);
 
-      pilihDaftar.innerHTML = daftar.map((r) =>
+      daftarPilih.innerHTML = hasil.map((r) =>
         '<li><button type="button" data-id="' + esc(r.id) + '">'
         + '<span class="pilih-nama">' + esc(r.nama) + "</span>"
         + '<span class="pilih-ket">' + esc(r.daerah) + " · " + fmtWaktu(r.waktuTotal) + " · " + esc(r.level) + "</span>"
         + "</button></li>"
       ).join("");
 
-      pilihDaftar.querySelectorAll("button[data-id]").forEach((btn) => {
+      daftarPilih.querySelectorAll("button[data-id]").forEach((btn) => {
         btn.addEventListener("click", () => {
           if (!slotSasaran) return;
           const baru = ambilRencana();
@@ -209,21 +197,23 @@
     }
 
     function bukaPemilih(hari, kode, label) {
-      slotSasaran = { hari: hari, kode: kode };
+      slotSasaran = { hari, kode };
       document.getElementById("pilihJudul").textContent = "Pilih resep untuk " + hari + " " + label;
-      pilihCari.value = "";
+      cariPilih.value = "";
       gambarPilihan();
       pilih.classList.add("buka");
-      pilihCari.focus();
+      document.body.classList.add("masak-jalan");
+      cariPilih.focus();
     }
 
     function tutupPemilih() {
       pilih.classList.remove("buka");
+      document.body.classList.remove("masak-jalan");
       slotSasaran = null;
     }
 
     document.getElementById("pilihTutup").addEventListener("click", tutupPemilih);
-    pilihCari.addEventListener("input", gambarPilihan);
+    cariPilih.addEventListener("input", gambarPilihan);
     document.addEventListener("keydown", (e) => {
       if (e.key === "Escape" && pilih.classList.contains("buka")) tutupPemilih();
     });
@@ -236,15 +226,13 @@
 
       HARI.forEach((hari) => {
         SLOT.forEach(([kode]) => {
-          const idResep = rencana[hari] && rencana[hari][kode];
-          const resep = idResep ? cariResep(idResep) : null;
+          const id = rencana[hari] && rencana[hari][kode];
+          const resep = id ? cariResep(id) : null;
           if (!resep) return;
 
           resep.bahan.forEach((b) => {
             const kunci = b.nama.toLowerCase().trim() + "|" + b.satuan.toLowerCase().trim();
-            if (!gabung[kunci]) {
-              gabung[kunci] = { nama: b.nama, satuan: b.satuan, jumlah: 0, dari: [] };
-            }
+            if (!gabung[kunci]) gabung[kunci] = { nama: b.nama, satuan: b.satuan, jumlah: 0, dari: [] };
             gabung[kunci].jumlah += b.jumlah;
             if (!gabung[kunci].dari.includes(resep.nama)) gabung[kunci].dari.push(resep.nama);
           });
@@ -254,18 +242,13 @@
       return Object.values(gabung).sort((a, b) => a.nama.localeCompare(b.nama, "id"));
     }
 
-    // Bahan yang kamu tulis sendiri. Disimpan di localStorage supaya tidak
-    // hilang saat daftar digambar ulang (misalnya setelah mengisi slot).
+    // Bahan yang ditulis sendiri, disimpan supaya tidak hilang saat digambar ulang.
     function ambilTambahan() {
       const isi = baca(KEY.gmanual, []);
       return Array.isArray(isi) ? isi : [];
     }
 
-    function simpanTambahan(daftar) {
-      tulis(KEY.gmanual, daftar);
-    }
-
-    // Satu baris bahan di daftar belanja.
+    // Satu baris bahan.
     function barisBahan(teks, kunci, keterangan) {
       const centang = baca(KEY.gcheck, {});
       const li = document.createElement("li");
@@ -296,74 +279,60 @@
     }
 
     function gambarBelanja() {
-      const ul = document.getElementById("grocery");
+      const ul = document.getElementById("belanja");
       const dariResep = susunBelanja();
       const tambahan = ambilTambahan();
       ul.innerHTML = "";
 
       const total = dariResep.length + tambahan.length;
-      document.getElementById("belanjaTeks").textContent = total
-        ? total + " bahan"
-        : "Belum ada bahan";
+      document.getElementById("belanjaTeks").textContent = total ? total + " bahan" : "Belum ada bahan";
 
       if (!total) {
         const li = document.createElement("li");
-        const sp = document.createElement("span");
-        sp.textContent = "Isi minimal satu slot di atas, atau tambahkan bahan sendiri di bawah.";
-        li.appendChild(sp);
+        li.innerHTML = "<span>Isi minimal satu slot di atas, atau tambahkan bahan sendiri di bawah.</span>";
         ul.appendChild(li);
         return;
       }
 
-      // Bahan dari resep rencana makan.
       dariResep.forEach((g) => {
         const jumlah = fmtQty(Math.round(g.jumlah * 4) / 4);
-        ul.appendChild(barisBahan(
-          jumlah + " " + g.satuan + " " + g.nama,
-          g.nama + "|" + g.satuan,
-          "untuk " + g.dari.join(", ")
-        ));
+        ul.appendChild(barisBahan(jumlah + " " + g.satuan + " " + g.nama,
+          g.nama + "|" + g.satuan, "untuk " + g.dari.join(", ")));
       });
 
-      // Bahan yang ditulis sendiri.
       tambahan.forEach((t, i) => {
         const li = barisBahan(t.teks, "manual|" + i, null);
-
         const hapus = document.createElement("button");
         hapus.type = "button";
-        hapus.innerHTML = '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>';
+        hapus.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>';
         hapus.setAttribute("aria-label", "Hapus " + t.teks);
         hapus.addEventListener("click", () => {
           const baru = ambilTambahan();
           baru.splice(i, 1);
-          simpanTambahan(baru);
+          tulis(KEY.gmanual, baru);
           gambarBelanja();
         });
         li.appendChild(hapus);
-
         ul.appendChild(li);
       });
     }
 
-    // ---- Tambah bahan manual ----
-    document.getElementById("manualForm").addEventListener("submit", (e) => {
+    document.getElementById("formManual").addEventListener("submit", (e) => {
       e.preventDefault();
       const nama = document.getElementById("mNama").value.trim();
       if (!nama) return;
 
       const jumlah = document.getElementById("mJumlah").value.trim();
       const satuan = document.getElementById("mSatuan").value.trim();
-      const teks = [jumlah, satuan, nama].filter(Boolean).join(" ");
-
       const daftar = ambilTambahan();
-      daftar.push({ teks, nama });
-      simpanTambahan(daftar);
+      daftar.push({ teks: [jumlah, satuan, nama].filter(Boolean).join(" ") });
+      tulis(KEY.gmanual, daftar);
 
       e.target.reset();
       gambarBelanja();
     });
 
-    document.getElementById("cetakLink").addEventListener("click", (e) => {
+    document.getElementById("tautanCetak").addEventListener("click", (e) => {
       e.preventDefault();
       window.print();
     });

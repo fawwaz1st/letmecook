@@ -4,11 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Resep — LetMeCook</title>
-  <meta name="description" content="Bahan bertakar gram, langkah bertanda matang, timer, dan video kalau ada.">
+  <meta name="description" content="Bahan bertakar gram, langkah bertanda matang, timer, dan mode masak.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Diambil lebih awal supaya thumbnail video cepat muncul. -->
   <link rel="preconnect" href="https://i.ytimg.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -17,61 +16,33 @@
 
   <a class="skip" href="#main">Lewati ke konten</a>
 
-  <header class="topbar">
-    <div class="topbar-in">
-      <a class="logo" href="index.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
-      <nav class="iconnav" aria-label="Navigasi utama">
-        <a href="favorit.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg>Favorit <span class="badge" id="favCount">0</span></a>
-        <a href="mealplan.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
+  <header class="kepala">
+    <div class="kepala-in">
+      <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="favorit.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg>Favorit <span class="badge-hitung" id="favCount">0</span></a>
+        <a href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
       </nav>
     </div>
   </header>
 
   <main class="wrap" id="main">
-    <a class="remah" href="katalog.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Kembali ke katalog</a>
+    <a class="remah" href="katalog.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Kembali ke katalog</a>
 
     <div id="area"></div>
 
-    <!-- Video: hanya diisi kalau resep ini punya ID video. -->
-    <section class="panel" id="seksiVideo" hidden aria-labelledby="judul-video">
-      <div class="panel-head">
-        <h2 id="judul-video"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-play"/></svg>Video langkahnya</h2>
+    <section class="panel" aria-labelledby="judulSanding">
+      <div class="panel-kepala">
+        <h2 id="judulSanding"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-utensils"/></svg>Cocok dimakan bersama</h2>
       </div>
-      <div class="pad"><div class="video-slot" id="videoSlot"></div></div>
-    </section>
-
-    <section class="panel" aria-labelledby="judul-sanding">
-      <div class="panel-head">
-        <h2 id="judul-sanding"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-utensils"/></svg>Cocok dimakan bersama</h2>
-      </div>
-      <div class="pad"><div class="grid" id="sanding"></div></div>
+      <div class="isi-grup"><div class="grup" id="sanding"></div></div>
     </section>
   </main>
 
-  <!-- Mode masak layar penuh -->
-  <div class="cook" id="cook" role="dialog" aria-modal="true" aria-label="Mode masak">
-    <div class="bar">
-      <span id="cookCount">1/1</span>
-      <button class="tutup" id="cookTutup" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>Tutup</button>
-    </div>
-    <div class="progress"><i id="cookBar"></i></div>
-    <div class="langkah-besar">
-      <div class="nomor-besar" id="cookNomor">Langkah 1</div>
-      <p class="teks-besar" id="cookTeks"></p>
-      <div class="cook-visual" id="cookVisual"></div>
-      <p><button class="timerbtn" id="cookTimer" type="button" hidden></button></p>
-      <p class="lock" id="cookLock"></p>
-    </div>
-    <div class="nav">
-      <button class="prev" id="cookPrev" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Sebelumnya</button>
-      <button class="next" id="cookNext" type="button">Lanjut <svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg></button>
-    </div>
-  </div>
-
   <footer>
     <div class="wrap">
-      <span><strong>LetMeCook</strong> — 44 panduan masak.</span>
-      <span><a href="index.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Beranda</a></span>
+      <span><strong>LetMeCook</strong> — 44 resep masakan Indonesia.</span>
+      <span><a href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Beranda</a></span>
     </div>
   </footer>
 
@@ -84,103 +55,95 @@
     const area = document.getElementById("area");
 
     if (!r) {
-      // Resep tidak ditemukan: satu pesan, satu jalan keluar.
       area.innerHTML = '<div class="panel"><div class="kosong">'
-        + '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>'
+        + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>'
         + "<strong>Resep itu tidak ada</strong>"
         + "<p>Mungkin ID di alamatnya salah. Semua resep ada di katalog.</p>"
-        + '<a class="btn btn-solid" href="katalog.html">Buka katalog</a>'
+        + '<a class="tb tb-isi" href="katalog.html">Buka katalog</a>'
         + "</div></div>";
     } else {
       document.title = r.nama + " — LetMeCook";
-      document.querySelector('meta[name="description"]').setAttribute("content",
-        r.deskripsi.slice(0, 150));
+      document.querySelector('meta[name="description"]').setAttribute("content", r.deskripsi.slice(0, 150));
 
       let faktorPorsi = 1;
       let timerAktif = null;
 
-      // ---- Label di atas judul ----
+      // Label kecil di atas judul.
       const label = ['<span class="tag">' + esc(r.level) + "</span>",
         '<span class="tag">' + esc(r.kategori) + "</span>"];
       if (r.veg) label.push('<span class="tag hijau">Vegetarian</span>');
       if (r.anak) label.push('<span class="tag hijau">Aman anak</span>');
       if (r.pedas > 0) {
-        label.push('<span class="tag merah"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-flame-kindling"/></svg>Pedas ' + r.pedas + "/3</span>");
+        label.push('<span class="tag merah"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame-kindling"/></svg>Pedas ' + r.pedas + "/3</span>");
       }
 
-      // ---- Susunan halaman ----
       area.innerHTML =
-        '<article class="panel"><div class="resep-head">'
-        + '<img src="' + esc(r.foto) + '" alt="' + esc(r.nama) + '" width="900" height="562" onerror="imgFallback(this)">'
-        + '<div class="info">'
+        '<article class="panel"><div class="kepala-resep">'
+        + '<img src="' + esc(r.foto) + '" alt="" width="900" height="562" onerror="imgFallback(this)">'
+        + '<div class="teks">'
         + '<div class="tag-baris">' + label.join("") + "</div>"
         + "<h1>" + esc(r.nama) + "</h1>"
         + '<p class="sub">'
-        + '<span><svg class="icon" aria-hidden="true"><use href="icons.svg#i-pin"/></svg>' + esc(r.daerah) + "</span>"
-        + '<span><svg class="icon isi bintang" aria-hidden="true"><use href="icons.svg#i-star"/></svg>' + r.rating + " dari 5</span>"
+        + '<span><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-pin"/></svg>' + esc(r.daerah) + "</span>"
+        + '<span class="bintang"><svg class="ikon padat" aria-hidden="true"><use href="icons.svg#i-star"/></svg>' + r.rating + " dari 5</span>"
         + "<span>dimasak " + r.dimasak.toLocaleString("id-ID") + " kali</span>"
         + "</p>"
-        + '<p class="prosa">' + esc(r.deskripsi) + "</p>"
+        + '<p class="lega">' + esc(r.deskripsi) + "</p>"
 
-        // Info cepat dalam kotak, bukan deretan ikon.
-        + '<dl class="infocepat">'
-        + "<div><dt><svg class=\"icon\" aria-hidden=\"true\"><use href=\"icons.svg#i-clock\"/></svg>Total</dt><dd>" + fmtWaktu(r.waktuTotal) + "</dd></div>"
-        + "<div><dt><svg class=\"icon\" aria-hidden=\"true\"><use href=\"icons.svg#i-flame\"/></svg>Di dapur</dt><dd>" + fmtWaktu(r.waktuAktif) + "</dd></div>"
-        + '<div><dt><svg class="icon" aria-hidden="true"><use href="icons.svg#i-users"/></svg>Hasil</dt><dd id="porsiTeks">' + r.porsi + " porsi</dd></div>"
-        + "<div><dt><svg class=\"icon\" aria-hidden=\"true\"><use href=\"icons.svg#i-leaf\"/></svg>Kalori</dt><dd>" + esc(r.kalori) + "</dd></div>"
+        + '<dl class="info-cepat">'
+        + '<div><dt><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>Total</dt><dd>' + fmtWaktu(r.waktuTotal) + "</dd></div>"
+        + '<div><dt><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>Di dapur</dt><dd>' + fmtWaktu(r.waktuAktif) + "</dd></div>"
+        + '<div><dt><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-users"/></svg>Hasil</dt><dd id="porsiTeks">' + r.porsi + " porsi</dd></div>"
+        + '<div><dt><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-leaf"/></svg>Kalori</dt><dd>' + esc(r.kalori) + "</dd></div>"
         + "</dl>"
 
         + '<div class="aksi-resep">'
-        + '<button class="btn btn-solid" id="bMasak" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-play"/></svg>Mode masak</button>'
-        + '<button class="btn" id="bFav" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg><span>' + (sudahFav(r.id) ? "Tersimpan" : "Simpan") + "</span></button>"
-        + '<button class="btn btn-halus" id="bPrint" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-printer"/></svg>Cetak</button>'
-        + '<button class="btn btn-halus" id="bShare" type="button"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-share"/></svg>Salin tautan</button>'
+        + '<button class="tb tb-isi" id="bMasak" type="button"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-play"/></svg>Mode masak</button>'
+        + '<button class="tb" id="bFav" type="button"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg><span>' + (sudahFav(r.id) ? "Tersimpan" : "Simpan") + "</span></button>"
+        + '<button class="tb tb-halus" id="bPrint" type="button"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-printer"/></svg>Cetak</button>'
+        + '<button class="tb tb-halus" id="bShare" type="button"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-share"/></svg>Salin tautan</button>'
         + "</div></div></div></article>"
 
-        + '<div class="duakol jarak-atas">'
+        + '<div class="dua-kolom" style="margin-top:var(--s4)">'
 
         + '<section class="panel" aria-label="Bahan">'
-        + '<div class="panel-head"><h2><svg class="icon" aria-hidden="true"><use href="icons.svg#i-list-checks"/></svg>Bahan</h2></div>'
-        + '<div class="porsi-bar"><span>Untuk</span>'
+        + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-list-checks"/></svg>Bahan</h2></div>'
+        + '<div class="baris-porsi"><span>Untuk</span>'
         + '<div class="stepper">'
-        + '<button id="pMin" type="button" aria-label="Kurangi porsi"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-minus"/></svg></button>'
+        + '<button id="pMin" type="button" aria-label="Kurangi porsi"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-minus"/></svg></button>'
         + '<span id="pVal">' + r.porsi + " porsi</span>"
-        + '<button id="pPlus" type="button" aria-label="Tambah porsi"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-plus"/></svg></button>'
+        + '<button id="pPlus" type="button" aria-label="Tambah porsi"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-plus"/></svg></button>'
         + "</div></div>"
         + '<ul class="bahan" id="bahanList"></ul>'
         + "</section>"
 
         + '<section class="panel" aria-label="Langkah">'
-        + '<div class="panel-head"><h2><svg class="icon" aria-hidden="true"><use href="icons.svg#i-cooking-pot"/></svg>Langkah</h2>'
-        + '<span class="prog" id="progTeks"></span></div>'
+        + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-cooking-pot"/></svg>Langkah</h2>'
+        + '<span class="baris-info" style="border:0;padding:0;margin-left:auto" id="progTeks"></span></div>'
         + '<ol class="langkah" id="langkahList"></ol>'
-        + '<div class="kotak kuning"><h3><svg class="icon" aria-hidden="true"><use href="icons.svg#i-bulb"/></svg>Sering gagal di sini</h3><p>' + esc(r.tips) + "</p></div>"
-        + '<div class="kotak hijau"><h3><svg class="icon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>Kalau sudah terjadi</h3><p>' + esc(r.selamat) + "</p></div>"
-        + '<div class="kotak biru"><h3><svg class="icon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>Menyimpan sisa</h3><p>' + esc(r.simpan) + "</p></div>"
+        + '<div class="kotak kuning"><h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-bulb"/></svg>Sering gagal di sini</h3><p>' + esc(r.tips) + "</p></div>"
+        + '<div class="kotak hijau"><h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>Kalau sudah terjadi</h3><p>' + esc(r.selamat) + "</p></div>"
+        + '<div class="kotak biru"><h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>Menyimpan sisa</h3><p>' + esc(r.simpan) + "</p></div>"
         + "</section></div>"
 
-        + '<section class="panel jarak-atas" aria-label="Rasa dan gizi">'
-        + '<div class="panel-head"><h2><svg class="icon" aria-hidden="true"><use href="icons.svg#i-leaf"/></svg>Rasa dan gizi</h2></div>'
-        + '<div class="pad">'
+        + '<section class="panel" style="margin-top:var(--s4)" aria-label="Rasa dan gizi">'
+        + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-leaf"/></svg>Rasa dan gizi</h2></div>'
+        + '<div class="isi">'
         + "<p><strong>Rasanya dari mana.</strong> " + esc(r.rasa) + "</p>"
         + '<div class="gizi">'
         + "<div><strong>" + esc(r.kalori) + "</strong><span>per porsi</span></div>"
         + "<div><strong>" + esc(r.protein) + "</strong><span>protein</span></div>"
         + "</div>"
-        + '<p><svg class="icon" aria-hidden="true"><use href="icons.svg#i-alert"/></svg> <strong>Perhatikan.</strong> ' + esc(r.pantangan) + "</p>"
+        + '<p><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-alert"/></svg> <strong>Perhatikan.</strong> ' + esc(r.pantangan) + "</p>"
         + "<p><strong>Enak dimakan dengan.</strong> " + esc(r.sanding.join(", ")) + "</p>"
         + "<p><strong>Minumnya.</strong> " + esc(r.minum) + "</p>"
-        + '<p class="pembuka">' + esc(r.suasana) + "</p>"
+        + '<p class="pesan">' + esc(r.suasana) + "</p>"
         + "</div></section>"
 
-        + '<section class="panel jarak-atas" aria-label="Alat">'
-        + '<div class="panel-head"><h2><svg class="icon" aria-hidden="true"><use href="icons.svg#i-utensils"/></svg>Alat yang perlu disiapkan</h2></div>'
-        + '<div class="pad"><p>' + esc(r.alat.join(" · ")) + "</p></div>"
+        + '<section class="panel" style="margin-top:var(--s4)" aria-label="Alat">'
+        + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-utensils"/></svg>Alat yang perlu disiapkan</h2></div>'
+        + '<div class="isi"><p>' + esc(r.alat.join(" · ")) + "</p></div>"
         + "</section>";
-
-      // Catatan: gambar di atas sudah punya onerror="imgFallback(this)".
-      // Jangan pasang pendengar error kedua, karena akan terpanggil dua kali
-      // dan gambar cadangan ikut terlewat.
 
       // ---- Simpan, cetak, salin tautan ----
       document.getElementById("bFav").addEventListener("click", (e) => {
@@ -200,12 +163,10 @@
           }
           await navigator.clipboard.writeText(location.href);
           tombol.textContent = "Tautan tersalin";
-          setTimeout(() => { tombol.textContent = teksAwal; }, 2000);
-        } catch (err) {
-          // Pengguna menutup dialog bagikan, atau clipboard diblokir.
+        } catch {
           tombol.textContent = "Tidak bisa menyalin";
-          setTimeout(() => { tombol.textContent = teksAwal; }, 2000);
         }
+        setTimeout(() => { tombol.textContent = teksAwal; }, 2000);
       });
 
       // ---- Bahan dan penyesuaian porsi ----
@@ -244,9 +205,9 @@
       }
 
       function gambarPorsi() {
-        const porsiBaru = Math.max(1, Math.round(r.porsi * faktorPorsi));
-        document.getElementById("pVal").textContent = porsiBaru + " porsi";
-        document.getElementById("porsiTeks").textContent = porsiBaru + " porsi";
+        const baru = Math.max(1, Math.round(r.porsi * faktorPorsi));
+        document.getElementById("pVal").textContent = baru + " porsi";
+        document.getElementById("porsiTeks").textContent = baru + " porsi";
         gambarBahan();
       }
 
@@ -261,7 +222,7 @@
         gambarPorsi();
       });
 
-      // ---- Langkah: badge teknik, meter api, tanda matang, timer ----
+      // ---- Daftar langkah ----
       const langkahList = document.getElementById("langkahList");
       const langkahTerurai = r.langkah.map(parseLangkah);
 
@@ -280,21 +241,20 @@
         const badge = badgeTeknikHTML(urai);
         if (badge) {
           const kepala = document.createElement("div");
-          kepala.className = "step-head";
           kepala.innerHTML = badge;
           isi.appendChild(kepala);
         }
 
         const pTeks = document.createElement("p");
-        pTeks.className = "step-teks";
+        pTeks.className = "teks-langkah";
         pTeks.textContent = urai.sisa;
         isi.appendChild(pTeks);
 
         // Tanda matang dibangun lewat textContent supaya teks data tetap aman.
         if (urai.matang) {
           const kotak = document.createElement("div");
-          kotak.className = "tanda-matang";
-          kotak.innerHTML = '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-check"/></svg><span></span>';
+          kotak.className = "tanda";
+          kotak.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg><span></span>';
           const kuat = document.createElement("strong");
           kuat.textContent = "Matang kalau: ";
           kotak.querySelector("span").append(kuat, document.createTextNode(urai.matang));
@@ -306,28 +266,28 @@
 
         const tombolCek = document.createElement("button");
         tombolCek.type = "button";
-        tombolCek.className = "timerbtn";
-        const tulisTombolCek = () => {
-          tombolCek.innerHTML = '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>'
+        tombolCek.className = "tb-mini";
+        const tulisCek = () => {
+          tombolCek.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>'
             + (prog.langkah[i] ? "Selesai" : "Tandai selesai");
         };
-        tulisTombolCek();
+        tulisCek();
         tombolCek.addEventListener("click", () => {
           prog.langkah[i] = !prog.langkah[i];
           li.classList.toggle("selesai", prog.langkah[i]);
-          tulisTombolCek();
+          tulisCek();
           simpanProg();
         });
         baris.appendChild(tombolCek);
 
-        // Timer otomatis kalau langkah menyebut jam, menit, atau detik.
+        // Timer muncul otomatis kalau langkah menyebut waktu.
         const waktu = teks.match(/(\d+)\s*(jam|menit|detik)/);
         if (waktu) {
           const detik = Number(waktu[1]) * { jam: 3600, menit: 60, detik: 1 }[waktu[2]];
           const tombolTimer = document.createElement("button");
           tombolTimer.type = "button";
-          tombolTimer.className = "timerbtn";
-          tombolTimer.innerHTML = '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-timer"/></svg>Timer ' + waktu[0];
+          tombolTimer.className = "tb-mini";
+          tombolTimer.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-timer"/></svg>Timer ' + waktu[0];
           tombolTimer.addEventListener("click", () => mulaiTimer(tombolTimer, detik));
           baris.appendChild(tombolTimer);
         }
@@ -343,17 +303,17 @@
       }
 
       function mulaiTimer(tombol, detik) {
-        // Satu timer berjalan saja supaya tidak ada dua hitungan bersamaan.
+        // Satu timer saja supaya tidak ada dua hitungan bersamaan.
         if (timerAktif) {
           clearInterval(timerAktif);
           timerAktif = null;
-          document.querySelectorAll(".timerbtn.jalan").forEach((b) => b.classList.remove("jalan"));
+          document.querySelectorAll(".tb-mini.jalan").forEach((b) => b.classList.remove("jalan"));
         }
 
         let sisa = detik;
         tombol.classList.add("jalan");
         const tulisSisa = () => {
-          tombol.innerHTML = '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-timer"/></svg>'
+          tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-timer"/></svg>'
             + Math.floor(sisa / 60) + ":" + String(sisa % 60).padStart(2, "0");
         };
         tulisSisa();
@@ -364,7 +324,7 @@
             clearInterval(timerAktif);
             timerAktif = null;
             tombol.classList.remove("jalan");
-            tombol.innerHTML = '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>Waktunya habis';
+            tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>Waktunya habis';
             if (navigator.vibrate) navigator.vibrate(400);
           } else {
             tulisSisa();
@@ -375,134 +335,8 @@
       gambarBahan();
       gambarProg();
 
-      // ---- Video YouTube ----
-      // Dipindah ke atas, tepat di bawah kepala resep, supaya terlihat
-      // tanpa harus menggulir jauh.
-      if (idVideoValid(r.video)) {
-        const seksiVideo = document.getElementById("seksiVideo");
-        seksiVideo.hidden = false;
-        const kepalaResep = area.querySelector("article.panel");
-        if (kepalaResep) kepalaResep.insertAdjacentElement("afterend", seksiVideo);
-        pasangVideo(document.getElementById("videoSlot"), r.video, r.bab, r.nama);
-      }
-
-      // ---- Mode masak ----
-      const cook = document.getElementById("cook");
-      let indeksCook = 0;
-      let wakeLock = null;
-      let timerCook = null;
-
-      async function jagaLayar() {
-        if (!("wakeLock" in navigator)) return;
-        try { wakeLock = await navigator.wakeLock.request("screen"); } catch (e) { /* diabaikan */ }
-      }
-
-      function gambarCook() {
-        const urai = langkahTerurai[indeksCook];
-        const terakhir = indeksCook === r.langkah.length - 1;
-
-        document.getElementById("cookCount").textContent = (indeksCook + 1) + "/" + r.langkah.length;
-        document.getElementById("cookNomor").textContent = "Langkah " + (indeksCook + 1);
-        document.getElementById("cookTeks").textContent = urai.sisa;
-        document.getElementById("cookBar").style.width = ((indeksCook + 1) / r.langkah.length * 100) + "%";
-        document.getElementById("cookPrev").disabled = indeksCook === 0;
-        document.getElementById("cookNext").innerHTML = terakhir
-          ? "Selesai"
-          : 'Lanjut <svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg>';
-
-        const visual = document.getElementById("cookVisual");
-        visual.innerHTML = badgeTeknikHTML(urai);
-        if (urai.matang) {
-          const chip = document.createElement("span");
-          chip.className = "badge-teknik";
-          chip.style.background = "oklch(0.96 0.028 155)";
-          chip.style.color = "oklch(0.33 0.082 155)";
-          chip.textContent = "Matang kalau: " + urai.matang;
-          visual.appendChild(chip);
-        }
-
-        // Timer di dalam mode masak.
-        const tombolTimer = document.getElementById("cookTimer");
-        if (timerCook) { clearInterval(timerCook); timerCook = null; }
-
-        const waktu = r.langkah[indeksCook].match(/(\d+)\s*(jam|menit|detik)/);
-        if (waktu) {
-          const detik = Number(waktu[1]) * { jam: 3600, menit: 60, detik: 1 }[waktu[2]];
-          tombolTimer.hidden = false;
-          tombolTimer.dataset.detik = detik;
-          tombolTimer.innerHTML = '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-timer"/></svg>Timer ' + waktu[0];
-        } else {
-          tombolTimer.hidden = true;
-        }
-
-        document.getElementById("cookLock").textContent = ("wakeLock" in navigator)
-          ? "Layar dibiarkan menyala selama memasak"
-          : "Atur layar agar tidak mati sendiri selama memasak";
-      }
-
-      function bukaCook() {
-        indeksCook = 0;
-        gambarCook();
-        cook.classList.add("buka");
-        jagaLayar();
-      }
-
-      function tutupCook() {
-        cook.classList.remove("buka");
-        if (timerCook) { clearInterval(timerCook); timerCook = null; }
-        if (wakeLock) { wakeLock.release(); wakeLock = null; }
-      }
-
-      document.getElementById("bMasak").addEventListener("click", bukaCook);
-      document.getElementById("cookTutup").addEventListener("click", tutupCook);
-      document.getElementById("cookPrev").addEventListener("click", () => {
-        if (indeksCook > 0) { indeksCook--; gambarCook(); }
-      });
-      document.getElementById("cookNext").addEventListener("click", () => {
-        if (indeksCook < r.langkah.length - 1) {
-          indeksCook++;
-          gambarCook();
-        } else {
-          tutupCook();
-        }
-      });
-
-      document.getElementById("cookTimer").addEventListener("click", (e) => {
-        const tombol = e.currentTarget;
-        const detik = Number(tombol.dataset.detik || 0);
-        if (!detik) return;
-        if (timerCook) { clearInterval(timerCook); timerCook = null; }
-
-        let sisa = detik;
-        const tulisSisa = () => {
-          tombol.textContent = Math.floor(sisa / 60) + ":" + String(sisa % 60).padStart(2, "0");
-        };
-        tulisSisa();
-
-        timerCook = setInterval(() => {
-          sisa--;
-          if (sisa <= 0) {
-            clearInterval(timerCook);
-            timerCook = null;
-            tombol.textContent = "Waktunya habis";
-            if (navigator.vibrate) navigator.vibrate(400);
-          } else {
-            tulisSisa();
-          }
-        }, 1000);
-      });
-
-      // Pintasan papan tuntas: panah kiri/kanan, Esc untuk keluar.
-      document.addEventListener("keydown", (e) => {
-        if (!cook.classList.contains("buka")) return;
-        if (e.key === "ArrowRight") document.getElementById("cookNext").click();
-        if (e.key === "ArrowLeft") document.getElementById("cookPrev").click();
-        if (e.key === "Escape") tutupCook();
-      });
-
-      document.addEventListener("visibilitychange", () => {
-        if (document.visibilityState === "visible" && cook.classList.contains("buka")) jagaLayar();
-      });
+      // ---- Mode masak: langkah besar + video ----
+      document.getElementById("bMasak").addEventListener("click", () => bukaModeMasak(r));
 
       // ---- Data terstruktur untuk mesin pencari ----
       const ld = document.createElement("script");
@@ -521,15 +355,12 @@
       });
       document.head.appendChild(ld);
 
-      // ---- Resep pendamping: kategori berbeda, biar makanannya bervariasi ----
-      const pendamping = RESEP
-        .filter((x) => x.id !== r.id && x.kategori !== r.kategori)
-        .slice(0, 4);
-      isiKartu(document.getElementById("sanding"), pendamping, { ringkas: true });
+      // ---- Resep pendamping: kategori berbeda biar bervariasi ----
+      isiKartu(document.getElementById("sanding"),
+        RESEP.filter((x) => x.id !== r.id && x.kategori !== r.kategori).slice(0, 4),
+        { tanpaSimpan: true });
     }
 
-    // Dropdown kustom dan animasi gulir dipasang untuk semua keadaan halaman,
-    // termasuk saat resepnya tidak ditemukan.
     siapkanHalaman();
   </script>
 </body>

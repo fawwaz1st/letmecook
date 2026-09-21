@@ -8,7 +8,6 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <!-- Hanya thumbnail video yang diambil sebelum kamu klik play. -->
   <link rel="preconnect" href="https://i.ytimg.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
@@ -17,93 +16,87 @@
 
   <a class="skip" href="#main">Lewati ke konten</a>
 
-  <header class="topbar">
-    <div class="topbar-in">
-      <a class="logo" href="index.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
-      <form class="search" id="searchForm" role="search">
-        <input id="searchInput" type="search" placeholder="Cari rendang, soto, klepon..." aria-label="Cari resep">
-        <button type="submit"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>Cari</button>
+  <header class="kepala">
+    <div class="kepala-in">
+      <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
+      <form class="cari" id="formCari" role="search">
+        <input id="inputCari" type="search" placeholder="Cari rendang, soto, klepon..." aria-label="Cari resep" autocomplete="off">
+        <button type="submit"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>Cari</button>
       </form>
-      <nav class="iconnav" aria-label="Navigasi utama">
-        <a href="favorit.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg>Favorit <span class="badge" id="favCount">0</span></a>
-        <a href="mealplan.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="favorit.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg>Favorit <span class="badge-hitung" id="favCount">0</span></a>
+        <a href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
       </nav>
     </div>
-    <div class="catchips">
-      <div class="catchips-in">
-        <a href="katalog.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Semua</a>
-        <a href="katalog.html?kat=sarapan"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-soup"/></svg>Sarapan</a>
-        <a href="katalog.html?kat=siang"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-utensils"/></svg>Siang</a>
-        <a href="katalog.html?kat=malam"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>Malam</a>
-        <a href="katalog.html?kat=camilan"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-star"/></svg>Camilan</a>
+    <div class="chip">
+      <div class="chip-in">
+        <a href="katalog.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Semua</a>
+        <a href="katalog.html?kat=sarapan"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-soup"/></svg>Sarapan</a>
+        <a href="katalog.html?kat=siang"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-utensils"/></svg>Siang</a>
+        <a href="katalog.html?kat=malam"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>Malam</a>
+        <a href="katalog.html?kat=camilan"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-star"/></svg>Camilan</a>
       </div>
     </div>
   </header>
 
   <main class="wrap" id="main">
 
-    <!-- Hero: satu gambar, satu janji, dua tombol. -->
     <section class="hero">
       <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Rendang_dish_closeup.jpg/1280px-Rendang_dish_closeup.jpg" alt="Rendang sapi yang kuahnya sudah menyusut dan berminyak" fetchpriority="high" width="1280" height="1011" onerror="imgFallback(this)">
       <div class="teks">
-        <span class="kicker"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>44 resep · takaran gram</span>
+        <span class="kicker"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>44 resep · takaran gram</span>
         <h1>Setiap langkah bilang apa yang harus kamu lihat.</h1>
-        <p class="lead">Bawang sudah kuning atau belum, santan sudah keluar minyak atau belum. Tiap langkah menyebut tandanya, bukan cuma lama waktunya. Ada timer, mode masak layar penuh, dan daftar belanja dari rencana makanmu.</p>
+        <p class="lead">Bawang sudah kuning atau belum, santan sudah keluar minyak atau belum. Tiap langkah menyebut tandanya, bukan cuma lama waktunya. Ada timer, mode masak, dan daftar belanja dari rencana makanmu.</p>
         <div class="aksi">
-          <a class="btn btn-solid" href="katalog.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Buka 44 resep</a>
-          <a class="btn" href="mealplan.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Susun 7 hari makan</a>
+          <a class="tb tb-isi" href="katalog.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Buka 44 resep</a>
+          <a class="tb" href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Susun 7 hari makan</a>
         </div>
       </div>
     </section>
 
-    <!-- Resep hari ini: berubah tiap tanggal. -->
-    <section class="panel" aria-labelledby="judul-hari-ini">
-      <div class="panel-head">
-        <h2 id="judul-hari-ini"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-star"/></svg>Resep untuk tanggal ini</h2>
-        <a href="katalog.html">Semua resep <svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg></a>
+    <section class="panel" aria-labelledby="judulHari">
+      <div class="panel-kepala">
+        <h2 id="judulHari"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-star"/></svg>Resep untuk tanggal ini</h2>
+        <a href="katalog.html">Semua resep <svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg></a>
       </div>
-      <div class="pad" id="hariIni"></div>
+      <div class="isi" id="hariIni"></div>
     </section>
 
-    <!-- Kategori: 4 pintu masuk. -->
-    <section aria-labelledby="judul-kategori">
-      <h2 id="judul-kategori" class="kicker">Mulai dari waktu makan</h2>
-      <div class="grid grid-kategori" id="katGrid"></div>
+    <section aria-labelledby="judulKategori">
+      <h2 id="judulKategori" class="kicker">Mulai dari waktu makan</h2>
+      <div class="grup" id="katGrup"></div>
     </section>
 
-    <!-- Video berbab: hanya resep yang videonya punya penanda bagian. -->
-    <section class="panel" aria-labelledby="judul-video" id="seksiVideo" hidden>
-      <div class="panel-head">
-        <h2 id="judul-video"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-play"/></svg>Videonya bisa dilompati</h2>
-        <a href="katalog.html">Semua resep <svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg></a>
+    <section class="panel" aria-labelledby="judulPopuler">
+      <div class="panel-kepala">
+        <h2 id="judulPopuler"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>Paling sering dimasak</h2>
+        <a href="katalog.html">Semua resep <svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg></a>
       </div>
-      <div class="pad"><div class="grid" id="gridVideo"></div></div>
+      <div class="isi-grup"><div class="grup" id="popGrup"></div></div>
     </section>
 
-    <!-- Populer. -->
-    <section class="panel" aria-labelledby="judul-populer">
-      <div class="panel-head">
-        <h2 id="judul-populer"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>Paling sering dimasak</h2>
-        <a href="katalog.html">Semua resep <svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg></a>
+    <section class="panel" aria-labelledby="judulBab">
+      <div class="panel-kepala">
+        <h2 id="judulBab"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-play"/></svg>Videonya bisa dilompati</h2>
+        <a href="katalog.html">Semua resep <svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg></a>
       </div>
-      <div class="pad"><div class="grid" id="popGrid"></div></div>
+      <div class="isi-grup"><div class="grup" id="babGrup"></div></div>
     </section>
 
-    <!-- Jam masak: tiga baris, bukan tiga paragraf. -->
-    <section class="panel" aria-labelledby="judul-jam">
-      <div class="panel-head"><h2 id="judul-jam"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>Jam berapa, masak apa</h2></div>
-      <div class="pad">
+    <section class="panel" aria-labelledby="judulJam">
+      <div class="panel-kepala"><h2 id="judulJam"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>Jam berapa, masak apa</h2></div>
+      <div class="isi">
         <p><strong>Pagi, 06–09.</strong> Bubur, nasi uduk, lontong sayur. Matang sambil kamu mandi.</p>
         <p><strong>Siang, 11–13.</strong> Rendang, soto, gudeg. Masak buat sekalian malam.</p>
         <p><strong>Malam, 18–20.</strong> Rawon, betutu, ikan bakar. Berkuah, cocok kalau badan capek.</p>
-        <p class="pembuka">Masih bingung? Buka resep hari ini, ikuti saja langkahnya.</p>
+        <p class="pesan">Masih bingung? Buka resep hari ini, ikuti saja langkahnya.</p>
       </div>
     </section>
   </main>
 
   <footer>
     <div class="wrap">
-      <span><strong>LetMeCook</strong> — 44 panduan masak. Foto: Wikimedia Commons.</span>
+      <span><strong>LetMeCook</strong> — 44 resep masakan Indonesia.</span>
       <span><a href="tentang.html">Tentang &amp; takaran</a></span>
     </div>
   </footer>
@@ -112,58 +105,52 @@
   <script>
     segarkanBadge();
 
-    // Kotak pencarian mengirim kata kunci ke katalog.
-    document.getElementById("searchForm").addEventListener("submit", (e) => {
+    // Pencarian: kalau ada saran yang disorot, biarkan saran yang jalan.
+    document.getElementById("formCari").addEventListener("submit", (e) => {
       e.preventDefault();
-      const q = document.getElementById("searchInput").value.trim();
-      location.href = "katalog.html" + (q ? "?q=" + encodeURIComponent(q) : "");
+      const q = document.getElementById("inputCari").value.trim();
+      if (q) location.href = "katalog.html?q=" + encodeURIComponent(q);
     });
 
-    // 1) Resep untuk tanggal ini. Tanggal dipakai sebagai pemutar otomatis.
+    // 1) Resep untuk tanggal ini, berganti tiap tanggal.
     const hari = RESEP[new Date().getDate() % RESEP.length];
     document.getElementById("hariIni").innerHTML =
       '<div class="sorot">'
-      + '<img src="' + esc(hari.foto) + '" alt="' + esc(hari.nama) + '" width="520" height="390" onerror="imgFallback(this)">'
-      + '<div class="isi">'
+      + '<img src="' + esc(hari.foto) + '" alt="" width="440" height="330" onerror="imgFallback(this)">'
+      + '<div class="teks">'
       + "<h3>" + esc(hari.nama) + "</h3>"
-      + '<p class="prosa">' + esc(hari.deskripsi) + "</p>"
+      + '<p class="lega">' + esc(hari.deskripsi) + "</p>"
       + '<p class="meta">'
-      + '<span><svg class="icon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>' + fmtWaktu(hari.waktuTotal) + "</span>"
-      + '<span><svg class="icon" aria-hidden="true"><use href="icons.svg#i-users"/></svg>' + hari.porsi + " porsi</span>"
-      + '<span><svg class="icon" aria-hidden="true"><use href="icons.svg#i-pin"/></svg>' + esc(hari.daerah) + "</span>"
+      + '<span><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>' + fmtWaktu(hari.waktuTotal) + "</span>"
+      + '<span><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-users"/></svg>' + hari.porsi + " porsi</span>"
+      + '<span><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-pin"/></svg>' + esc(hari.daerah) + "</span>"
       + "</p>"
-      + '<a class="btn btn-solid" href="resep.html?id=' + esc(hari.id) + '">Masak resep ini</a>'
+      + '<a class="tb tb-isi" href="resep.html?id=' + esc(hari.id) + '">Masak resep ini</a>'
       + "</div></div>";
 
-    // 2) Empat kategori, masing-masing menyebut jumlah resepnya.
+    // 2) Empat kategori.
     const kategori = [
       ["sarapan", "Sarapan", "Bubur, uduk, lontong.", "i-soup"],
       ["siang", "Makan siang", "Rendang, soto, gudeg.", "i-utensils"],
       ["malam", "Makan malam", "Rawon, betutu, ikan bakar.", "i-flame"],
       ["camilan", "Camilan", "Klepon, martabak, cendol.", "i-star"],
     ];
-    document.getElementById("katGrid").innerHTML = kategori.map(([kode, nama, ket, ikon]) => {
+    document.getElementById("katGrup").innerHTML = kategori.map(([kode, nama, ket, ikon]) => {
       const jumlah = RESEP.filter((r) => r.kategori === kode).length;
       return '<a class="panel kat" href="katalog.html?kat=' + kode + '">'
-        + '<svg class="icon" aria-hidden="true"><use href="icons.svg#' + ikon + '"/></svg>'
-        + "<div><strong>" + nama + " · " + jumlah + " resep</strong>"
-        + '<span class="ket">' + ket + "</span></div></a>";
+        + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#' + ikon + '"/></svg>'
+        + "<span><strong>" + nama + " · " + jumlah + "</strong>"
+        + "<small>" + ket + "</small></span></a>";
     }).join("");
 
     // 3) Empat resep terpopuler.
-    const populer = [...RESEP].sort((a, b) => b.dimasak - a.dimasak).slice(0, 4);
-    isiKartu(document.getElementById("popGrid"), populer);
+    isiKartu(document.getElementById("popGrup"),
+      [...RESEP].sort((a, b) => b.dimasak - a.dimasak).slice(0, 4));
 
-    // 4) Resep yang videonya punya penanda bagian.
-    // Semua resep sudah punya video, jadi yang ditonjolkan adalah yang
-    // videonya punya bab dan bisa dilompati.
-    const berbab = RESEP.filter((r) => Array.isArray(r.bab) && r.bab.length).slice(0, 4);
-    if (berbab.length) {
-      document.getElementById("seksiVideo").hidden = false;
-      isiKartu(document.getElementById("gridVideo"), berbab);
-    }
+    // 4) Empat resep yang videonya punya penanda bagian.
+    isiKartu(document.getElementById("babGrup"),
+      RESEP.filter((r) => Array.isArray(r.bab) && r.bab.length).slice(0, 4));
 
-    // 5) Pasang dropdown kustom dan animasi gulir.
     siapkanHalaman();
   </script>
 </body>

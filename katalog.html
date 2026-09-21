@@ -8,7 +8,6 @@
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="preconnect" href="https://i.ytimg.com">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -16,38 +15,36 @@
 
   <a class="skip" href="#main">Lewati ke konten</a>
 
-  <header class="topbar">
-    <div class="topbar-in">
-      <a class="logo" href="index.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
-      <form class="search" id="searchForm" role="search">
-        <input id="searchInput" type="search" placeholder="Cari resep atau bahan, misal: ayam" aria-label="Cari resep">
-        <button type="submit"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>Cari</button>
+  <header class="kepala">
+    <div class="kepala-in">
+      <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
+      <form class="cari" id="formCari" role="search">
+        <input id="inputCari" type="search" placeholder="Cari resep atau bahan, misal: ayam" aria-label="Cari resep" autocomplete="off">
+        <button type="submit"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>Cari</button>
       </form>
-      <nav class="iconnav" aria-label="Navigasi utama">
-        <a href="favorit.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg>Favorit <span class="badge" id="favCount">0</span></a>
-        <a href="mealplan.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
+      <nav class="nav" aria-label="Navigasi utama">
+        <a href="favorit.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg>Favorit <span class="badge-hitung" id="favCount">0</span></a>
+        <a href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
       </nav>
     </div>
-    <div class="catchips">
-      <div class="catchips-in" id="catChips">
-        <a href="katalog.html" data-kat=""><svg class="icon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Semua</a>
-        <a href="katalog.html?kat=sarapan" data-kat="sarapan"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-soup"/></svg>Sarapan</a>
-        <a href="katalog.html?kat=siang" data-kat="siang"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-utensils"/></svg>Siang</a>
-        <a href="katalog.html?kat=malam" data-kat="malam"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>Malam</a>
-        <a href="katalog.html?kat=camilan" data-kat="camilan"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-star"/></svg>Camilan</a>
+    <div class="chip">
+      <div class="chip-in" id="chipKategori">
+        <a href="katalog.html" data-kat=""><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Semua</a>
+        <a href="katalog.html?kat=sarapan" data-kat="sarapan"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-soup"/></svg>Sarapan</a>
+        <a href="katalog.html?kat=siang" data-kat="siang"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-utensils"/></svg>Siang</a>
+        <a href="katalog.html?kat=malam" data-kat="malam"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>Malam</a>
+        <a href="katalog.html?kat=camilan" data-kat="camilan"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-star"/></svg>Camilan</a>
       </div>
     </div>
   </header>
 
   <main class="wrap" id="main">
     <section class="panel" aria-labelledby="judul">
-
-      <div class="panel-head">
+      <div class="panel-kepala">
         <h1 id="judul">Semua resep</h1>
       </div>
 
-      <!-- Tiga saringan. Nilainya diambil dari URL saat halaman dibuka. -->
-      <form class="baris-filter" id="filterForm" role="search" aria-label="Saring resep">
+      <form class="saring" id="formSaring" aria-label="Saring resep">
         <div>
           <label for="fLevel">Level</label>
           <select id="fLevel">
@@ -78,28 +75,26 @@
         </div>
       </form>
 
-      <!-- Umpan balik: berapa resep yang lolos saringan. -->
-      <div class="hasil-bar">
+      <div class="baris-info">
         <span id="jumlahTeks">Menampilkan 44 dari 44 resep</span>
-        <button type="button" id="resetFilter" hidden>Hapus saringan</button>
+        <button type="button" id="tombolReset" hidden>Hapus saringan</button>
       </div>
 
-      <div class="pad-grid"><div class="grid" id="grid"></div></div>
+      <div class="isi-grup"><div class="grup" id="grup"></div></div>
 
-      <!-- Keadaan kosong: sebut masalahnya, lalu tawarkan satu aksi. -->
       <div class="kosong" id="kosong" hidden>
-        <svg class="icon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>
+        <svg class="ikon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>
         <strong id="kosongJudul">Tidak ada yang cocok</strong>
-        <p id="kosongPesan">Coba longgarkan saringan, atau cari kata lain. Misalnya "soto" atau "santan".</p>
-        <button class="btn btn-solid" type="button" id="kosongAksi">Hapus semua saringan</button>
+        <p>Coba longgarkan saringan, atau cari kata lain. Misalnya "soto" atau "santan".</p>
+        <button class="tb tb-isi" type="button" id="kosongAksi">Hapus semua saringan</button>
       </div>
     </section>
   </main>
 
   <footer>
     <div class="wrap">
-      <span><strong>LetMeCook</strong> — 44 panduan masak.</span>
-      <span><a href="index.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Beranda</a></span>
+      <span><strong>LetMeCook</strong> — 44 resep masakan Indonesia.</span>
+      <span><a href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Beranda</a></span>
     </div>
   </footer>
 
@@ -107,40 +102,40 @@
   <script>
     segarkanBadge();
 
-    const params = new URLSearchParams(location.search);
-    const kat = params.get("kat") || "";
-    const q = (params.get("q") || "").trim();
+    const param = new URLSearchParams(location.search);
+    const kat = param.get("kat") || "";
+    const q = (param.get("q") || "").trim();
 
     const fLevel = document.getElementById("fLevel");
     const fWaktu = document.getElementById("fWaktu");
     const fDiet = document.getElementById("fDiet");
-    const grid = document.getElementById("grid");
+    const grup = document.getElementById("grup");
     const kosong = document.getElementById("kosong");
     const jumlahTeks = document.getElementById("jumlahTeks");
-    const tombolReset = document.getElementById("resetFilter");
+    const tombolReset = document.getElementById("tombolReset");
 
-    // Isi kotak pencarian dengan kata kunci dari URL.
-    document.getElementById("searchInput").value = q;
+    document.getElementById("inputCari").value = q;
 
     // Tandai chip kategori yang sedang aktif.
-    document.querySelectorAll("#catChips a").forEach((a) => {
+    document.querySelectorAll("#chipKategori a").forEach((a) => {
       if (a.dataset.kat === kat) a.classList.add("aktif");
     });
 
     // Pencarian berikutnya tetap membawa kategori yang sedang dipilih.
-    document.getElementById("searchForm").addEventListener("submit", (e) => {
+    document.getElementById("formCari").addEventListener("submit", (e) => {
       e.preventDefault();
-      const v = document.getElementById("searchInput").value.trim();
+      const v = document.getElementById("inputCari").value.trim();
       const bagian = [];
       if (v) bagian.push("q=" + encodeURIComponent(v));
       if (kat) bagian.push("kat=" + kat);
       location.href = "katalog.html" + (bagian.length ? "?" + bagian.join("&") : "");
     });
 
-    // Satu kata kunci dicocokkan ke nama, daerah, deskripsi, dan nama bahan.
+    // Kata kunci dicocokkan ke nama, daerah, deskripsi, dan nama bahan.
     function cocokKata(r, kata) {
       if (!kata) return true;
-      const tumpuk = [r.nama, r.daerah, r.deskripsi, r.rasa, r.bahan.map((b) => b.nama).join(" ")].join(" ").toLowerCase();
+      const tumpuk = [r.nama, r.daerah, r.deskripsi, r.rasa, r.bahan.map((b) => b.nama).join(" ")]
+        .join(" ").toLowerCase();
       return kata.toLowerCase().split(/\s+/).every((k) => tumpuk.includes(k));
     }
 
@@ -152,7 +147,7 @@
       camilan: "Resep camilan",
     };
 
-    function terapkanSaringan() {
+    function saring() {
       let daftar = RESEP.filter((r) => !kat || r.kategori === kat);
       daftar = daftar.filter((r) => cocokKata(r, q));
 
@@ -166,36 +161,31 @@
     }
 
     function gambar() {
-      const daftar = terapkanSaringan();
+      const daftar = saring();
 
-      // Judul panel menyebut konteks dan jumlah hasilnya.
       document.getElementById("judul").textContent =
         (NAMA_KAT[kat] || NAMA_KAT[""]) + (q ? ' untuk "' + q + '"' : "");
-
       jumlahTeks.textContent = "Menampilkan " + daftar.length + " dari " + RESEP.length + " resep";
 
-      // Tombol hapus saringan hanya muncul kalau ada yang perlu dihapus.
       const adaSaringan = Boolean(q || fLevel.value || fWaktu.value || fDiet.value || kat);
       tombolReset.hidden = !adaSaringan;
 
-      isiKartu(grid, daftar);
+      isiKartu(grup, daftar);
 
-      const kosongTerlihat = daftar.length === 0;
-      kosong.hidden = !kosongTerlihat;
-      if (kosongTerlihat) {
+      const takAda = daftar.length === 0;
+      kosong.hidden = !takAda;
+      if (takAda) {
         document.getElementById("kosongJudul").textContent =
           q ? 'Tidak ada hasil untuk "' + q + '"' : "Tidak ada resep yang cocok";
       }
     }
 
-    // Hapus semua saringan lalu muat ulang katalog tanpa parameter.
     function hapusSemua() {
       location.href = "katalog.html";
     }
 
     tombolReset.addEventListener("click", hapusSemua);
     document.getElementById("kosongAksi").addEventListener("click", hapusSemua);
-
     [fLevel, fWaktu, fDiet].forEach((el) => el.addEventListener("change", gambar));
 
     gambar();

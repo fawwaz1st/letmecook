@@ -9,48 +9,48 @@ Situs resep masakan Indonesia. Statis, tanpa server, tanpa build tools.
 ## Isinya apa
 
 44 resep dari seluruh Indonesia. Setiap resep punya bahan bertakar gram,
-langkah yang menyebut tanda matang, video YouTube, dan timer.
+langkah yang menyebut tanda matang, dan video YouTube di dalam mode masak.
 
 | Bagian | Jumlah | Keterangan |
 |---|---|---|
 | Resep | 44 | Dari 20 provinsi, 4 kategori waktu makan |
-| Video YouTube | 44 | Semua resep punya video, 8 di antaranya berbab |
+| Video YouTube | 44 | Diputar di dalam mode masak |
+| Video berbab | 8 | Bisa dilompati ke menit tertentu |
 | Foto | 44 | Wikimedia Commons, berlisensi bebas |
-| Bab video | 8 | Bisa dilompati langsung ke menit tertentu |
 
 ## Yang bisa dipakai
 
-**Mencari dan menyaring.** Cari menurut nama, daerah, deskripsi, atau nama bahan.
-Saring menurut level, waktu maksimal, dan pantangan (vegetarian, aman anak,
-tidak pedas, video berbab).
+**Mencari.** Ketik di kotak cari, saran muncul langsung dengan foto dan
+daerahnya. Panah atas/bawah untuk memilih, Enter untuk membuka. Kalau
+diteruskan, pencarian membuka halaman katalog dengan hasil lengkap.
+
+**Menyaring.** Level, waktu maksimal, dan pantangan (vegetarian, aman anak,
+tidak pedas, video berbab). Jumlah hasil selalu terlihat, dan tombol hapus
+saringan muncul saat ada yang perlu dihapus.
 
 **Menyesuaikan porsi.** Tombol porsi mengubah semua jumlah bahan sekaligus.
 Bahan yang dihitung per butir dibulatkan dan diberi tanda ± karena tidak bisa
 dibelah dua.
 
-**Mode masak.** Layar penuh, satu langkah sekali tampil. Teksnya besar supaya
-kebaca dari jauh. Timer muncul sendiri di langkah yang menyebut menit.
-Layar dibiarkan menyala selama memasak (kalau browser mendukung).
+**Mode masak.** Ini bagian utamanya. Layar penuh, satu langkah sekali tampil,
+teksnya besar supaya kebaca dari jauh. Isinya:
+
+- Tanda kemajuan dan hitungan langkah
+- Badge teknik masak dan meter besar api
+- Kotak "Matang kalau" berisi tanda yang bisa kamu periksa sendiri
+- Timer yang muncul otomatis di langkah yang menyebut menit
+- Pemutar video dengan daftar bab, dibuka dengan satu tombol
+- Layar dibiarkan menyala selama memasak, kalau browser mendukung
+- Papan tuntas: panah kiri/kanan pindah langkah, spasi menyalakan timer,
+  Esc menutup
 
 **Rencana makan 7 hari.** 21 slot (7 hari × 3 waktu makan). Daftar belanja
-tersusun sendiri dari resep yang kamu isi, lalu digabung kalau bahan dan
-satuannya sama.
-
-**Video yang ringan.** Halaman tidak memuat 44 pemutar YouTube sekaligus.
-Yang dimuat hanya thumbnail; iframe baru dibuat setelah kamu tekan play.
-Video ditanam lewat `youtube-nocookie.com`.
+tersusun sendiri dari resep yang kamu isi, digabung kalau bahan dan satuannya
+sama. Bisa juga menambah bahan sendiri, dan itu tersimpan.
 
 ## Cara memasang
 
-**1. Buka langsung.** Unduh repo, klik dua kali `index.html`.
-
-> **Catatan soal video.** Kalau halaman dibuka langsung dari berkas
-> (alamatnya diawali `file://`), YouTube menolak memutar videonya karena
-> tidak ada HTTP Referer (Error 153). Tombol play tetap ada, tapi ia
-> membuka video di tab baru dan menjelaskan alasannya. Supaya videonya
-> bisa diputar di dalam halaman, pakai salah satu cara di bawah.
-
-**2. Server lokal.** Paling gampang untuk mencoba dengan video yang jalan:
+**1. Lewat server lokal.** Ini cara paling gampang kalau mau videonya jalan:
 
 ```bash
 npx serve .
@@ -60,18 +60,24 @@ python -m http.server 8000
 
 Lalu buka `http://localhost:8000`.
 
-**3. GitHub Pages.** Situsnya sudah terbit di
-<https://fawwaz1st.github.io/letmecook/>. Untuk repo sendiri, cukup
+**2. GitHub Pages.** Situsnya sudah terbit di
+<https://fawwaz1st.github.io/letmecook/>. Untuk repo sendiri:
 **Settings → Pages → Source: Deploy from a branch → Branch: `main` / `root`**.
-Workflow di `.github/workflows/pages.yml` juga bisa dipakai, tapi ia butuh
-GitHub Pages dinyalakan lebih dulu lewat halaman Settings.
+
+**3. Buka langsung dari berkas.** Klik dua kali `index.html` juga jalan,
+tapi dua hal ini tidak bisa dipakai:
+
+- Pemutar YouTube butuh alamat `http` atau `https`. Kalau dibuka dari
+  berkas, tombol video akan mengarahkan ke YouTube di tab baru.
+- Sebagian browser membatasi `localStorage` pada alamat `file://`, jadi
+  favorit dan rencana makan bisa gagal tersimpan.
 
 ## Susunan berkas
 
 ```
-index.html      Beranda: hero, resep hari ini, kategori, populer, jam masak
+index.html      Beranda: hero, resep hari ini, kategori, populer, video berbab
 katalog.html    Katalog 44 resep + pencarian dan saringan
-resep.html      Detail resep: bahan, langkah, video, timer, mode masak
+resep.html      Detail resep: bahan, langkah, dan tombol mode masak
 mealplan.html   Rencana 7 hari + daftar belanja otomatis
 favorit.html    Resep yang disimpan
 tentang.html    Cara membaca takaran + ke mana data pergi
@@ -81,30 +87,13 @@ store.js        Data 44 resep + semua fungsi bersama
 icons.svg       Sprite ikon garis 24px
 ```
 
-Berkas yang paling sering diubah kalau mau menambah resep adalah `store.js`.
-Tiap resep satu objek di dalam larik `RESEP`. Salin satu objek yang sudah ada,
-ganti isinya, dan halaman lain otomatis ikut karena semuanya membaca dari
-larik yang sama.
+Dua berkas yang paling sering diubah:
 
-## Datanya di mana
-
-Favorit, rencana makan, centang belanja, dan centang langkah disimpan di
-browser kamu sendiri di bawah kunci `letmecook:*`. Tidak ada yang dikirim
-ke mana pun.
-
-Konsekuensinya: hapus riwayat browser, data itu ikut hilang, dan tidak bisa
-dibuka dari perangkat lain.
-
-## Teknis
-
-- HTML, CSS, dan JavaScript biasa. Tanpa framework, tanpa bundler.
-- Warna memakai `oklch()`. Seluruh kontras teks lolos WCAG AA
-  (terendah 6.5:1, ambangnya 4.5:1).
-- Jarak memakai token `--sp-1` sampai `--sp-10`, bukan angka lepas.
-- Dropdown, batang gulir, dan animasi gulir dibuat sendiri, bukan bawaan browser.
-- Ada `@media (prefers-reduced-motion: reduce)` dan gaya khusus `@media print`.
-- Video: pola facade. Thumbnail dulu, iframe menyusul setelah diklik.
-- Foto dari Wikimedia Commons. Video dari YouTube, hak masing-masing pemilik.
+- **`store.js`** untuk menambah atau mengubah resep. Tiap resep satu objek di
+  dalam larik `RESEP`. Halaman lain otomatis ikut karena semuanya membaca dari
+  larik yang sama.
+- **`style.css`** untuk mengubah tampilan. Semua warna dan jarak diambil dari
+  token di bagian 1, jadi mengubah satu token mengubah seluruh situs.
 
 ## Menambah resep
 
@@ -143,6 +132,21 @@ Aturan kecil yang perlu diikuti:
 - Bab harus mulai dari detik `0` dan angkanya naik terus.
 - Langkah yang menyebut menit otomatis dapat tombol timer, jadi tulis
   waktunya sebagai angka: `"Masak 40 menit"`, bukan `"masak sampai matang"`.
+- Kalau langkah memuat `"Tanda matang: ..."`, kalimat itu dipindah ke kotak
+  hijau terpisah supaya lebih mudah dibaca sambil memasak.
+
+## Teknis
+
+- HTML, CSS, dan JavaScript biasa. Tanpa framework, tanpa bundler, tanpa
+  dependensi.
+- Warna memakai `oklch()`. Seluruh kontras teks lolos WCAG AA, terendah
+  6.5:1 dari ambang 4.5:1.
+- Jarak memakai token `--s1` sampai `--s8`, bukan angka lepas.
+- Nama class dan fungsi memakai istilah Indonesia supaya mudah diikuti.
+- Dropdown, kotak saran pencarian, dan batang gulir dibuat sendiri.
+- Video memakai YouTube IFrame API, dimuat hanya saat tombol video ditekan.
+- Ada `@media (prefers-reduced-motion: reduce)` dan gaya khusus `@media print`.
+- Foto dari Wikimedia Commons. Video dari YouTube, hak masing-masing pemilik.
 
 ## Kontak
 

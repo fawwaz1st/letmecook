@@ -1603,6 +1603,10 @@ const RESEP = [
   },
 ];
 
+// ============================================================
+// PENYIMPANAN
+// Favorit, rencana makan, centang. Semua di browser sendiri.
+// ============================================================
 const KEY = {
   fav: "letmecook:fav",
   meal: "letmecook:meal",
@@ -1611,55 +1615,79 @@ const KEY = {
   prog: "letmecook:prog",
 };
 
+// Baca dari localStorage. Kalau isinya rusak, pakai nilai cadangan.
 function baca(kunci, cadangan) {
   try {
-    const m = localStorage.getItem(kunci);
-    if (m === null) return cadangan;
-    const v = JSON.parse(m);
-    if (Array.isArray(cadangan)) return Array.isArray(v) ? v : cadangan;
-    if (cadangan && typeof cadangan === "object") return v && typeof v === "object" ? v : cadangan;
-    return v ?? cadangan;
-  } catch { return cadangan; }
+    const mentah = localStorage.getItem(kunci);
+    if (mentah === null) return cadangan;
+    const nilai = JSON.parse(mentah);
+    if (Array.isArray(cadangan)) return Array.isArray(nilai) ? nilai : cadangan;
+    if (cadangan && typeof cadangan === "object") {
+      return nilai && typeof nilai === "object" ? nilai : cadangan;
+    }
+    return nilai ?? cadangan;
+  } catch {
+    return cadangan;
+  }
 }
 
 function tulis(kunci, nilai) {
-  try { localStorage.setItem(kunci, JSON.stringify(nilai)); return true; }
-  catch (e) { return false; }
+  try {
+    localStorage.setItem(kunci, JSON.stringify(nilai));
+    return true;
+  } catch {
+    return false;
+  }
 }
 
-function cariResep(id) { return RESEP.find((r) => r.id === id); }
+function cariResep(id) {
+  return RESEP.find((r) => r.id === id);
+}
 
-// Favorit
-function ambilFav() { return baca(KEY.fav, []).filter((id) => cariResep(id)); }
-function sudahFav(id) { return ambilFav().includes(id); }
+function ambilFav() {
+  return baca(KEY.fav, []).filter((id) => cariResep(id));
+}
+
+function sudahFav(id) {
+  return ambilFav().includes(id);
+}
+
 function toggleFav(id) {
   if (!cariResep(id)) return [];
-  let f = ambilFav();
-  f = f.includes(id) ? f.filter((x) => x !== id) : [...f, id];
-  tulis(KEY.fav, f);
+  let daftar = ambilFav();
+  daftar = daftar.includes(id) ? daftar.filter((x) => x !== id) : [...daftar, id];
+  tulis(KEY.fav, daftar);
   segarkanBadge();
-  return f;
+  return daftar;
 }
 
 function segarkanBadge() {
   const el = document.getElementById("favCount");
   if (el) el.textContent = ambilFav().length;
 }
-window.addEventListener("storage", (e) => { if (e.key === KEY.fav) segarkanBadge(); });
 
-// Format takaran: 0.5 -> "1/2", 0.25 -> "1/4", 1.5 -> "1 1/2"
+window.addEventListener("storage", (e) => {
+  if (e.key === KEY.fav) segarkanBadge();
+});
+
+// ============================================================
+// FORMAT ANGKA, WAKTU, TEKS
+// ============================================================
+
+// 0.5 jadi "1/2", 1.5 jadi "1 1/2", 2 jadi "2".
 function fmtQty(n) {
   if (!Number.isFinite(n)) return "";
-  const pecah = { 0.25: "1/4", 0.5: "1/2", 0.75: "3/4" };
+  const pecahan = { 0.25: "1/4", 0.5: "1/2", 0.75: "3/4" };
   const bulat = Math.floor(n + 1e-9);
   const sisa = Math.round((n - bulat) * 4) / 4;
   if (sisa === 0) return String(bulat);
   if (sisa === 1) return String(bulat + 1);
-  const s = pecah[sisa] || String(sisa);
-  return bulat > 0 ? bulat + " " + s : s;
+  const teks = pecahan[sisa] || String(sisa);
+  return bulat > 0 ? bulat + " " + teks : teks;
 }
 
-// Teks bahan dengan faktor porsi. Satuan utuh (bagi:0) dibulatkan + tanda ±.
+// Bahan jadi teks sesuai jumlah porsi.
+// bagi:0 artinya dihitung per butir, jadi dibulatkan dan diberi tanda ±.
 function teksBahan(b, faktor) {
   let q = b.jumlah * faktor;
   if (b.bagi === 0) q = Math.max(1, Math.round(q));
@@ -1668,41 +1696,64 @@ function teksBahan(b, faktor) {
   return awal + fmtQty(q) + " " + b.satuan + " " + b.nama;
 }
 
-// Waktu: 70 -> "1 jam 10 mnt", 45 -> "45 mnt"
-function fmtWaktu(mnt) {
-  if (mnt < 60) return mnt + " mnt";
-  const j = Math.floor(mnt / 60), s = mnt % 60;
-  return j + " jam" + (s ? " " + s + " mnt" : "");
+// 70 jadi "1 jam 10 mnt", 45 jadi "45 mnt".
+function fmtWaktu(menit) {
+  if (menit < 60) return menit + " mnt";
+  const jam = Math.floor(menit / 60);
+  const sisa = menit % 60;
+  return jam + " jam" + (sisa ? " " + sisa + " mnt" : "");
 }
 
-// Fallback gambar berlapis: foto -> svg kategori -> blok warna.
-// Gambar pengganti saat foto asli gagal dimuat. Dipakai sebagai data URI
-// supaya tidak ada permintaan berkas tambahan yang bisa gagal lagi.
+// 91 jadi "01:31", untuk daftar bab video.
+function fmtDetik(detik) {
+  const d = Math.max(0, Math.floor(detik));
+  return String(Math.floor(d / 60)).padStart(2, "0") + ":" + String(d % 60).padStart(2, "0");
+}
+
+// Ubah teks jadi aman dipasang di HTML.
+function esc(teks) {
+  return String(teks)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+}
+
+// ID video YouTube selalu 11 karakter.
+function idVideoValid(id) {
+  return typeof id === "string" && /^[A-Za-z0-9_-]{11}$/.test(id);
+}
+
+// Halaman dibuka lewat http/https, bukan diklik dari berkas.
+// Dipakai untuk memutuskan apakah pemutar YouTube boleh ditanam.
+function lewatServer() {
+  return location.protocol === "http:" || location.protocol === "https:";
+}
+
+// ============================================================
+// GAMBAR CADANGAN
+// ============================================================
 const GAMBAR_CADANGAN =
   "data:image/svg+xml;utf8," +
   encodeURIComponent(
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 300">' +
-    '<rect width="400" height="300" fill="#0d5c34"/>' +
-    '<g fill="none" stroke="#ffffff" stroke-opacity="0.55" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">' +
-    '<path d="M120 168h160v40a32 32 0 0 1-32 32h-96a32 32 0 0 1-32-32z"/>' +
-    '<path d="M104 168h192"/>' +
-    '<path d="M160 138v-16a16 16 0 0 1 16-16h48a16 16 0 0 1 16 16v16"/>' +
-    "</g></svg>"
+      '<rect width="400" height="300" fill="#0d5c34"/>' +
+      '<g fill="none" stroke="#fff" stroke-opacity="0.5" stroke-width="8" stroke-linecap="round">' +
+      '<path d="M120 168h160v40a32 32 0 0 1-32 32h-96a32 32 0 0 1-32-32z"/>' +
+      '<path d="M104 168h192"/>' +
+      '<path d="M160 138v-16a16 16 0 0 1 16-16h48a16 16 0 0 1 16 16v16"/>' +
+      "</g></svg>"
   );
 
-// Ganti gambar yang gagal dimuat. Dua tahap: gambar cadangan, lalu
-// blok warna kalau cadangan pun tidak tampil.
-//
-// Penjaga tahap: kalau halaman ini juga memasang pendengar error sendiri,
-// fungsi ini bisa terpanggil dua kali untuk satu kegagalan. Karena tahap
-// disimpan di dataset, panggilan kedua langsung lompat ke blok warna tanpa
-// melewati gambar cadangan.
+// Dua tahap: gambar cadangan, lalu blok warna.
+// Tahap disimpan di dataset supaya panggilan kedua tidak mengulang.
 function imgFallback(el) {
   const tahap = Number(el.dataset.stage || 0);
   if (tahap === 0) {
     el.dataset.stage = 1;
-    el.onerror = null;                 // matikan penanganan inline
-    el.src = el.dataset.fb || GAMBAR_CADANGAN;
+    el.onerror = null;
+    el.src = GAMBAR_CADANGAN;
     return;
   }
   el.dataset.stage = 2;
@@ -1711,32 +1762,50 @@ function imgFallback(el) {
   if (el.parentElement) el.parentElement.classList.add("img-solid");
 }
 
-// Visualisasi langkah: deteksi teknik + api + tanda matang dari teks.
-// Teknik: tumis/rebus/kukus/bakar/panggang/goreng + blender/campur/masak/sajikan.
-// Api: kecil/sedang/besar. Matang: pola "hingga/sampai ...".
-const RE_TEKNIK = /(menumis|tumis|merebus|rebus|mengukus|kukus|membakar|bakar|menggoreng|goreng|memanggang|panggang|didihkan|didih|sangrai|ungkep|blender|haluskan|tumbuk|uleg|campur|aduk|masak|tumis|tumis|rebus|sajikan|tata|siram|tuang|masukkan|angkat|tiriskan|diamkan|simpan)/i;
+// ============================================================
+// BACA LANGKAH
+// Dari teks langkah, ambil teknik masak, besar api, dan tanda matang.
+// ============================================================
+const RE_TEKNIK = /(menumis|tumis|merebus|rebus|mengukus|kukus|membakar|bakar|menggoreng|goreng|memanggang|panggang|didihkan|didih|sangrai|ungkep|blender|haluskan|tumbuk|uleg|campur|aduk|masak|sajikan|tata|siram|tuang|masukkan|angkat|tiriskan|diamkan|simpan)/i;
 const RE_API = /api\s+(terkecil|sangat kecil|kecil|sedang|besar|paling besar)/i;
 const RE_MATANG = /tanda\s*matang\s*:\s*([^.]+)\.?/i;
 const RE_HASIL = /(hingga|sampai|agar|supaya)\s+([^.]+)\.?/i;
 
+const PADANAN_TEKNIK = {
+  menumis: "tumis", tumis: "tumis",
+  merebus: "rebus", rebus: "rebus", didihkan: "rebus", didih: "rebus",
+  mengukus: "kukus", kukus: "kukus",
+  membakar: "bakar", bakar: "bakar",
+  menggoreng: "goreng", goreng: "goreng",
+  memanggang: "panggang", panggang: "panggang",
+  sangrai: "sangrai", ungkep: "ungkep",
+  blender: "haluskan", haluskan: "haluskan", tumbuk: "haluskan", uleg: "haluskan",
+  campur: "campur", aduk: "campur",
+  masak: "masak", masukkan: "masak",
+  sajikan: "sajikan", tata: "sajikan", siram: "sajikan", tuang: "sajikan",
+  angkat: "sajikan", tiriskan: "sajikan",
+  diamkan: "tunggu", simpan: "simpan",
+};
+
 function parseLangkah(teks) {
-  const norm = { menumis: "tumis", merebus: "rebus", mengukus: "kukus", membakar: "bakar", menggoreng: "goreng", memanggang: "panggang", didihkan: "rebus", didih: "rebus", blender: "haluskan", haluskan: "haluskan", tumbuk: "haluskan", uleg: "haluskan", campur: "campur", aduk: "campur", masak: "masak", sajikan: "sajikan", tata: "sajikan", siram: "sajikan", tuang: "sajikan", masukkan: "masak", angkat: "sajikan", tiriskan: "sajikan", diamkan: "tunggu", simpan: "simpan" };
-  let teknik = (teks.match(RE_TEKNIK) || [])[1];
-  teknik = teknik ? (norm[teknik.toLowerCase()] || teknik.toLowerCase()) : null;
+  const kena = (teks.match(RE_TEKNIK) || [])[1];
+  const teknik = kena ? PADANAN_TEKNIK[kena.toLowerCase()] || kena.toLowerCase() : null;
   const api = ((teks.match(RE_API) || [])[1] || "").toLowerCase().replace(/\s+/g, " ") || null;
+
   let matang = ((teks.match(RE_MATANG) || [])[1] || "").trim() || null;
   let sisa = teks;
-  if (!matang) {
-    const m2 = teks.match(RE_HASIL);
-    if (m2) { matang = m2[2].trim(); }
-  } else {
+
+  if (matang) {
     sisa = teks.replace(RE_MATANG, "").trim();
+  } else {
+    const hasil = teks.match(RE_HASIL);
+    if (hasil) matang = hasil[2].trim();
   }
+
   return { teknik, api, matang, sisa };
 }
 
-// Warna badge per teknik: [latar, teks, ikon]. Semua dari token di style.css.
-// Tumis/masak = hangat (kunyit), rebus/kukus/ungkep = sejuk (biru), bakar = merah.
+// [latar, teks, ikon] per teknik. Warnanya mengikuti token di style.css.
 const WARNA_TEKNIK = {
   tumis: ["oklch(0.97 0.045 85)", "oklch(0.40 0.09 75)", "i-cooking-pot"],
   masak: ["oklch(0.97 0.045 85)", "oklch(0.40 0.09 75)", "i-cooking-pot"],
@@ -1748,240 +1817,82 @@ const WARNA_TEKNIK = {
   tunggu: ["oklch(0.97 0.02 290)", "oklch(0.44 0.13 290)", "i-timer"],
   bakar: ["oklch(0.96 0.03 27)", "oklch(0.45 0.16 27)", "i-flame-kindling"],
   panggang: ["oklch(0.96 0.03 27)", "oklch(0.45 0.16 27)", "i-flame-kindling"],
-  siapkan: ["oklch(0.96 0.028 155)", "oklch(0.33 0.082 155)", "i-list-checks"],
   haluskan: ["oklch(0.96 0.028 155)", "oklch(0.33 0.082 155)", "i-list-checks"],
   sajikan: ["oklch(0.96 0.028 155)", "oklch(0.33 0.082 155)", "i-check"],
   simpan: ["oklch(0.96 0.028 155)", "oklch(0.33 0.082 155)", "i-basket"],
   campur: ["oklch(0.95 0.005 155)", "oklch(0.42 0.02 155)", "i-utensils"],
 };
 
-// HTML badge teknik + meter api. Kosong bila tidak terdeteksi.
-function badgeTeknikHTML(parsed) {
-  if (!parsed.teknik) return "";
-  const w = WARNA_TEKNIK[parsed.teknik] || ["oklch(0.96 0.028 155)", "oklch(0.33 0.082 155)", "i-cooking-pot"];
+function badgeTeknikHTML(urai) {
+  if (!urai.teknik) return "";
+  const w = WARNA_TEKNIK[urai.teknik] || ["oklch(0.95 0.005 155)", "oklch(0.42 0.02 155)", "i-cooking-pot"];
+
   let meter = "";
-  if (parsed.api) {
-    const lvl = /kecil/.test(parsed.api) ? 1 : /sedang/.test(parsed.api) ? 2 : /besar/.test(parsed.api) ? 3 : 0;
-    if (lvl) {
-      let seg = "";
-      for (let i = 1; i <= 3; i++) seg += '<i class="' + (i <= lvl ? "on" : "") + '"></i>';
-      meter = '<span class="api-meter" role="img" aria-label="Api ' + parsed.api + '">' + seg + "</span>";
+  if (urai.api) {
+    const tingkat = /kecil/.test(urai.api) ? 1 : /sedang/.test(urai.api) ? 2 : /besar/.test(urai.api) ? 3 : 0;
+    if (tingkat) {
+      let segmen = "";
+      for (let i = 1; i <= 3; i++) segmen += '<i class="' + (i <= tingkat ? "on" : "") + '"></i>';
+      meter = '<span class="api" role="img" aria-label="Api ' + urai.api + '">' + segmen + "</span>";
     }
   }
-  return '<span class="badge-teknik" style="background:' + w[0] + ";color:" + w[1] + '">' +
-    '<svg class="icon" aria-hidden="true"><use href="icons.svg#' + w[2] + '"/></svg>' +
-    parsed.teknik + (parsed.api ? " · api " + parsed.api : "") + "</span>" + meter;
+
+  return '<span class="badge" style="background:' + w[0] + ";color:" + w[1] + '">' +
+    '<svg class="ikon" aria-hidden="true"><use href="icons.svg#' + w[2] + '"/></svg>' +
+    urai.teknik + (urai.api ? " · api " + urai.api : "") + "</span>" + meter;
 }
 
 // ============================================================
-// BAGIAN BERSAMA SEMUA HALAMAN
-// Dipakai index.html, katalog.html, favorit.html, resep.html.
+// KARTU RESEP
+// Ringkas: foto, nama, satu baris meta, tombol simpan kecil.
 // ============================================================
-
-// Ubah teks jadi aman dipasang di HTML, supaya tanda kutip di nama
-// resep tidak merusak halaman.
-function esc(teks) {
-  return String(teks)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
-}
-
-// ID video YouTube selalu 11 karakter: huruf, angka, minus, garis bawah.
-function idVideoValid(id) {
-  return typeof id === "string" && /^[A-Za-z0-9_-]{11}$/.test(id);
-}
-
-// Detik jadi "02:31", untuk daftar bab video.
-function fmtDetik(detik) {
-  const d = Math.max(0, Math.floor(detik));
-  return String(Math.floor(d / 60)).padStart(2, "0") + ":" + String(d % 60).padStart(2, "0");
-}
-
-// Satu kartu resep dipakai di semua halaman.
-// opsi.ringkas = tanpa tombol Simpan (dipakai di bagian "Disandingkan").
 function kartuResepHTML(r, opsi) {
   opsi = opsi || {};
-  const tombolSimpan = opsi.ringkas
+  const simpan = opsi.tanpaSimpan
     ? ""
-    : '<button class="btn btn-halus btn-kecil" type="button" data-simpan>'
-      + (sudahFav(r.id) ? "Tersimpan" : "Simpan") + "</button>";
+    : '<button class="kartu-simpan" type="button" data-simpan aria-label="Simpan ' + esc(r.nama) + '"'
+      + (sudahFav(r.id) ? ' aria-pressed="true"' : "") + ">"
+      + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg></button>';
 
-  return '<article class="card">'
-    + '<a class="foto" href="resep.html?id=' + esc(r.id) + '">'
-    + '<span class="lvl">' + esc(r.level) + "</span>"
-    + '<img src="' + esc(r.foto) + '" alt="' + esc(r.nama) + '" loading="lazy" width="900" height="675" onerror="imgFallback(this)">'
-    + "</a>"
-    + '<div class="info">'
-    + '<a class="nama" href="resep.html?id=' + esc(r.id) + '">' + esc(r.nama) + "</a>"
-    + '<span class="daerah"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-pin"/></svg>' + esc(r.daerah) + "</span>"
-    + '<div class="meta">'
-    + '<span><svg class="icon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>' + fmtWaktu(r.waktuTotal) + "</span>"
-    + '<span><svg class="icon isi bintang" aria-hidden="true"><use href="icons.svg#i-star"/></svg>' + r.rating + "</span>"
-    + (r.veg ? '<span><svg class="icon" aria-hidden="true"><use href="icons.svg#i-leaf"/></svg>Vege</span>' : "")
-    + "</div>"
-    + '<div class="row">' + tombolSimpan
-    + '<a class="btn btn-solid btn-kecil" href="resep.html?id=' + esc(r.id) + '">Masak</a>'
-    + "</div></div></article>";
+  return '<article class="kartu">'
+    + '<a class="kartu-tautan" href="resep.html?id=' + esc(r.id) + '">'
+    + '<span class="kartu-foto">'
+    + '<img src="' + esc(r.foto) + '" alt="" loading="lazy" width="600" height="400" onerror="imgFallback(this)">'
+    + '<span class="kartu-level">' + esc(r.level) + "</span>"
+    + "</span>"
+    + '<span class="kartu-teks">'
+    + '<span class="kartu-nama">' + esc(r.nama) + "</span>"
+    + '<span class="kartu-meta">' + fmtWaktu(r.waktuTotal) + " · " + esc(r.daerah)
+    + '<span class="kartu-bintang"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-star"/></svg>'
+    + r.rating + "</span></span>"
+    + "</span></a>"
+    + simpan
+    + "</article>";
 }
 
-// Pasang kartu ke wadah sekaligus hidupkan tombol Simpan.
-// opsi.setelahSimpan dipanggil tiap kali tombol Simpan ditekan. Halaman
-// favorit memakainya untuk menggambar ulang daftar, karena di sana
-// melepas simpan berarti kartunya harus hilang.
+// Pasang kartu ke wadah, sekaligus hidupkan tombol simpan.
 function isiKartu(wadah, daftar, opsi) {
   opsi = opsi || {};
   wadah.innerHTML = daftar.map((r) => kartuResepHTML(r, opsi)).join("");
-  wadah.querySelectorAll("[data-simpan]").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      const tautan = btn.closest(".card").querySelector("a.nama").getAttribute("href");
-      const idResep = tautan.split("id=")[1];
-      toggleFav(idResep);
-      btn.textContent = sudahFav(idResep) ? "Tersimpan" : "Simpan";
-      if (opsi.setelahSimpan) opsi.setelahSimpan(idResep);
+
+  wadah.querySelectorAll("[data-simpan]").forEach((tombol) => {
+    tombol.addEventListener("click", (e) => {
+      e.preventDefault();
+      const id = tombol.closest(".kartu").querySelector("a").getAttribute("href").split("id=")[1];
+      toggleFav(id);
+      tombol.setAttribute("aria-pressed", String(sudahFav(id)));
+      if (opsi.setelahSimpan) opsi.setelahSimpan(id);
     });
   });
 }
 
 // ============================================================
-// VIDEO YOUTUBE
-// Thumbnail dulu, iframe menyusul setelah diklik. Halaman jadi
-// ringan karena 44 pemutar tidak dimuat sekaligus.
+// DROPDOWN KUSTOM
+// <select> bawaan disembunyikan, diganti tombol + daftar sendiri.
+// Nilainya tetap dibaca dari <select>, jadi logika filter tidak berubah.
 // ============================================================
-
-// YouTube menolak memutar video kalau halaman dibuka tanpa HTTP Referer
-// (Error 153: embedder.identity.missing.referrer). Itu terjadi kalau
-// index.html diklik dua kali langsung dari berkas (protokol file://).
-//
-// Solusinya bukan menyerah, tapi menyesuaikan diri:
-// - Dibuka lewat http/https  -> tanam pemutar di halaman.
-// - Dibuka lewat file://     -> pemutar akan diblokir, jadi tombol play
-//                               mengarahkan ke YouTube (selalu bisa diputar).
-function bisaTanamVideo() {
-  return location.protocol === "http:" || location.protocol === "https:";
-}
-
-function pasangVideo(wadah, idVideo, daftarBab, judulResep) {
-  wadah.innerHTML = "";
-
-  // ID tidak sah: tawarkan pencarian, jangan tanam apa pun.
-  if (!idVideoValid(idVideo)) {
-    wadah.innerHTML = '<a class="btn-yt" href="https://www.youtube.com/results?search_query='
-      + encodeURIComponent(judulResep + " resep") + '" target="_blank" rel="noopener">Cari video di YouTube</a>';
-    return;
-  }
-
-  const tautanTonton = "https://www.youtube.com/watch?v=" + idVideo;
-  const bisaTanam = bisaTanamVideo();
-
-  // Tombol facade: thumbnail + ikon play. Ini yang dilihat sebelum diklik.
-  const facade = document.createElement("button");
-  facade.type = "button";
-  facade.className = "video-facade";
-  facade.setAttribute("aria-label", "Putar video: " + judulResep);
-  facade.innerHTML = '<img src="https://i.ytimg.com/vi/' + idVideo + '/hqdefault.jpg" alt="" loading="lazy" decoding="async" width="480" height="360">'
-    + '<span class="video-play" aria-hidden="true"></span>';
-  wadah.appendChild(facade);
-
-  // Thumbnail gagal dimuat: ganti jadi tautan keluar.
-  facade.querySelector("img").addEventListener("error", () => {
-    facade.remove();
-    const bab = wadah.querySelector(".video-bab");
-    if (bab) bab.remove();
-    wadah.insertAdjacentHTML("afterbegin",
-      '<a class="btn-yt" href="' + tautanTonton + '" target="_blank" rel="noopener">Buka di YouTube</a>');
-  });
-
-  // Kalau halaman dibuka dari berkas, pemutar tidak akan jalan.
-  // Ganti tombol play jadi tautan yang membuka YouTube di tab baru,
-  // lalu jelaskan alasannya supaya tidak terasa rusak.
-  if (!bisaTanam) {
-    facade.addEventListener("click", () => {
-      window.open(tautanTonton, "_blank", "noopener");
-    });
-    facade.setAttribute("aria-label", "Buka video " + judulResep + " di YouTube");
-
-    const catatan = document.createElement("p");
-    catatan.className = "catatan-video";
-    catatan.innerHTML = '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-alert"/></svg>'
-      + "<span>Halaman ini dibuka langsung dari berkas, jadi pemutar YouTube diblokir. "
-      + 'Tombol play membuka videonya di tab baru. Kalau mau diputar di sini, '
-      + 'jalankan <code>npx serve .</code> lalu buka lewat <code>localhost</code>.</span>';
-    wadah.appendChild(catatan);
-
-    // Daftar bab tetap berguna: membuka YouTube tepat di detik yang dipilih.
-    if (Array.isArray(daftarBab) && daftarBab.length) {
-      const kotakBab = document.createElement("div");
-      kotakBab.className = "video-bab";
-      kotakBab.setAttribute("aria-label", "Lompat ke bagian video");
-      daftarBab.forEach((bab) => {
-        const tombol = document.createElement("button");
-        tombol.type = "button";
-        tombol.className = "bab-btn";
-        tombol.innerHTML = '<span class="menit">' + fmtDetik(bab[0]) + "</span>" + esc(bab[1]);
-        tombol.addEventListener("click", () => {
-          window.open(tautanTonton + "&t=" + Math.floor(bab[0]) + "s", "_blank", "noopener");
-        });
-        kotakBab.appendChild(tombol);
-      });
-      wadah.appendChild(kotakBab);
-    }
-    return;
-  }
-
-  // Daftar bab, hanya kalau datanya ada.
-  if (Array.isArray(daftarBab) && daftarBab.length) {
-    const kotakBab = document.createElement("div");
-    kotakBab.className = "video-bab";
-    kotakBab.setAttribute("aria-label", "Lompat ke bagian video");
-    daftarBab.forEach((bab) => {
-      const tombol = document.createElement("button");
-      tombol.type = "button";
-      tombol.className = "bab-btn";
-      tombol.innerHTML = '<span class="menit">' + fmtDetik(bab[0]) + "</span>" + esc(bab[1]);
-      tombol.addEventListener("click", () => muatPemutar(bab[0]));
-      kotakBab.appendChild(tombol);
-    });
-    wadah.appendChild(kotakBab);
-  }
-
-  // Ganti facade dengan iframe. Kalau iframe sudah ada, cukup ubah src.
-  function muatPemutar(detikMulai) {
-    const mulai = typeof detikMulai === "number" && detikMulai > 0 ? Math.floor(detikMulai) : 0;
-    const src = "https://www.youtube-nocookie.com/embed/" + idVideo
-      + "?rel=0&autoplay=1" + (mulai ? "&start=" + mulai : "");
-
-    const lama = wadah.querySelector("iframe");
-    if (lama) { lama.src = src; return; }
-
-    const iframe = document.createElement("iframe");
-    iframe.src = src;
-    iframe.title = "Video tutorial: " + judulResep;
-    iframe.setAttribute("allow", "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture");
-    iframe.setAttribute("allowfullscreen", "");
-    iframe.setAttribute("referrerpolicy", "strict-origin-when-cross-origin");
-    facade.replaceWith(iframe);
-  }
-
-  facade.addEventListener("click", () => muatPemutar(0));
-}
-
-// ============================================================
-// KOMPONEN TAMPILAN
-// Dropdown, animasi gulir, dan penggulung buatan sendiri.
-// Dipasang otomatis saat halaman selesai dimuat.
-// ============================================================
-
-// ------------------------------------------------------------
-// Dropdown kustom
-// <select> bawaan tidak bisa diatur tampilannya. Jadi aslinya tetap
-// dipakai (supaya logika filter tidak berubah), tapi disembunyikan,
-// lalu diganti tombol + daftar buatan sendiri yang tampilannya bebas.
-// ------------------------------------------------------------
 function pasangDropdown(select) {
-  if (select.dataset.kustom === "1") return;
+  if (select.dataset.kustom) return;
   select.dataset.kustom = "1";
 
   const bungkus = document.createElement("div");
@@ -1993,7 +1904,7 @@ function pasangDropdown(select) {
   tombol.setAttribute("aria-haspopup", "listbox");
   tombol.setAttribute("aria-expanded", "false");
   tombol.innerHTML = '<span class="dd-teks"></span>'
-    + '<svg class="icon dd-panah" aria-hidden="true"><use href="icons.svg#i-chevron-down"/></svg>';
+    + '<svg class="ikon dd-panah" aria-hidden="true"><use href="icons.svg#i-chevron-down"/></svg>';
 
   const daftar = document.createElement("ul");
   daftar.className = "dd-daftar";
@@ -2001,37 +1912,30 @@ function pasangDropdown(select) {
 
   const teks = tombol.querySelector(".dd-teks");
 
-  // Isi daftar dari <option>.
-  function gambarPilihan() {
-    daftar.innerHTML = "";
-    [...select.options].forEach((opt) => {
-      const li = document.createElement("li");
-      li.className = "dd-pilihan";
-      li.setAttribute("role", "option");
-      li.dataset.nilai = opt.value;
-      li.setAttribute("aria-selected", String(opt.value === select.value));
-      if (opt.value === select.value) li.classList.add("dipilih");
-      li.textContent = opt.textContent;
-      li.addEventListener("click", () => pilih(opt.value));
-      daftar.appendChild(li);
-    });
+  function gambar() {
+    daftar.innerHTML = [...select.options].map((opt) =>
+      '<li role="option" data-nilai="' + esc(opt.value) + '"'
+      + (opt.value === select.value ? ' class="aktif" aria-selected="true"' : ' aria-selected="false"')
+      + ">" + esc(opt.textContent) + "</li>"
+    ).join("");
+
     const terpilih = select.options[select.selectedIndex];
     teks.textContent = terpilih ? terpilih.textContent : "";
+
+    daftar.querySelectorAll("li").forEach((li) => {
+      li.addEventListener("click", () => pilih(li.dataset.nilai));
+    });
   }
 
   function pilih(nilai) {
     select.value = nilai;
-    // Beri tahu pendengar "change" yang sudah ada di halaman.
     select.dispatchEvent(new Event("change", { bubbles: true }));
-    gambarPilihan();
+    gambar();
     tutup();
   }
 
   function buka() {
-    // Tutup dropdown lain supaya tidak ada dua yang terbuka.
-    document.querySelectorAll(".dd.buka").forEach((d) => {
-      if (d !== bungkus) d.classList.remove("buka");
-    });
+    document.querySelectorAll(".dd.buka").forEach((d) => d.classList.remove("buka"));
     bungkus.classList.add("buka");
     tombol.setAttribute("aria-expanded", "true");
   }
@@ -2046,7 +1950,7 @@ function pasangDropdown(select) {
     bungkus.classList.contains("buka") ? tutup() : buka();
   });
 
-  // Papan tuntas: panah atas/bawah untuk memilih, Esc untuk menutup.
+  // Papan tuntas: panah atas/bawah memilih, Esc menutup.
   tombol.addEventListener("keydown", (e) => {
     const opsi = [...select.options];
     const pos = opsi.findIndex((o) => o.value === select.value);
@@ -2061,72 +1965,424 @@ function pasangDropdown(select) {
     }
   });
 
-  // Klik di luar menutup dropdown.
   document.addEventListener("click", (e) => {
     if (!bungkus.contains(e.target)) tutup();
   });
 
-  bungkus.append(tombol, daftar);
   select.classList.add("select-asli");
+  bungkus.append(tombol, daftar);
   select.insertAdjacentElement("afterend", bungkus);
-  gambarPilihan();
-
-  // Kalau nilainya diubah dari kode (mis. saat memuat URL), ikut menyesuaikan.
-  select.addEventListener("change", gambarPilihan);
+  select.addEventListener("change", gambar);
+  gambar();
 }
 
-// Pasang ke semua <select> di halaman.
-function pasangSemuaDropdown() {
-  document.querySelectorAll("select").forEach(pasangDropdown);
+// ============================================================
+// SARAN PENCARIAN
+// Saat mengetik, muncul daftar resep yang cocok. Klik langsung
+// membuka resepnya, tanpa lewat halaman katalog.
+// ============================================================
+function pasangSaranPencarian(input) {
+  if (!input || input.dataset.saran) return;
+  input.dataset.saran = "1";
+
+  const kotak = document.createElement("div");
+  kotak.className = "saran";
+  kotak.hidden = true;
+  input.insertAdjacentElement("afterend", kotak);
+
+  let sorot = -1;
+
+  function cocokkan(kata) {
+    const k = kata.toLowerCase().trim();
+    if (k.length < 2) return [];
+    return RESEP.filter((r) =>
+      (r.nama + " " + r.daerah + " " + r.kategori + " " + r.bahan.map((b) => b.nama).join(" "))
+        .toLowerCase().includes(k)
+    ).slice(0, 7);
+  }
+
+  function gambar() {
+    const daftar = cocokkan(input.value);
+    sorot = -1;
+    if (!daftar.length) {
+      kotak.hidden = true;
+      return;
+    }
+    kotak.innerHTML = daftar.map((r) =>
+      '<a class="saran-item" href="resep.html?id=' + esc(r.id) + '">'
+      + '<img src="' + esc(r.foto) + '" alt="" loading="lazy" onerror="imgFallback(this)">'
+      + "<span><strong>" + esc(r.nama) + "</strong>"
+      + "<small>" + esc(r.daerah) + " · " + fmtWaktu(r.waktuTotal) + "</small></span></a>"
+    ).join("");
+    kotak.hidden = false;
+  }
+
+  function sorotKe(arah) {
+    const item = [...kotak.querySelectorAll(".saran-item")];
+    if (!item.length) return;
+    sorot = (sorot + arah + item.length) % item.length;
+    item.forEach((a, i) => a.classList.toggle("disorot", i === sorot));
+  }
+
+  input.addEventListener("input", gambar);
+  input.addEventListener("focus", gambar);
+
+  input.addEventListener("keydown", (e) => {
+    if (kotak.hidden) return;
+    if (e.key === "ArrowDown") { e.preventDefault(); sorotKe(1); }
+    else if (e.key === "ArrowUp") { e.preventDefault(); sorotKe(-1); }
+    else if (e.key === "Enter" && sorot >= 0) {
+      e.preventDefault();
+      kotak.querySelectorAll(".saran-item")[sorot].click();
+    } else if (e.key === "Escape") {
+      kotak.hidden = true;
+    }
+  });
+
+  document.addEventListener("click", (e) => {
+    if (!kotak.contains(e.target) && e.target !== input) kotak.hidden = true;
+  });
 }
 
-// ------------------------------------------------------------
-// Animasi saat digulir
-// Elemen ber-class .muncul diberi efek naik + pudar ketika masuk layar.
-//
-// Sengaja dipasang begini: kalau IntersectionObserver tidak ada, atau
-// pengunjung meminta "kurangi gerak", animasinya dilewati sama sekali dan
-// isinya tetap terbaca. Animasi hanya menambah, tidak pernah menyembunyikan.
-// ------------------------------------------------------------
-function pasangAnimasiGulir() {
-  const sukaGerak = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-  if (sukaGerak || !("IntersectionObserver" in window)) return;
+// ============================================================
+// ANIMASI GULIR
+// Elemen ber-class .muncul naik sedikit saat masuk layar.
+// Kalau pengunjung minta "kurangi gerak", animasinya dilewati.
+// ============================================================
+function pasangAnimasi() {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!("IntersectionObserver" in window)) return;
 
   const pengamat = new IntersectionObserver((masuk) => {
     masuk.forEach((m) => {
       if (!m.isIntersecting) return;
       m.target.classList.add("tampil");
-      pengamat.unobserve(m.target);   // sekali saja, tidak diulang
+      pengamat.unobserve(m.target);
     });
-  }, { rootMargin: "0px 0px -6% 0px", threshold: 0.04 });
+  }, { rootMargin: "0px 0px -5% 0px", threshold: 0.03 });
 
-  // Kartu sering digambar ulang oleh pencarian dan saringan, jadi elemen
-  // baru perlu diamati lagi. MutationObserver mengurusnya otomatis.
   function amati() {
     document.querySelectorAll(".muncul:not(.tampil)").forEach((el, i) => {
-      // Jeda berjenjang supaya munculnya tidak serempak.
-      el.style.setProperty("--jeda", (i % 8) * 40 + "ms");
+      el.style.setProperty("--jeda", (i % 8) * 35 + "ms");
       pengamat.observe(el);
     });
   }
 
   amati();
-
-  const pengamatIsi = new MutationObserver(amati);
-  document.querySelectorAll(".grid, .meal-grid, .grocery, .bahan, .langkah").forEach((wadah) => {
-    pengamatIsi.observe(wadah, { childList: true });
-  });
+  new MutationObserver(amati).observe(document.body, { childList: true, subtree: true });
 }
 
-// ------------------------------------------------------------
-// Sapuan awal. Dipanggil sekali setelah seluruh halaman siap.
-// ------------------------------------------------------------
+// ============================================================
+// MODE MASAK
+// Layar penuh: langkah besar, timer, dan pemutar video.
+// Dibangun sekali, lalu dipakai ulang.
+// ============================================================
+let masakEl = null;
+let masakState = null;
+let apiYouTube = null;
+
+// Muat API pemutar YouTube sekali saja, saat benar-benar dibutuhkan.
+function muatApiYouTube() {
+  if (apiYouTube) return apiYouTube;
+  apiYouTube = new Promise((selesai) => {
+    if (window.YT && window.YT.Player) return selesai();
+    const sebelumnya = window.onYouTubeIframeAPIReady;
+    window.onYouTubeIframeAPIReady = () => {
+      if (sebelumnya) sebelumnya();
+      selesai();
+    };
+    const s = document.createElement("script");
+    s.src = "https://www.youtube.com/iframe_api";
+    document.head.appendChild(s);
+  });
+  return apiYouTube;
+}
+
+// Bangun kerangka mode masak satu kali.
+function siapkanMasak() {
+  if (masakEl) return masakEl;
+
+  masakEl = document.createElement("div");
+  masakEl.className = "masak";
+  masakEl.setAttribute("role", "dialog");
+  masakEl.setAttribute("aria-modal", "true");
+  masakEl.setAttribute("aria-label", "Mode masak");
+  masakEl.innerHTML =
+    '<div class="masak-atas">'
+    + '<div class="masak-lacak"><i></i></div>'
+    + '<div class="masak-baris">'
+    + '<span class="masak-hitung"></span>'
+    + '<button class="masak-tombol" type="button" data-video>'
+    + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-play"/></svg><span>Video</span></button>'
+    + '<button class="masak-tombol" type="button" data-tutup>'
+    + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>Tutup</button>'
+    + "</div></div>"
+    // Bagian tengah yang bisa digulir. Tombol navigasi di bawahnya
+    // selalu terlihat, walau panel video sedang terbuka.
+    + '<div class="masak-tengah">'
+    + '<div class="masak-video" hidden></div>'
+    + '<div class="masak-isi">'
+    + '<p class="masak-teks"></p>'
+    + '<div class="masak-tanda"></div>'
+    + '<button class="masak-timer" type="button" hidden></button>'
+    + "</div></div>"
+    + '<div class="masak-nav">'
+    + '<button class="masak-mundur" type="button">'
+    + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Sebelumnya</button>'
+    + '<button class="masak-maju" type="button"><span>Lanjut</span>'
+    + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg></button>'
+    + "</div>";
+
+  document.body.appendChild(masakEl);
+  return masakEl;
+}
+
+function bukaModeMasak(resep) {
+  const el = siapkanMasak();
+  const langkah = resep.langkah.map(parseLangkah);
+
+  masakState = { resep, langkah, indeks: 0, timer: null, pemutar: null, wakeLock: null };
+
+  const $ = (sel) => el.querySelector(sel);
+  const lacak = $(".masak-lacak i");
+  const hitung = $(".masak-hitung");
+  const teks = $(".masak-teks");
+  const tanda = $(".masak-tanda");
+  const tombolTimer = $(".masak-timer");
+  const tombolMundur = $(".masak-mundur");
+  const tombolMaju = $(".masak-maju");
+  const panelVideo = $(".masak-video");
+  const tombolVideo = $("[data-video]");
+
+  // ---- Timer ----
+  function hentikanTimer() {
+    if (masakState.timer) {
+      clearInterval(masakState.timer);
+      masakState.timer = null;
+    }
+  }
+
+  function jalankanTimer(detik) {
+    hentikanTimer();
+    let sisa = detik;
+    tombolTimer.classList.add("jalan");
+    const tulisSisa = () => {
+      tombolTimer.textContent = Math.floor(sisa / 60) + ":" + String(sisa % 60).padStart(2, "0");
+    };
+    tulisSisa();
+    masakState.timer = setInterval(() => {
+      sisa--;
+      if (sisa <= 0) {
+        hentikanTimer();
+        tombolTimer.classList.remove("jalan");
+        tombolTimer.textContent = "Waktunya habis";
+        if (navigator.vibrate) navigator.vibrate(400);
+      } else {
+        tulisSisa();
+      }
+    }, 1000);
+  }
+
+  // ---- Layar tetap menyala selama memasak ----
+  async function jagaLayar() {
+    if (!("wakeLock" in navigator)) return;
+    try {
+      masakState.wakeLock = await navigator.wakeLock.request("screen");
+    } catch {
+      /* browser menolak, abaikan */
+    }
+  }
+
+  function lepasLayar() {
+    if (masakState.wakeLock) {
+      masakState.wakeLock.release();
+      masakState.wakeLock = null;
+    }
+  }
+
+  // ---- Gambar satu langkah ----
+  function gambar() {
+    const i = masakState.indeks;
+    const urai = langkah[i];
+    const terakhir = i === langkah.length - 1;
+
+    hitung.textContent = "Langkah " + (i + 1) + " dari " + langkah.length;
+    lacak.style.width = ((i + 1) / langkah.length) * 100 + "%";
+    teks.textContent = urai.sisa;
+    tombolMundur.disabled = i === 0;
+
+    // Isi teks tombol tanpa menghapus ikon di dalamnya.
+    tombolMaju.querySelector("span").textContent = terakhir ? "Selesai" : "Lanjut";
+
+    tanda.innerHTML = badgeTeknikHTML(urai);
+    if (urai.matang) {
+      const chip = document.createElement("span");
+      chip.className = "badge badge-matang";
+      chip.textContent = "Matang kalau: " + urai.matang;
+      tanda.appendChild(chip);
+    }
+
+    // Timer muncul kalau langkah menyebut jam, menit, atau detik.
+    hentikanTimer();
+    tombolTimer.classList.remove("jalan");
+    const waktu = resep.langkah[i].match(/(\d+)\s*(jam|menit|detik)/);
+    if (waktu) {
+      const detik = Number(waktu[1]) * { jam: 3600, menit: 60, detik: 1 }[waktu[2]];
+      tombolTimer.hidden = false;
+      tombolTimer.dataset.detik = detik;
+      tombolTimer.textContent = "Mulai timer " + waktu[0];
+    } else {
+      tombolTimer.hidden = true;
+    }
+  }
+
+  // ---- Video ----
+  function tampilkanTautanVideo(pesan) {
+    panelVideo.innerHTML = '<p class="masak-catatan">' + esc(pesan) + "</p>"
+      + '<a class="masak-keluar" href="https://www.youtube.com/watch?v=' + esc(resep.video)
+      + '" target="_blank" rel="noopener">Buka di YouTube</a>';
+  }
+
+  async function bukaVideo() {
+    if (panelVideo.hidden === false) {
+      panelVideo.hidden = true;
+      tombolVideo.classList.remove("aktif");
+      return;
+    }
+
+    panelVideo.hidden = false;
+    tombolVideo.classList.add("aktif");
+
+    if (panelVideo.dataset.siap) return;
+    panelVideo.dataset.siap = "1";
+
+    if (!idVideoValid(resep.video)) {
+      tampilkanTautanVideo("Resep ini belum punya video.");
+      return;
+    }
+
+    if (!lewatServer()) {
+      tampilkanTautanVideo("Pemutar YouTube butuh alamat http atau https. Halaman ini dibuka langsung dari berkas.");
+      return;
+    }
+
+    panelVideo.innerHTML = '<div class="masak-pemutar"><p class="masak-catatan">Memuat pemutar…</p></div>';
+    const wadah = panelVideo.querySelector(".masak-pemutar");
+
+    try {
+      await muatApiYouTube();
+    } catch {
+      tampilkanTautanVideo("Pemutar YouTube gagal dimuat.");
+      return;
+    }
+
+    wadah.innerHTML = "";
+    const target = document.createElement("div");
+    wadah.appendChild(target);
+
+    masakState.pemutar = new YT.Player(target, {
+      videoId: resep.video,
+      playerVars: {
+        origin: location.origin,
+        playsinline: 1,
+        rel: 0,
+        modestbranding: 1,
+      },
+      events: {
+        onReady: (e) => e.target.playVideo(),
+        onError: () => tampilkanTautanVideo("Video ini tidak bisa diputar di sini."),
+      },
+    });
+
+    // Daftar bab, kalau resepnya punya. Klik untuk lompat ke detik itu.
+    if (Array.isArray(resep.bab) && resep.bab.length) {
+      const bab = document.createElement("div");
+      bab.className = "masak-bab";
+      resep.bab.forEach(([detik, label]) => {
+        const tombol = document.createElement("button");
+        tombol.type = "button";
+        tombol.innerHTML = '<span class="menit">' + fmtDetik(detik) + "</span>" + esc(label);
+        tombol.addEventListener("click", () => {
+          if (masakState.pemutar && masakState.pemutar.seekTo) {
+            masakState.pemutar.seekTo(detik, true);
+            masakState.pemutar.playVideo();
+          }
+        });
+        bab.appendChild(tombol);
+      });
+      wadah.appendChild(bab);
+    }
+  }
+
+  // ---- Pindah langkah ----
+  function mundur() {
+    if (masakState.indeks > 0) {
+      masakState.indeks--;
+      gambar();
+    }
+  }
+
+  function maju() {
+    if (masakState.indeks < langkah.length - 1) {
+      masakState.indeks++;
+      gambar();
+    } else {
+      tutup();
+    }
+  }
+
+  // ---- Buka dan tutup ----
+  function tutup() {
+    el.classList.remove("buka");
+    document.body.classList.remove("masak-jalan");
+    hentikanTimer();
+    lepasLayar();
+    document.removeEventListener("keydown", tombolPapanTuntas);
+  }
+
+  function tombolPapanTuntas(e) {
+    if (e.key === "ArrowRight") maju();
+    else if (e.key === "ArrowLeft") mundur();
+    else if (e.key === "Escape") tutup();
+    else if (e.key === " " && !tombolTimer.hidden) {
+      e.preventDefault();
+      jalankanTimer(Number(tombolTimer.dataset.detik));
+    }
+  }
+
+  // ---- Pasang pendengar ----
+  tombolMundur.addEventListener("click", mundur);
+  tombolMaju.addEventListener("click", maju);
+  $("[data-tutup]").addEventListener("click", tutup);
+  tombolVideo.addEventListener("click", bukaVideo);
+  tombolTimer.addEventListener("click", () => jalankanTimer(Number(tombolTimer.dataset.detik)));
+
+  document.addEventListener("keydown", tombolPapanTuntas);
+  document.addEventListener("visibilitychange", () => {
+    if (document.visibilityState === "visible" && el.classList.contains("buka")) jagaLayar();
+  });
+
+  // Sembunyikan panel video tiap kali dibuka ulang.
+  panelVideo.hidden = true;
+  tombolVideo.classList.remove("aktif");
+
+  gambar();
+  el.classList.add("buka");
+  document.body.classList.add("masak-jalan");
+  jagaLayar();
+}
+
+// ============================================================
+// SAPUAN AWAL
+// Dipanggil sekali di setiap halaman, setelah isi siap.
+// ============================================================
 function siapkanHalaman() {
-  // Tandai elemen yang ikut animasi gulir. Dilakukan di sini supaya
-  // HTML-nya tidak perlu ditulisi class satu per satu.
-  document.querySelectorAll(".wrap > section, .wrap > .panel, .wrap > .hero")
+  // Tandai elemen yang ikut animasi gulir.
+  document.querySelectorAll(".wrap > section, .wrap > .kartu, .kartu, .grup")
     .forEach((el) => el.classList.add("muncul"));
 
-  pasangSemuaDropdown();
-  pasangAnimasiGulir();
+  document.querySelectorAll("select").forEach(pasangDropdown);
+  document.querySelectorAll(".cari input").forEach(pasangSaranPencarian);
+  pasangAnimasi();
 }
+
