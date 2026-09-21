@@ -30,4 +30,5 @@
   <symbol id="i-leaf" viewBox="0 0 24 24"><path d="M5 19C5 9 13 4 20 4c0 8-5 15-15 15z"/><path d="M5 19c3-5 7-9 11-11"/></symbol>
   <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l13-7.5-13-7.5z"/></symbol>
   <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+  <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
 </svg>

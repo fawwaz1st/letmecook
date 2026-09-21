@@ -1850,10 +1850,23 @@ function isiKartu(wadah, daftar, opsi) {
 // Thumbnail dulu, iframe menyusul setelah diklik. Halaman jadi
 // ringan karena 44 pemutar tidak dimuat sekaligus.
 // ============================================================
+
+// YouTube menolak memutar video kalau halaman dibuka tanpa HTTP Referer
+// (Error 153: embedder.identity.missing.referrer). Itu terjadi kalau
+// index.html diklik dua kali langsung dari berkas (protokol file://).
+//
+// Solusinya bukan menyerah, tapi menyesuaikan diri:
+// - Dibuka lewat http/https  -> tanam pemutar di halaman.
+// - Dibuka lewat file://     -> pemutar akan diblokir, jadi tombol play
+//                               mengarahkan ke YouTube (selalu bisa diputar).
+function bisaTanamVideo() {
+  return location.protocol === "http:" || location.protocol === "https:";
+}
+
 function pasangVideo(wadah, idVideo, daftarBab, judulResep) {
   wadah.innerHTML = "";
 
-  // ID tidak sah: tawarkan tautan keluar, jangan tanam apa pun.
+  // ID tidak sah: tawarkan pencarian, jangan tanam apa pun.
   if (!idVideoValid(idVideo)) {
     wadah.innerHTML = '<a class="btn-yt" href="https://www.youtube.com/results?search_query='
       + encodeURIComponent(judulResep + " resep") + '" target="_blank" rel="noopener">Cari video di YouTube</a>';
@@ -1861,6 +1874,7 @@ function pasangVideo(wadah, idVideo, daftarBab, judulResep) {
   }
 
   const tautanTonton = "https://www.youtube.com/watch?v=" + idVideo;
+  const bisaTanam = bisaTanamVideo();
 
   // Tombol facade: thumbnail + ikon play. Ini yang dilihat sebelum diklik.
   const facade = document.createElement("button");
@@ -1879,6 +1893,43 @@ function pasangVideo(wadah, idVideo, daftarBab, judulResep) {
     wadah.insertAdjacentHTML("afterbegin",
       '<a class="btn-yt" href="' + tautanTonton + '" target="_blank" rel="noopener">Buka di YouTube</a>');
   });
+
+  // Kalau halaman dibuka dari berkas, pemutar tidak akan jalan.
+  // Ganti tombol play jadi tautan yang membuka YouTube di tab baru,
+  // lalu jelaskan alasannya supaya tidak terasa rusak.
+  if (!bisaTanam) {
+    facade.addEventListener("click", () => {
+      window.open(tautanTonton, "_blank", "noopener");
+    });
+    facade.setAttribute("aria-label", "Buka video " + judulResep + " di YouTube");
+
+    const catatan = document.createElement("p");
+    catatan.className = "catatan-video";
+    catatan.innerHTML = '<svg class="icon" aria-hidden="true"><use href="icons.svg#i-alert"/></svg>'
+      + "<span>Halaman ini dibuka langsung dari berkas, jadi pemutar YouTube diblokir. "
+      + 'Tombol play membuka videonya di tab baru. Kalau mau diputar di sini, '
+      + 'jalankan <code>npx serve .</code> lalu buka lewat <code>localhost</code>.</span>';
+    wadah.appendChild(catatan);
+
+    // Daftar bab tetap berguna: membuka YouTube tepat di detik yang dipilih.
+    if (Array.isArray(daftarBab) && daftarBab.length) {
+      const kotakBab = document.createElement("div");
+      kotakBab.className = "video-bab";
+      kotakBab.setAttribute("aria-label", "Lompat ke bagian video");
+      daftarBab.forEach((bab) => {
+        const tombol = document.createElement("button");
+        tombol.type = "button";
+        tombol.className = "bab-btn";
+        tombol.innerHTML = '<span class="menit">' + fmtDetik(bab[0]) + "</span>" + esc(bab[1]);
+        tombol.addEventListener("click", () => {
+          window.open(tautanTonton + "&t=" + Math.floor(bab[0]) + "s", "_blank", "noopener");
+        });
+        kotakBab.appendChild(tombol);
+      });
+      wadah.appendChild(kotakBab);
+    }
+    return;
+  }
 
   // Daftar bab, hanya kalau datanya ada.
   if (Array.isArray(daftarBab) && daftarBab.length) {
@@ -1915,4 +1966,167 @@ function pasangVideo(wadah, idVideo, daftarBab, judulResep) {
   }
 
   facade.addEventListener("click", () => muatPemutar(0));
+}
+
+// ============================================================
+// KOMPONEN TAMPILAN
+// Dropdown, animasi gulir, dan penggulung buatan sendiri.
+// Dipasang otomatis saat halaman selesai dimuat.
+// ============================================================
+
+// ------------------------------------------------------------
+// Dropdown kustom
+// <select> bawaan tidak bisa diatur tampilannya. Jadi aslinya tetap
+// dipakai (supaya logika filter tidak berubah), tapi disembunyikan,
+// lalu diganti tombol + daftar buatan sendiri yang tampilannya bebas.
+// ------------------------------------------------------------
+function pasangDropdown(select) {
+  if (select.dataset.kustom === "1") return;
+  select.dataset.kustom = "1";
+
+  const bungkus = document.createElement("div");
+  bungkus.className = "dd";
+
+  const tombol = document.createElement("button");
+  tombol.type = "button";
+  tombol.className = "dd-tombol";
+  tombol.setAttribute("aria-haspopup", "listbox");
+  tombol.setAttribute("aria-expanded", "false");
+  tombol.innerHTML = '<span class="dd-teks"></span>'
+    + '<svg class="icon dd-panah" aria-hidden="true"><use href="icons.svg#i-chevron-down"/></svg>';
+
+  const daftar = document.createElement("ul");
+  daftar.className = "dd-daftar";
+  daftar.setAttribute("role", "listbox");
+
+  const teks = tombol.querySelector(".dd-teks");
+
+  // Isi daftar dari <option>.
+  function gambarPilihan() {
+    daftar.innerHTML = "";
+    [...select.options].forEach((opt) => {
+      const li = document.createElement("li");
+      li.className = "dd-pilihan";
+      li.setAttribute("role", "option");
+      li.dataset.nilai = opt.value;
+      li.setAttribute("aria-selected", String(opt.value === select.value));
+      if (opt.value === select.value) li.classList.add("dipilih");
+      li.textContent = opt.textContent;
+      li.addEventListener("click", () => pilih(opt.value));
+      daftar.appendChild(li);
+    });
+    const terpilih = select.options[select.selectedIndex];
+    teks.textContent = terpilih ? terpilih.textContent : "";
+  }
+
+  function pilih(nilai) {
+    select.value = nilai;
+    // Beri tahu pendengar "change" yang sudah ada di halaman.
+    select.dispatchEvent(new Event("change", { bubbles: true }));
+    gambarPilihan();
+    tutup();
+  }
+
+  function buka() {
+    // Tutup dropdown lain supaya tidak ada dua yang terbuka.
+    document.querySelectorAll(".dd.buka").forEach((d) => {
+      if (d !== bungkus) d.classList.remove("buka");
+    });
+    bungkus.classList.add("buka");
+    tombol.setAttribute("aria-expanded", "true");
+  }
+
+  function tutup() {
+    bungkus.classList.remove("buka");
+    tombol.setAttribute("aria-expanded", "false");
+  }
+
+  tombol.addEventListener("click", (e) => {
+    e.stopPropagation();
+    bungkus.classList.contains("buka") ? tutup() : buka();
+  });
+
+  // Papan tuntas: panah atas/bawah untuk memilih, Esc untuk menutup.
+  tombol.addEventListener("keydown", (e) => {
+    const opsi = [...select.options];
+    const pos = opsi.findIndex((o) => o.value === select.value);
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      pilih(opsi[Math.min(pos + 1, opsi.length - 1)].value);
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      pilih(opsi[Math.max(pos - 1, 0)].value);
+    } else if (e.key === "Escape") {
+      tutup();
+    }
+  });
+
+  // Klik di luar menutup dropdown.
+  document.addEventListener("click", (e) => {
+    if (!bungkus.contains(e.target)) tutup();
+  });
+
+  bungkus.append(tombol, daftar);
+  select.classList.add("select-asli");
+  select.insertAdjacentElement("afterend", bungkus);
+  gambarPilihan();
+
+  // Kalau nilainya diubah dari kode (mis. saat memuat URL), ikut menyesuaikan.
+  select.addEventListener("change", gambarPilihan);
+}
+
+// Pasang ke semua <select> di halaman.
+function pasangSemuaDropdown() {
+  document.querySelectorAll("select").forEach(pasangDropdown);
+}
+
+// ------------------------------------------------------------
+// Animasi saat digulir
+// Elemen ber-class .muncul diberi efek naik + pudar ketika masuk layar.
+//
+// Sengaja dipasang begini: kalau IntersectionObserver tidak ada, atau
+// pengunjung meminta "kurangi gerak", animasinya dilewati sama sekali dan
+// isinya tetap terbaca. Animasi hanya menambah, tidak pernah menyembunyikan.
+// ------------------------------------------------------------
+function pasangAnimasiGulir() {
+  const sukaGerak = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  if (sukaGerak || !("IntersectionObserver" in window)) return;
+
+  const pengamat = new IntersectionObserver((masuk) => {
+    masuk.forEach((m) => {
+      if (!m.isIntersecting) return;
+      m.target.classList.add("tampil");
+      pengamat.unobserve(m.target);   // sekali saja, tidak diulang
+    });
+  }, { rootMargin: "0px 0px -6% 0px", threshold: 0.04 });
+
+  // Kartu sering digambar ulang oleh pencarian dan saringan, jadi elemen
+  // baru perlu diamati lagi. MutationObserver mengurusnya otomatis.
+  function amati() {
+    document.querySelectorAll(".muncul:not(.tampil)").forEach((el, i) => {
+      // Jeda berjenjang supaya munculnya tidak serempak.
+      el.style.setProperty("--jeda", (i % 8) * 40 + "ms");
+      pengamat.observe(el);
+    });
+  }
+
+  amati();
+
+  const pengamatIsi = new MutationObserver(amati);
+  document.querySelectorAll(".grid, .meal-grid, .grocery, .bahan, .langkah").forEach((wadah) => {
+    pengamatIsi.observe(wadah, { childList: true });
+  });
+}
+
+// ------------------------------------------------------------
+// Sapuan awal. Dipanggil sekali setelah seluruh halaman siap.
+// ------------------------------------------------------------
+function siapkanHalaman() {
+  // Tandai elemen yang ikut animasi gulir. Dilakukan di sini supaya
+  // HTML-nya tidak perlu ditulisi class satu per satu.
+  document.querySelectorAll(".wrap > section, .wrap > .panel, .wrap > .hero")
+    .forEach((el) => el.classList.add("muncul"));
+
+  pasangSemuaDropdown();
+  pasangAnimasiGulir();
 }

@@ -90,7 +90,7 @@
       <div class="kosong" id="kosong" hidden>
         <svg class="icon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>
         <strong id="kosongJudul">Tidak ada yang cocok</strong>
-        <p id="kosongPesan">Coba longgarkan saringan, atau cari kata lain seperti "soto" atau "santan".</p>
+        <p id="kosongPesan">Coba longgarkan saringan, atau cari kata lain. Misalnya "soto" atau "santan".</p>
         <button class="btn btn-solid" type="button" id="kosongAksi">Hapus semua saringan</button>
       </div>
     </section>
@@ -199,6 +199,7 @@
     [fLevel, fWaktu, fDiet].forEach((el) => el.addEventListener("change", gambar));
 
     gambar();
+    siapkanHalaman();
   </script>
 </body>
 </html>

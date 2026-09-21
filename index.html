@@ -47,8 +47,8 @@
       <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Rendang_dish_closeup.jpg/1280px-Rendang_dish_closeup.jpg" alt="Rendang sapi yang kuahnya sudah menyusut dan berminyak" fetchpriority="high" width="1280" height="1011" onerror="imgFallback(this)">
       <div class="teks">
         <span class="kicker"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>44 resep · takaran gram</span>
-        <h1>Kamu cek warna, bau, suara. Bukan cuma timer.</h1>
-        <p class="lead">Tiap langkah menyebut tanda matang yang bisa kamu lihat sendiri. Ada timer, mode masak layar penuh, dan daftar belanja yang tersusun dari rencana makanmu.</p>
+        <h1>Setiap langkah bilang apa yang harus kamu lihat.</h1>
+        <p class="lead">Bawang sudah kuning atau belum, santan sudah keluar minyak atau belum. Tiap langkah menyebut tandanya, bukan cuma lama waktunya. Ada timer, mode masak layar penuh, dan daftar belanja dari rencana makanmu.</p>
         <div class="aksi">
           <a class="btn btn-solid" href="katalog.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Buka 44 resep</a>
           <a class="btn" href="mealplan.html"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Susun 7 hari makan</a>
@@ -74,7 +74,7 @@
     <!-- Video berbab: hanya resep yang videonya punya penanda bagian. -->
     <section class="panel" aria-labelledby="judul-video" id="seksiVideo" hidden>
       <div class="panel-head">
-        <h2 id="judul-video"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-play"/></svg>Videonya ada penanda bagian</h2>
+        <h2 id="judul-video"><svg class="icon" aria-hidden="true"><use href="icons.svg#i-play"/></svg>Videonya bisa dilompati</h2>
         <a href="katalog.html">Semua resep <svg class="icon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg></a>
       </div>
       <div class="pad"><div class="grid" id="gridVideo"></div></div>
@@ -96,14 +96,14 @@
         <p><strong>Pagi, 06–09.</strong> Bubur, nasi uduk, lontong sayur. Matang sambil kamu mandi.</p>
         <p><strong>Siang, 11–13.</strong> Rendang, soto, gudeg. Masak buat sekalian malam.</p>
         <p><strong>Malam, 18–20.</strong> Rawon, betutu, ikan bakar. Berkuah, cocok kalau badan capek.</p>
-        <p class="pembuka">Kalau bingung, buka resep hari ini. Kamu cuma perlu ikut langkahnya.</p>
+        <p class="pembuka">Masih bingung? Buka resep hari ini, ikuti saja langkahnya.</p>
       </div>
     </section>
   </main>
 
   <footer>
     <div class="wrap">
-      <span><strong>LetMeCook</strong> — 44 panduan masak. Foto: Wikimedia Commons, Unsplash.</span>
+      <span><strong>LetMeCook</strong> — 44 panduan masak. Foto: Wikimedia Commons.</span>
       <span><a href="tentang.html">Tentang &amp; takaran</a></span>
     </div>
   </footer>
@@ -162,6 +162,9 @@
       document.getElementById("seksiVideo").hidden = false;
       isiKartu(document.getElementById("gridVideo"), berbab);
     }
+
+    // 5) Pasang dropdown kustom dan animasi gulir.
+    siapkanHalaman();
   </script>
 </body>
 </html>

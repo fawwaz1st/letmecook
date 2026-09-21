@@ -828,6 +828,27 @@ p:last-child { margin-bottom: 0; }
   align-self: flex-start;
 }
 
+/* Keterangan kenapa pemutar video tidak muncul. */
+.catatan-video {
+  display: flex;
+  gap: var(--sp-2);
+  align-items: flex-start;
+  background: var(--accent-soft);
+  border: 1px solid oklch(0.90 0.06 85);
+  border-radius: var(--radius-sm);
+  padding: var(--sp-3);
+  font-size: 0.85rem;
+  color: oklch(0.36 0.07 75);
+  margin: 0;
+}
+.catatan-video .icon { margin-top: 2px; flex: none; }
+.catatan-video code {
+  background: rgb(255 255 255 / 0.7);
+  border-radius: 4px;
+  padding: 0 4px;
+  font-size: 0.95em;
+}
+
 /* ---------- 10) MODE MASAK -------------------------------- */
 .cook {
   position: fixed;
@@ -1145,7 +1166,150 @@ footer .wrap {
 footer a { color: var(--accent); text-decoration: none; display: inline-flex; align-items: center; gap: var(--sp-1); }
 footer a:hover { text-decoration: underline; }
 
-/* ---------- 14) AKSESIBILITAS & CETAK --------------------- */
+/* ---------- 14) DROPDOWN KUSTOM --------------------------- */
+/* <select> bawaan disembunyikan, diganti tombol + daftar buatan sendiri.
+   Nilainya tetap diambil dari <select>, jadi logika filter tidak berubah. */
+.select-asli {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.dd { position: relative; }
+
+.dd-tombol {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--sp-2);
+  font: inherit;
+  font-size: 0.92rem;
+  font-weight: 600;
+  text-align: left;
+  padding: var(--sp-2) var(--sp-3);
+  min-height: 42px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--card);
+  color: var(--ink);
+  cursor: pointer;
+  transition: border-color var(--dur) var(--ease), background var(--dur) var(--ease);
+}
+.dd-tombol:hover { border-color: var(--brand); }
+.dd.buka .dd-tombol { border-color: var(--brand); background: var(--brand-soft); }
+
+.dd-panah {
+  color: var(--muted);
+  transition: transform var(--dur) var(--ease);
+}
+.dd.buka .dd-panah { transform: rotate(180deg); }
+
+.dd-daftar {
+  position: absolute;
+  z-index: var(--z-sticky);
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  margin: 0;
+  padding: var(--sp-1);
+  list-style: none;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow-naik);
+  max-height: 260px;
+  overflow-y: auto;
+
+  /* Tertutup: tidak terlihat dan tidak bisa diklik. */
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(-6px);
+  transition: opacity var(--dur) var(--ease), transform var(--dur) var(--ease), visibility var(--dur);
+}
+.dd.buka .dd-daftar {
+  opacity: 1;
+  visibility: visible;
+  transform: translateY(0);
+}
+
+.dd-pilihan {
+  padding: var(--sp-2) var(--sp-3);
+  border-radius: 6px;
+  font-size: 0.9rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: var(--sp-2);
+  transition: background var(--dur) var(--ease);
+}
+.dd-pilihan:hover { background: var(--brand-soft); }
+.dd-pilihan.dipilih {
+  background: var(--brand);
+  color: #fff;
+  font-weight: 700;
+}
+.dd-pilihan.dipilih::before {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-pill);
+  background: currentColor;
+  flex: none;
+}
+
+/* ---------- 15) PENGGULUNG KUSTOM ------------------------- */
+/* Batang gulir bawaan diganti batang tipis yang warnanya ikut tema. */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: oklch(0.80 0.02 155) transparent;
+}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb {
+  background: oklch(0.80 0.02 155);
+  border-radius: var(--radius-pill);
+  border: 3px solid transparent;
+  background-clip: content-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--brand);
+  background-clip: content-box;
+}
+
+/* Baris chip kategori: geser tanpa batang gulir yang mengganggu. */
+.catchips-in { scrollbar-width: none; }
+.catchips-in::-webkit-scrollbar { display: none; }
+
+/* ---------- 16) ANIMASI ----------------------------------- */
+/* Muncul saat masuk layar. Kalau JavaScript tidak jalan, isinya tetap
+   terlihat karena aturan di bawah menetralkan keadaan awalnya. */
+.muncul {
+  opacity: 0;
+  transform: translateY(12px);
+  transition:
+    opacity 0.5s var(--ease) var(--jeda, 0ms),
+    transform 0.5s var(--ease) var(--jeda, 0ms);
+}
+.muncul.tampil {
+  opacity: 1;
+  transform: none;
+}
+
+/* Tanpa JavaScript, jangan sembunyikan apa pun. */
+@media (scripting: none) {
+  .muncul { opacity: 1; transform: none; }
+}
+
+/* Kartu terangkat sedikit saat kursor mendekat. */
+.card:hover { transform: translateY(-2px); }
+
+/* Tombol tertekan sedikit saat diklik. */
+.btn:active, .btn-kecil:active { transform: translateY(1px); }
+
+/* ---------- 17) AKSESIBILITAS & CETAK --------------------- */
 .skip { position: absolute; left: -999px; }
 .skip:focus {
   left: var(--sp-2);
