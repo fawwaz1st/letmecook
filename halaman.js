@@ -412,14 +412,13 @@ function halamanResep() {
     baris.appendChild(tombolCek);
 
     // Timer muncul otomatis kalau langkah menyebut waktu.
-    const waktu = teks.match(/(\d+)\s*(jam|menit|detik)/);
+    const waktu = waktuDiTeks(teks);
     if (waktu) {
-      const detik = Number(waktu[1]) * { jam: 3600, menit: 60, detik: 1 }[waktu[2]];
       const tombolTimer = document.createElement("button");
       tombolTimer.type = "button";
       tombolTimer.className = "tb-mini";
       tombolTimer.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-timer"/></svg>Timer ' + waktu[0];
-      tombolTimer.addEventListener("click", () => mulaiTimer(tombolTimer, detik));
+      tombolTimer.addEventListener("click", () => mulaiTimer(tombolTimer, waktu[1]));
       baris.appendChild(tombolTimer);
     }
 
@@ -441,26 +440,17 @@ function halamanResep() {
       document.querySelectorAll(".tb-mini.jalan").forEach((b) => b.classList.remove("jalan"));
     }
 
-    let sisa = detik;
     tombol.classList.add("jalan");
-    const tulisSisa = () => {
-      tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-timer"/></svg>'
-        + Math.floor(sisa / 60) + ":" + String(sisa % 60).padStart(2, "0");
+    const tulisSisa = (sisa) => {
+      tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-timer"/></svg>' + fmtDetik(sisa);
     };
-    tulisSisa();
 
-    timerAktif = setInterval(() => {
-      sisa--;
-      if (sisa <= 0) {
-        clearInterval(timerAktif);
-        timerAktif = null;
-        tombol.classList.remove("jalan");
-        tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>Waktunya habis';
-        if (navigator.vibrate) navigator.vibrate(400);
-      } else {
-        tulisSisa();
-      }
-    }, 1000);
+    timerAktif = hitungMundur(detik, tulisSisa, () => {
+      timerAktif = null;
+      tombol.classList.remove("jalan");
+      tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>Waktunya habis';
+      if (navigator.vibrate) navigator.vibrate(400);
+    });
   }
 
   gambarBahan();

@@ -103,10 +103,33 @@ function fmtWaktu(menit) {
   return jam + " jam" + (sisa ? " " + sisa + " mnt" : "");
 }
 
-// 91 jadi "01:31", untuk daftar bab video.
+// 91 jadi "01:31", 10798 jadi "2:59:58". Dipakai daftar bab video
+// dan hitungan mundur timer. Jam hanya muncul kalau perlu.
 function fmtDetik(detik) {
   const d = Math.max(0, Math.floor(detik));
-  return String(Math.floor(d / 60)).padStart(2, "0") + ":" + String(d % 60).padStart(2, "0");
+  const jam = Math.floor(d / 3600);
+  const mnt = String(Math.floor((d % 3600) / 60)).padStart(2, "0");
+  const dtk = String(d % 60).padStart(2, "0");
+  return (jam ? jam + ":" : "") + mnt + ":" + dtk;
+}
+
+// Hitung mundur sekali jalan, dipakai timer di halaman resep dan di
+// mode masak supaya logikanya cuma ada di satu tempat.
+// saatTik dipanggil tiap detik dengan sisa detik, saatHabis sekali di
+// akhir. Mengembalikan id interval supaya pemanggil bisa menghentikannya.
+function hitungMundur(detik, saatTik, saatHabis) {
+  let sisa = detik;
+  saatTik(sisa);
+  const id = setInterval(() => {
+    sisa--;
+    if (sisa <= 0) {
+      clearInterval(id);
+      saatHabis();
+    } else {
+      saatTik(sisa);
+    }
+  }, 1000);
+  return id;
 }
 
 // Ubah teks jadi aman dipasang di HTML.
@@ -117,6 +140,15 @@ function esc(teks) {
     .replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;")
     .replace(/'/g, "&#39;");
+}
+
+// Cari penyebutan waktu di teks langkah, misal "30 menit" atau "1 jam".
+// Mengembalikan [teks asli, detik] atau null kalau tidak ada.
+// Dipakai halaman resep dan mode masak supaya aturannya sama.
+function waktuDiTeks(teks) {
+  const kena = teks.match(/(\d+)\s*(jam|menit|detik)/);
+  if (!kena) return null;
+  return [kena[0], Number(kena[1]) * { jam: 3600, menit: 60, detik: 1 }[kena[2]]];
 }
 
 // ID video YouTube selalu 11 karakter.
@@ -641,23 +673,15 @@ function bukaModeMasak(resep) {
 
   function jalankanTimer(detik) {
     hentikanTimer();
-    let sisa = detik;
     tombolTimer.classList.add("jalan");
-    const tulisSisa = () => {
-      tombolTimer.textContent = Math.floor(sisa / 60) + ":" + String(sisa % 60).padStart(2, "0");
-    };
-    tulisSisa();
-    masakState.timer = setInterval(() => {
-      sisa--;
-      if (sisa <= 0) {
-        hentikanTimer();
-        tombolTimer.classList.remove("jalan");
-        tombolTimer.textContent = "Waktunya habis";
-        if (navigator.vibrate) navigator.vibrate(400);
-      } else {
-        tulisSisa();
-      }
-    }, 1000);
+    masakState.timer = hitungMundur(detik, (sisa) => {
+      tombolTimer.textContent = fmtDetik(sisa);
+    }, () => {
+      masakState.timer = null;
+      tombolTimer.classList.remove("jalan");
+      tombolTimer.textContent = "Waktunya habis";
+      if (navigator.vibrate) navigator.vibrate(400);
+    });
   }
 
   // ---- Layar tetap menyala selama memasak ----
@@ -792,11 +816,10 @@ function bukaModeMasak(resep) {
     // Timer muncul kalau langkah menyebut jam, menit, atau detik.
     hentikanTimer();
     tombolTimer.classList.remove("jalan");
-    const waktu = resep.langkah[i].match(/(\d+)\s*(jam|menit|detik)/);
+    const waktu = waktuDiTeks(resep.langkah[i]);
     if (waktu) {
-      const detik = Number(waktu[1]) * { jam: 3600, menit: 60, detik: 1 }[waktu[2]];
       tombolTimer.hidden = false;
-      tombolTimer.dataset.detik = detik;
+      tombolTimer.dataset.detik = waktu[1];
       tombolTimer.textContent = "Mulai timer " + waktu[0];
     } else {
       tombolTimer.hidden = true;
