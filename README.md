@@ -60,9 +60,11 @@ python -m http.server 8000
 
 Lalu buka `http://localhost:8000`.
 
-**3. GitHub Pages.** Repo ini sudah punya berkas statis, jadi cukup:
+**3. GitHub Pages.** Situsnya sudah terbit di
+<https://fawwaz1st.github.io/letmecook/>. Untuk repo sendiri, cukup
 **Settings → Pages → Source: Deploy from a branch → Branch: `main` / `root`**.
-Situsnya lalu bisa dibuka di <https://fawwaz1st.github.io/letmecook/>.
+Workflow di `.github/workflows/pages.yml` juga bisa dipakai, tapi ia butuh
+GitHub Pages dinyalakan lebih dulu lewat halaman Settings.
 
 ## Susunan berkas
 
