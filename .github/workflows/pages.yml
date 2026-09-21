@@ -1,0 +1,46 @@
+name: Deploy ke GitHub Pages
+
+# Situs ini berkas statis, jadi tidak ada langkah build.
+# Workflow ini hanya menyalin isi repo lalu menerbitkannya ke GitHub Pages.
+#
+# Catatan: baris "enablement: true" di bawah yang menyalakan GitHub Pages
+# untuk pertama kali. Kalau Pages sudah pernah dinyalakan, baris itu diabaikan.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Batalkan penerbitan yang masih jalan kalau ada push baru.
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  terbitkan:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      - name: Ambil isi repo
+        uses: actions/checkout@v4
+
+      - name: Siapkan GitHub Pages
+        uses: actions/configure-pages@v5
+        with:
+          enablement: true
+
+      - name: Bungkus berkas situs
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+
+      - name: Terbitkan
+        id: deploy
+        uses: actions/deploy-pages@v4
