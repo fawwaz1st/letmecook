@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Resep — LetMeCook</title>
+  <title>Resep â€” LetMeCook</title>
   <meta name="description" content="Bahan bertakar gram, langkah bertanda matang, timer, dan mode masak.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,11 +41,12 @@
 
   <footer>
     <div class="wrap">
-      <span><strong>LetMeCook</strong> — 44 resep masakan Indonesia.</span>
+      <span><strong>LetMeCook</strong> â€” <span data-jumlah></span> resep masakan Indonesia.</span>
       <span><a href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Beranda</a></span>
     </div>
   </footer>
 
+  <script src="resep-data.js"></script>
   <script src="store.js"></script>
   <script>
     segarkanBadge();
@@ -57,13 +58,14 @@
     if (!r) {
       area.innerHTML = '<div class="panel"><div class="kosong">'
         + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>'
-        + "<strong>Resep itu tidak ada</strong>"
+        + "<h1>Resep itu tidak ada</h1>"
         + "<p>Mungkin ID di alamatnya salah. Semua resep ada di katalog.</p>"
         + '<a class="tb tb-isi" href="katalog.html">Buka katalog</a>'
         + "</div></div>";
     } else {
       document.title = r.nama + " — LetMeCook";
-      document.querySelector('meta[name="description"]').setAttribute("content", r.deskripsi.slice(0, 150));
+      const metaDesk = document.querySelector('meta[name="description"]');
+      if (metaDesk) metaDesk.setAttribute("content", r.deskripsi.slice(0, 150));
 
       let faktorPorsi = 1;
       let timerAktif = null;
@@ -79,7 +81,7 @@
 
       area.innerHTML =
         '<article class="panel"><div class="kepala-resep">'
-        + '<img src="' + esc(r.foto) + '" alt="" width="900" height="562" onerror="imgFallback(this)">'
+        + '<img src="' + esc(r.foto) + '" alt="' + esc(r.nama) + ", " + esc(r.daerah) + '" width="900" height="562" onerror="imgFallback(this)">'
         + '<div class="teks">'
         + '<div class="tag-baris">' + label.join("") + "</div>"
         + "<h1>" + esc(r.nama) + "</h1>"
@@ -142,7 +144,7 @@
 
         + '<section class="panel" style="margin-top:var(--s4)" aria-label="Alat">'
         + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-utensils"/></svg>Alat yang perlu disiapkan</h2></div>'
-        + '<div class="isi"><p>' + esc(r.alat.join(" · ")) + "</p></div>"
+        + '<div class="isi"><p>' + esc(r.alat.join(" Â· ")) + "</p></div>"
         + "</section>";
 
       // ---- Simpan, cetak, salin tautan ----
@@ -172,7 +174,13 @@
       // ---- Bahan dan penyesuaian porsi ----
       const bahanList = document.getElementById("bahanList");
       const semuaProg = baca(KEY.prog, {});
-      const prog = semuaProg[r.id] || { bahan: [], langkah: [] };
+      // Normalisasi: data dari localStorage bisa saja rusak atau setengah,
+      // jadi pastikan bentuknya selalu lengkap sebelum dipakai.
+      const tersimpan = semuaProg[r.id];
+      const prog = {
+        bahan: Array.isArray(tersimpan && tersimpan.bahan) ? tersimpan.bahan : [],
+        langkah: Array.isArray(tersimpan && tersimpan.langkah) ? tersimpan.langkah : [],
+      };
 
       function gambarBahan() {
         bahanList.innerHTML = "";
@@ -354,6 +362,12 @@
         recipeInstructions: r.langkah.map((t) => ({ "@type": "HowToStep", text: t })),
       });
       document.head.appendChild(ld);
+
+      // Hentikan timer kalau halaman ditinggalkan, supaya tidak jalan
+      // diam-diam di latar belakang.
+      window.addEventListener("pagehide", () => {
+        if (timerAktif) { clearInterval(timerAktif); timerAktif = null; }
+      });
 
       // ---- Resep pendamping: kategori berbeda biar bervariasi ----
       isiKartu(document.getElementById("sanding"),

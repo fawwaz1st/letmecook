@@ -10,11 +10,16 @@ desktop.ini
 
 # Berkas sementara untuk riset dan audit (dipakai saat pengembangan)
 _cek/
+_qa/
 _tmp/
 _bak/
 
-# Cadangan
-*.bak
+# Cadangan. Pola *.bak* menangkap store.js.bak1, bak2, dan sejenisnya.
+*.bak*
+*.old
+*.sebelum*
+*.prevideo
+*.precopy
 *.old
 *.precopy
 *.prevideo

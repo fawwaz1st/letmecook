@@ -1,9 +1,9 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Rencana Makan 7 Hari — LetMeCook</title>
+  <title>Rencana Makan 7 Hari â€” LetMeCook</title>
   <meta name="description" content="Susun 21 slot makan untuk seminggu. Daftar belanjanya tersusun sendiri dari resep yang kamu pilih.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -30,7 +30,7 @@
     <section class="panel" aria-labelledby="judulRencana">
       <div class="panel-kepala">
         <h1 id="judulRencana"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana 7 hari</h1>
-        <a href="#" id="tautanCetak">Cetak <svg class="ikon" aria-hidden="true"><use href="icons.svg#i-printer"/></svg></a>
+        <button class="tautan-kepala" type="button" id="tautanCetak">Cetak <svg class="ikon" aria-hidden="true"><use href="icons.svg#i-printer"/></svg></button>
       </div>
       <div class="baris-info"><span id="isiTeks">0 dari 21 slot terisi</span></div>
       <div class="meal-grup" id="mealGrup"></div>
@@ -46,16 +46,16 @@
       <form class="isian" id="formManual">
         <div>
           <label for="mNama">Tambahkan bahan sendiri</label>
-          <input id="mNama" placeholder="misal: kecap manis" aria-label="Nama bahan">
+          <input id="mNama" placeholder="misal: kecap manis">
         </div>
         <div class="dua">
           <div>
             <label for="mJumlah">Jumlah</label>
-            <input id="mJumlah" placeholder="250" inputmode="decimal" aria-label="Jumlah">
+            <input id="mJumlah" placeholder="250" inputmode="decimal">
           </div>
           <div>
             <label for="mSatuan">Satuan</label>
-            <input id="mSatuan" placeholder="gram" aria-label="Satuan">
+            <input id="mSatuan" placeholder="gram">
           </div>
         </div>
         <button class="tb tb-isi" type="submit"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-plus"/></svg>Tambah ke daftar</button>
@@ -77,11 +77,12 @@
 
   <footer>
     <div class="wrap">
-      <span><strong>LetMeCook</strong> — 44 resep masakan Indonesia.</span>
+      <span><strong>LetMeCook</strong> â€” <span data-jumlah></span> resep masakan Indonesia.</span>
       <span><a href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Beranda</a></span>
     </div>
   </footer>
 
+  <script src="resep-data.js"></script>
   <script src="store.js"></script>
   <script>
     segarkanBadge();
@@ -180,7 +181,7 @@
       daftarPilih.innerHTML = hasil.map((r) =>
         '<li><button type="button" data-id="' + esc(r.id) + '">'
         + '<span class="pilih-nama">' + esc(r.nama) + "</span>"
-        + '<span class="pilih-ket">' + esc(r.daerah) + " · " + fmtWaktu(r.waktuTotal) + " · " + esc(r.level) + "</span>"
+        + '<span class="pilih-ket">' + esc(r.daerah) + " Â· " + fmtWaktu(r.waktuTotal) + " Â· " + esc(r.level) + "</span>"
         + "</button></li>"
       ).join("");
 
@@ -332,8 +333,7 @@
       gambarBelanja();
     });
 
-    document.getElementById("tautanCetak").addEventListener("click", (e) => {
-      e.preventDefault();
+    document.getElementById("tautanCetak").addEventListener("click", () => {
       window.print();
     });
 

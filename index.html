@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LetMeCook — 44 Resep Indonesia Bertakar Gram</title>
-  <meta name="description" content="44 resep Indonesia dengan takaran gram, tanda matang di tiap langkah, timer, dan daftar belanja otomatis.">
+  <title>LetMeCook â€” Resep Masakan Indonesia Bertakar Gram</title>
+  <meta name="description" content="Resep masakan Indonesia dengan takaran gram, tanda matang di tiap langkah, timer, dan daftar belanja otomatis.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -28,7 +28,7 @@
         <a href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
       </nav>
     </div>
-    <div class="chip">
+    <nav class="chip" aria-label="Kategori resep">
       <div class="chip-in">
         <a href="katalog.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Semua</a>
         <a href="katalog.html?kat=sarapan"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-soup"/></svg>Sarapan</a>
@@ -36,7 +36,7 @@
         <a href="katalog.html?kat=malam"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>Malam</a>
         <a href="katalog.html?kat=camilan"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-star"/></svg>Camilan</a>
       </div>
-    </div>
+    </nav>
   </header>
 
   <main class="wrap" id="main">
@@ -44,11 +44,11 @@
     <section class="hero">
       <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Rendang_dish_closeup.jpg/1280px-Rendang_dish_closeup.jpg" alt="Rendang sapi yang kuahnya sudah menyusut dan berminyak" fetchpriority="high" width="1280" height="1011" onerror="imgFallback(this)">
       <div class="teks">
-        <span class="kicker"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>44 resep · takaran gram</span>
+        <span class="kicker"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg><span data-jumlah></span>&nbsp;resep Â· takaran gram</span>
         <h1>Setiap langkah bilang apa yang harus kamu lihat.</h1>
         <p class="lead">Bawang sudah kuning atau belum, santan sudah keluar minyak atau belum. Tiap langkah menyebut tandanya, bukan cuma lama waktunya. Ada timer, mode masak, dan daftar belanja dari rencana makanmu.</p>
         <div class="aksi">
-          <a class="tb tb-isi" href="katalog.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Buka 44 resep</a>
+          <a class="tb tb-isi" href="katalog.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Buka <span data-jumlah></span>&nbsp;resep</a>
           <a class="tb" href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Susun 7 hari makan</a>
         </div>
       </div>
@@ -86,9 +86,9 @@
     <section class="panel" aria-labelledby="judulJam">
       <div class="panel-kepala"><h2 id="judulJam"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>Jam berapa, masak apa</h2></div>
       <div class="isi">
-        <p><strong>Pagi, 06–09.</strong> Bubur, nasi uduk, lontong sayur. Matang sambil kamu mandi.</p>
-        <p><strong>Siang, 11–13.</strong> Rendang, soto, gudeg. Masak buat sekalian malam.</p>
-        <p><strong>Malam, 18–20.</strong> Rawon, betutu, ikan bakar. Berkuah, cocok kalau badan capek.</p>
+        <p><strong>Pagi, 06â€“09.</strong> Bubur, nasi uduk, lontong sayur. Matang sambil kamu mandi.</p>
+        <p><strong>Siang, 11â€“13.</strong> Rendang, soto, gudeg. Masak buat sekalian malam.</p>
+        <p><strong>Malam, 18â€“20.</strong> Rawon, betutu, ikan bakar. Berkuah, cocok kalau badan capek.</p>
         <p class="pesan">Masih bingung? Buka resep hari ini, ikuti saja langkahnya.</p>
       </div>
     </section>
@@ -96,11 +96,12 @@
 
   <footer>
     <div class="wrap">
-      <span><strong>LetMeCook</strong> — 44 resep masakan Indonesia.</span>
+      <span><strong>LetMeCook</strong> â€” <span data-jumlah></span> resep masakan Indonesia.</span>
       <span><a href="tentang.html">Tentang &amp; takaran</a></span>
     </div>
   </footer>
 
+  <script src="resep-data.js"></script>
   <script src="store.js"></script>
   <script>
     segarkanBadge();
@@ -139,7 +140,7 @@
       const jumlah = RESEP.filter((r) => r.kategori === kode).length;
       return '<a class="panel kat" href="katalog.html?kat=' + kode + '">'
         + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#' + ikon + '"/></svg>'
-        + "<span><strong>" + nama + " · " + jumlah + "</strong>"
+        + "<span><strong>" + nama + " Â· " + jumlah + "</strong>"
         + "<small>" + ket + "</small></span></a>";
     }).join("");
 

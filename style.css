@@ -20,6 +20,9 @@
   --merek-muda: oklch(0.96 0.028 155);
   --aksen:      oklch(0.72 0.145 75);
   --aksen-muda: oklch(0.97 0.045 85);
+  /* Versi lebih gelap khusus untuk teks. --aksen terlalu terang di atas
+     putih (2.54:1). Yang ini 4.95:1, lolos WCAG AA. */
+  --aksen-teks: oklch(0.55 0.145 75);
   --bahaya:     oklch(0.48 0.185 27);
 
   /* Jarak. Naik satu tingkat, makin longgar. */
@@ -289,8 +292,6 @@ p:last-child { margin-bottom: 0; }
 .tb-halus { border-color: var(--garis); color: var(--redup); }
 .tb-halus:hover { background: var(--bg); color: var(--tinta); }
 
-.tb-kecil { font-size: 0.85rem; padding: var(--s1) var(--s3); min-height: 36px; }
-
 /* ---------- 5) KARTU -------------------------------------- */
 /* Ringkas dan seragam tingginya: foto 3:2, dua baris teks. */
 .grup {
@@ -319,6 +320,10 @@ p:last-child { margin-bottom: 0; }
 /* height:auto wajib, kalau tidak atribut height di HTML dipakai sebagai
    tinggi pasti dan aspect-ratio diabaikan sehingga kartu jadi sangat tinggi. */
 .kartu-foto img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+
+/* Latar pengganti kalau foto gagal dimuat dua kali. Tanpa ini,
+   imgFallback tahap 2 hanya menyembunyikan gambar dan menyisakan ruang kosong. */
+.img-solid { background: var(--merek-muda); }
 
 .kartu-level {
   position: absolute;
@@ -360,7 +365,7 @@ p:last-child { margin-bottom: 0; }
   align-items: center;
   gap: 2px;
   margin-left: auto;
-  color: var(--aksen);
+  color: var(--aksen-teks);
   font-weight: 700;
 }
 .kartu-bintang .ikon { fill: currentColor; stroke: none; }
@@ -421,6 +426,25 @@ p:last-child { margin-bottom: 0; }
 }
 .panel-kepala a:hover { text-decoration: underline; }
 
+/* Tombol aksi di kepala panel. Tampil seperti tautan, tapi tetap
+   tombol supaya benar saat diakses papan tuntas. */
+.tautan-kepala {
+  margin-left: auto;
+  background: none;
+  border: 0;
+  padding: var(--s1);
+  font: inherit;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: var(--merek);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: var(--s1);
+  border-radius: 6px;
+}
+.tautan-kepala:hover { text-decoration: underline; }
+
 .isi { padding: var(--s4); }
 .isi-grup { padding: var(--s4); }
 
@@ -480,6 +504,7 @@ p:last-child { margin-bottom: 0; }
   font-family: var(--isi);
   font-weight: 700;
   letter-spacing: normal;
+  line-height: 1.3;
 }
 .kosong p { margin: 0; max-width: 42ch; font-size: 0.92rem; }
 .kosong .tb { margin-top: var(--s2); }
@@ -578,7 +603,7 @@ p:last-child { margin-bottom: 0; }
   flex-wrap: wrap;
 }
 .kepala-resep .sub span { display: inline-flex; align-items: center; gap: var(--s1); }
-.kepala-resep .bintang { color: var(--aksen); }
+.kepala-resep .bintang { color: var(--aksen-teks); }
 
 .tag {
   display: inline-flex;
@@ -1262,27 +1287,54 @@ p:last-child { margin-bottom: 0; }
 .saran-item small { color: var(--redup); font-size: 0.78rem; }
 
 /* ---------- 14) GULIR KUSTOM ------------------------------ */
-/* Batang gulir bawaan diganti batang tipis yang warnanya ikut tema. */
+/* Batang gulir bawaan diganti batang yang warnanya ikut tema.
+   Dibuat cukup tebal supaya terlihat, bukan sekadar garis samar. */
 * {
-  scrollbar-width: thin;
-  scrollbar-color: oklch(0.80 0.02 155) transparent;
+  scrollbar-width: auto;
+  scrollbar-color: var(--merek) var(--merek-muda);
 }
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar { width: 12px; height: 12px; }
+::-webkit-scrollbar-track { background: var(--merek-muda); }
 ::-webkit-scrollbar-thumb {
-  background: oklch(0.80 0.02 155);
-  border-radius: var(--pil);
-  border: 3px solid transparent;
-  background-clip: content-box;
-}
-::-webkit-scrollbar-thumb:hover {
   background: var(--merek);
-  background-clip: content-box;
+  border-radius: var(--pil);
+  border: 2px solid var(--merek-muda);
 }
+::-webkit-scrollbar-thumb:hover { background: var(--merek-tua); }
 
 /* Baris chip: geser tanpa batang gulir yang mengganggu. */
 .chip-in { scrollbar-width: none; }
 .chip-in::-webkit-scrollbar { display: none; }
+
+/* Tombol kembali ke atas. Muncul setelah halaman digulir jauh. */
+.ke-atas {
+  position: fixed;
+  right: var(--s4);
+  bottom: var(--s4);
+  z-index: var(--z-lekat);
+  width: 46px;
+  height: 46px;
+  border-radius: var(--pil);
+  border: 1px solid var(--garis);
+  background: var(--kartu);
+  color: var(--merek);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: var(--bayang-naik);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity var(--dur) var(--gerak), transform var(--dur) var(--gerak), visibility var(--dur);
+}
+.ke-atas.tampil {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+.ke-atas:hover { background: var(--merek-muda); }
+.ke-atas .ikon { width: 1.4em; height: 1.4em; }
 
 /* ---------- 15) GERAK ------------------------------------- */
 /* Muncul saat masuk layar. Tanpa JavaScript, isinya tetap terlihat. */
@@ -1320,6 +1372,17 @@ select:focus-visible {
   outline-offset: 2px;
 }
 
+/* Di atas latar gelap, cincin hijau tidak terlihat. Ganti jadi putih. */
+.kepala :focus-visible,
+.chip :focus-visible,
+.masak :focus-visible {
+  outline-color: #fff;
+}
+.masak-maju:focus-visible,
+.masak-timer.jalan:focus-visible {
+  outline-color: var(--tinta);
+}
+
 footer { background: var(--tinta); color: oklch(0.88 0.01 155); margin-top: var(--s8); }
 footer .wrap {
   display: flex;
@@ -1344,13 +1407,42 @@ footer a:hover { text-decoration: underline; }
 }
 
 @media print {
+  /* Halaman cetak khusus resep: hanya isi yang penting.
+     Kepala, navigasi, tombol, video, dan footer disembunyikan. */
   .kepala, .chip, .aksi-resep, .masak, footer, .baris-porsi, .tb-mini,
-  .remah, .baris-info, .saring, .kartu-simpan { display: none !important; }
-  body { background: #fff; font-size: 11pt; color: #000; }
-  .panel, .kartu, .kepala-resep img { box-shadow: none; border-color: #ccc; }
-  .panel, .kotak, .langkah li, .bahan li { break-inside: avoid; }
-  .dua-kolom { grid-template-columns: 1fr; }
+  .remah, .baris-info, .saring, .kartu-simpan, .ke-atas, .saran,
+  .masak-video, .dd, .pilih-daftar { display: none !important; }
+
+  body { background: #fff; font-size: 11pt; color: #000; line-height: 1.5; }
   .wrap { padding: 0; max-width: none; }
+  .wrap > * + * { margin-top: 12pt; }
+
+  .panel, .kartu { box-shadow: none; border: 1px solid #999; border-radius: 0; }
+  .panel-kepala { padding: 8pt 0; border-bottom: 2px solid #000; }
+  .isi, .isi-grup { padding: 8pt 0; }
+
+  /* Foto kepala diperkecil supaya tidak menghabiskan tinta. */
+  .kepala-resep { grid-template-columns: 1fr 2fr; gap: 12pt; }
+  .kepala-resep img { max-height: 180pt; object-fit: cover; }
+  .kepala-resep .teks { padding: 0; gap: 6pt; }
+
+  /* Bahan dua kolom supaya muat satu halaman. */
+  .dua-kolom { grid-template-columns: 1fr 1.4fr; gap: 12pt; }
+  .bahan { padding: 0; }
+  .bahan li { padding: 3pt 0; font-size: 10pt; }
+  .langkah { padding: 0; }
+  .langkah li { padding: 5pt 0; font-size: 10.5pt; }
+  .langkah .nomor { width: 22pt; height: 22pt; font-size: 11pt; background: #000; }
+
+  .kotak { margin: 6pt 0; font-size: 10pt; border: 1px solid #999; }
+  .tag { border: 1px solid #999; background: none; color: #000; }
+  .badge, .badge-matang, .tanda { border: 1px solid #999; background: none; color: #000; }
+  .api i.on { background: #000; }
+
+  /* Tautan ditulis lengkap supaya berguna di kertas. */
+  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; }
+
+  .panel, .kotak, .langkah li, .bahan li { break-inside: avoid; }
 }
 
 /* ---------- 17) RESPONSIF --------------------------------- */

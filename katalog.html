@@ -1,10 +1,10 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="id">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Katalog Resep — LetMeCook</title>
-  <meta name="description" content="Cari 44 resep Indonesia, saring menurut level, waktu, dan pantangan.">
+  <title>Katalog Resep â€” LetMeCook</title>
+  <meta name="description" content="Cari resep masakan Indonesia, saring menurut level, waktu, dan pantangan.">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -27,7 +27,7 @@
         <a href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
       </nav>
     </div>
-    <div class="chip">
+    <nav class="chip" aria-label="Kategori resep">
       <div class="chip-in" id="chipKategori">
         <a href="katalog.html" data-kat=""><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Semua</a>
         <a href="katalog.html?kat=sarapan" data-kat="sarapan"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-soup"/></svg>Sarapan</a>
@@ -35,7 +35,7 @@
         <a href="katalog.html?kat=malam" data-kat="malam"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>Malam</a>
         <a href="katalog.html?kat=camilan" data-kat="camilan"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-star"/></svg>Camilan</a>
       </div>
-    </div>
+    </nav>
   </header>
 
   <main class="wrap" id="main">
@@ -76,7 +76,7 @@
       </form>
 
       <div class="baris-info">
-        <span id="jumlahTeks">Menampilkan 44 dari 44 resep</span>
+        <span id="jumlahTeks">Memuat resepâ€¦</span>
         <button type="button" id="tombolReset" hidden>Hapus saringan</button>
       </div>
 
@@ -93,11 +93,12 @@
 
   <footer>
     <div class="wrap">
-      <span><strong>LetMeCook</strong> — 44 resep masakan Indonesia.</span>
+      <span><strong>LetMeCook</strong> â€” <span data-jumlah></span> resep masakan Indonesia.</span>
       <span><a href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Beranda</a></span>
     </div>
   </footer>
 
+  <script src="resep-data.js"></script>
   <script src="store.js"></script>
   <script>
     segarkanBadge();
