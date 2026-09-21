@@ -1432,7 +1432,7 @@ select:focus-visible {
   outline-color: var(--tinta);
 }
 
-/* ---------- 18) KAKI HALAMAN ------------------------------ */
+/* ---------- 17) KAKI HALAMAN ------------------------------ */
 footer {
   background: var(--tinta);
   color: oklch(0.88 0.01 155);
@@ -1556,7 +1556,7 @@ footer a:hover { text-decoration: underline; }
   .panel, .kotak, .langkah li, .bahan li { break-inside: avoid; }
 }
 
-/* ---------- 17) RESPONSIF --------------------------------- */
+/* ---------- 18) RESPONSIF --------------------------------- */
 /* Tablet dan ke atas: dua kolom, foto lebih tinggi. */
 @media (min-width: 760px) {
   :root { --kepala: 60px; }
