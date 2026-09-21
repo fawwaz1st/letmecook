@@ -138,7 +138,7 @@ CSP (`frame-ancestors`, `sandbox`) tidak tersedia. Itu batasan host.
 ## Pemeriksaan (QA)
 
 ```bash
-node _qa/audit-mojibake.js   # cari karakter rusak (Â, â€, dsb.)
+node _qa/audit-mojibake.js   # cari karakter rusak (huruf aksen nyasar)
 node _qa/audit-video.js      # periksa 67 video YouTube masih bisa diputar
 node _qa/audit-foto.js       # periksa pola URL foto
 node _qa/audit-srcset.js     # periksa varian ukuran foto Wikimedia
