@@ -614,13 +614,16 @@ function siapkanMasak() {
     + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Sebelumnya</button>'
     + '<button class="masak-maju" type="button"><span>Lanjut</span>'
     + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg></button>'
-    + "</div>";
+    + "</div>"
+    // Petunjuk papan tuntas, hanya tampil di layar lebar.
+    + '<p class="masak-papan">Panah kiri dan kanan pindah langkah · Esc menutup · Spasi menghidupkan timer</p>';
 
   document.body.appendChild(masakEl);
   return masakEl;
 }
 
 // Lepas semua pendengar dari sesi sebelumnya.
+// Tiap kunci di pendengar adalah fungsi yang melepas satu pendengar.
 function lepasPendengarMasak() {
   if (!masakState || !masakState.pendengar) return;
   const p = masakState.pendengar;
@@ -629,6 +632,7 @@ function lepasPendengarMasak() {
   p.tutup();
   p.video();
   p.timer();
+  p.geser();
   document.removeEventListener("keydown", p.papan);
   document.removeEventListener("visibilitychange", p.layar);
 }
@@ -892,6 +896,37 @@ function bukaModeMasak(resep) {
     if (document.visibilityState === "visible" && el.classList.contains("buka")) jagaLayar();
   }
 
+  // ---- Geser di layar sentuh ----
+  // Tangan sering berminyak saat masak, jadi pindah langkah cukup
+  // dengan menggeser, bukan menekan tombol kecil.
+  let sentuhX = null;
+  let sentuhY = null;
+
+  function sentuhMulai(e) {
+    sentuhX = e.touches[0].clientX;
+    sentuhY = e.touches[0].clientY;
+  }
+
+  function sentuhSelesai(e) {
+    if (sentuhX === null) return;
+    const dx = e.changedTouches[0].clientX - sentuhX;
+    const dy = e.changedTouches[0].clientY - sentuhY;
+    sentuhX = sentuhY = null;
+
+    // Geser mendatar minimal 60px dan lebih mendatar daripada menurun,
+    // supaya menggulir layar tidak ikut pindah langkah.
+    if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy)) return;
+    // Jangan bajak geseran yang dimulai dari pemutar video atau daftar bab.
+    if (e.target.closest(".masak-video")) return;
+
+    if (dx < 0) maju();
+    else mundur();
+  }
+
+  const tengah = el.querySelector(".masak-tengah");
+  tengah.addEventListener("touchstart", sentuhMulai, { passive: true });
+  tengah.addEventListener("touchend", sentuhSelesai, { passive: true });
+
   // ---- Pasang pendengar, dan simpan untuk dilepas nanti ----
   const p = masakState.pendengar;
   p.mundur = () => tombolMundur.removeEventListener("click", mundur);
@@ -899,6 +934,10 @@ function bukaModeMasak(resep) {
   p.tutup = () => el.querySelector("[data-tutup]").removeEventListener("click", tutup);
   p.video = () => tombolVideo.removeEventListener("click", bukaVideo);
   p.timer = () => tombolTimer.removeEventListener("click", jalankanTimerKlik);
+  p.geser = () => {
+    tengah.removeEventListener("touchstart", sentuhMulai);
+    tengah.removeEventListener("touchend", sentuhSelesai);
+  };
   p.papan = papanTuntas;
   p.layar = saatLayarKembali;
 

@@ -996,6 +996,19 @@ p:last-child { margin-bottom: 0; }
 .masak-maju { background: var(--aksen); border: none; color: var(--tinta); }
 .masak-maju:hover { background: oklch(0.78 0.15 75); }
 
+/* Petunjuk papan tuntas di mode masak. Disembunyikan di layar kecil
+   karena tidak ada papan ketik. */
+.masak-papan {
+  text-align: center;
+  font-size: 0.78rem;
+  color: rgb(255 255 255 / 0.55);
+  margin-top: var(--s3);
+  flex: none;
+}
+@media (max-width: 700px) {
+  .masak-papan { display: none; }
+}
+
 /* Panel video di dalam mode masak. */
 .masak-video {
   max-width: 640px;
@@ -1468,6 +1481,12 @@ footer a:hover { text-decoration: underline; }
   .tag { border: 1px solid #999; background: none; color: #000; }
   .badge, .badge-matang, .tanda { border: 1px solid #999; background: none; color: #000; }
   .api i.on { background: #000; }
+
+  /* Daftar belanja dan rencana makan: tombol tidak berguna di kertas. */
+  .slot button, .belanja button, .isian { display: none !important; }
+  .meal-grup { grid-template-columns: repeat(2, 1fr); gap: 8pt; padding: 8pt 0; }
+  .hari { border: 1px solid #999; break-inside: avoid; }
+  .belanja { padding: 8pt 0; }
 
   /* Tautan ditulis lengkap supaya berguna di kertas. */
   a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; }
