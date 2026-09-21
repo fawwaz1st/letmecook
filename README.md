@@ -2,10 +2,7 @@
 
 Situs resep masakan Indonesia. Statis, tanpa server, tanpa build tools.
 
-**[▶ Buka Preview Lengkap](https://letmecook.example.com)** · 44 resep · 44 video · takaran gram
-
-> Ganti tautan di atas dengan alamat GitHub Pages setelah repo di-push
-> (lihat bagian **Cara memasang** di bawah).
+**[▶ Buka Preview Lengkap](https://fawwaz1st.github.io/letmecook/)** · 44 resep · 44 video · takaran gram
 
 ---
 
@@ -45,12 +42,15 @@ Video ditanam lewat `youtube-nocookie.com`.
 
 ## Cara memasang
 
-Tidak perlu instalasi apa pun. Tiga cara:
-
 **1. Buka langsung.** Unduh repo, klik dua kali `index.html`.
 
-**2. Server lokal.** Beberapa browser membatasi `localStorage` pada
-alamat `file://`. Kalau begitu, jalankan server sederhana:
+> **Catatan soal video.** Kalau halaman dibuka langsung dari berkas
+> (alamatnya diawali `file://`), YouTube menolak memutar videonya karena
+> tidak ada HTTP Referer (Error 153). Tombol play tetap ada, tapi ia
+> membuka video di tab baru dan menjelaskan alasannya. Supaya videonya
+> bisa diputar di dalam halaman, pakai salah satu cara di bawah.
+
+**2. Server lokal.** Paling gampang untuk mencoba dengan video yang jalan:
 
 ```bash
 npx serve .
@@ -60,10 +60,9 @@ python -m http.server 8000
 
 Lalu buka `http://localhost:8000`.
 
-**3. GitHub Pages.** Di halaman repo: **Settings → Pages → Source: Deploy from
-a branch → Branch: `main` / `root`**. Setelah aktif, situsnya bisa dibuka di
-`https://<nama-pengguna>.github.io/letmecook/`. Salin alamat itu ke tombol
-preview di bagian paling atas berkas ini.
+**3. GitHub Pages.** Repo ini sudah punya berkas statis, jadi cukup:
+**Settings → Pages → Source: Deploy from a branch → Branch: `main` / `root`**.
+Situsnya lalu bisa dibuka di <https://fawwaz1st.github.io/letmecook/>.
 
 ## Susunan berkas
 
@@ -100,6 +99,7 @@ dibuka dari perangkat lain.
 - Warna memakai `oklch()`. Seluruh kontras teks lolos WCAG AA
   (terendah 6.5:1, ambangnya 4.5:1).
 - Jarak memakai token `--sp-1` sampai `--sp-10`, bukan angka lepas.
+- Dropdown, batang gulir, dan animasi gulir dibuat sendiri, bukan bawaan browser.
 - Ada `@media (prefers-reduced-motion: reduce)` dan gaya khusus `@media print`.
 - Video: pola facade. Thumbnail dulu, iframe menyusul setelah diklik.
 - Foto dari Wikimedia Commons. Video dari YouTube, hak masing-masing pemilik.
