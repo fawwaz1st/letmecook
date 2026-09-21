@@ -26,7 +26,7 @@ diteruskan, pencarian membuka halaman katalog dengan hasil lengkap.
 
 **Menyaring.** Level, waktu maksimal, dan pantangan (vegetarian, aman anak,
 tidak pedas, video berbab). Jumlah hasil selalu terlihat, dan tombol hapus
-saringan muncul saat ada yang perlu dihapus.
+filter muncul saat ada yang perlu dihapus.
 
 **Menyesuaikan porsi.** Tombol porsi mengubah semua jumlah bahan sekaligus.
 Bahan yang dihitung per butir dibulatkan dan diberi tanda ± karena tidak bisa
@@ -41,6 +41,7 @@ teksnya besar supaya kebaca dari jauh. Isinya:
 - Timer yang muncul otomatis di langkah yang menyebut menit
 - Pemutar video dengan daftar bab
 - Layar dibiarkan menyala selama memasak, kalau browser mendukung
+- Geser kiri/kanan di layar sentuh untuk pindah langkah
 - Papan tuntas: panah kiri/kanan pindah langkah, spasi menyalakan timer,
   Esc menutup
 
@@ -86,29 +87,62 @@ tapi dua hal ini tidak bisa dipakai:
 
 ```
 index.html      Beranda: hero, resep hari ini, kategori, populer, video berbab
-katalog.html    Katalog 67 resep + pencarian dan saringan
+katalog.html    Katalog 67 resep + pencarian dan filter
 resep.html      Detail resep: bahan, langkah, dan tombol mode masak
 mealplan.html   Rencana 7 hari + daftar belanja otomatis
 favorit.html    Resep yang disimpan
 tentang.html    Cara membaca takaran + ke mana data pergi
 404.html        Halaman tidak ditemukan
 resep-data.js   DATA saja: larik RESEP + tabel durasi video
-store.js        LOGIKA saja: semua fungsi bersama
-style.css       Seluruh tampilan. Token warna dan jarak di bagian paling atas
-icons.svg       Sprite ikon garis 24px
+store.js        ALAT BERSAMA: penyimpanan, kartu, dropdown, mode masak, timer
+halaman.js      LOGIKA HALAMAN: satu fungsi per halaman, dipilih lewat
+                <body data-halaman="...">
+style.css       Seluruh tampilan (18 bagian bernomor). Token di bagian 1
+icons.svg       Sprite 32 ikon garis 24px
+manifest.webmanifest  Info aplikasi (nama, ikon, warna)
+ikon-192.png    Ikon aplikasi 192px
+ikon-512.png    Ikon aplikasi 512px
+sitemap.xml     Daftar halaman untuk mesin pencari
+robots.txt      Aturan untuk mesin pencari
+PENJELASAN.MD   Panduan lengkap kode, ditulis untuk pemula
+_qa/            Skrip pemeriksaan (tidak dipakai website)
 ```
 
-Data dipisah dari logika supaya tiap berkas punya satu tugas. `resep-data.js`
-2523 baris isinya data; `store.js` 862 baris isinya kode. Keduanya dimuat
-berurutan sebagai skrip biasa:
+Data, alat, dan logika halaman dipisah supaya tiap berkas punya satu tugas.
+`resep-data.js` 2.525 baris isinya data; `store.js` 1.075 baris isinya alat
+bersama; `halaman.js` 831 baris isinya apa yang dilakukan tiap halaman.
+Ketiganya dimuat berurutan sebagai skrip biasa:
 
 ```html
 <script src="resep-data.js"></script>
 <script src="store.js"></script>
+<script src="halaman.js"></script>
 ```
 
 Skrip biasa dipakai, bukan `type="module"`, supaya situs tetap bisa dibuka
-langsung dari berkas tanpa server.
+langsung dari berkas tanpa server. Router kecil di ujung `halaman.js`
+memanggil fungsi yang cocok dengan `<body data-halaman="...">`.
+
+## Keamanan
+
+Setiap halaman memasang **Content-Security-Policy** lewat meta tag: kode
+hanya boleh dimuat dari domain sendiri, ditambah YouTube, Google Fonts, dan
+Wikimedia. Karena CSP ketat memblokir skrip dan gaya yang ditulis langsung di
+HTML, seluruh skrip halaman berada di `halaman.js` dan seluruh gaya berada di
+`style.css`. Galat gambar ditangani satu pendengar di fase tangkap, bukan
+atribut `onerror` di tiap `<img>`.
+
+Catatan: GitHub Pages tidak bisa mengatur header HTTP, jadi beberapa direktif
+CSP (`frame-ancestors`, `sandbox`) tidak tersedia. Itu batasan host.
+
+## Pemeriksaan (QA)
+
+```bash
+node _qa/audit-mojibake.js   # cari karakter rusak (Â, â€, dsb.)
+node _qa/audit-video.js      # periksa 67 video YouTube masih bisa diputar
+node _qa/audit-foto.js       # periksa pola URL foto
+node _qa/audit-srcset.js     # periksa varian ukuran foto Wikimedia
+```
 
 ## Menambah resep
 
@@ -166,9 +200,20 @@ Aturan kecil yang perlu diikuti:
 - Nama class dan fungsi memakai istilah Indonesia supaya mudah diikuti.
 - Dropdown, kotak saran pencarian, batang gulir, dan tombol kembali ke atas
   dibuat sendiri, bukan bawaan browser.
-- Video memakai YouTube IFrame API, dimuat hanya saat tombol video ditekan.
+- Video memakai YouTube IFrame API di host `youtube-nocookie.com`, dimuat
+  hanya saat tombol video ditekan.
 - Ada `@media (prefers-reduced-motion: reduce)` dan gaya khusus `@media print`.
+- `content-visibility: auto` pada kartu: 67 kartu katalog tidak digambar
+  sekaligus.
+- Data terstruktur JSON-LD: Recipe + VideoObject di halaman resep, ItemList
+  di katalog.
 - Foto dari Wikimedia Commons. Video dari YouTube, hak masing-masing pemilik.
+
+## Dokumen lain
+
+- **[PENJELASAN.MD](PENJELASAN.MD)** — panduan lengkap seluruh kode: alur data,
+  penjelasan tiap fungsi, sistem desain, keamanan, dan tanya-jawab. Ditulis
+  untuk pemula yang ingin memahami atau mempresentasikan situs ini.
 
 ## Kontak
 
