@@ -43,7 +43,8 @@ berbagai daerah, masing-masing dengan:
 - Langkah yang menyebut **tanda matang** yang bisa dilihat mata
 - **Video YouTube** yang bisa diputar sambil memasak
 - **Timer** otomatis yang muncul kalau langkah menyebut waktu
-- **Mode masak**: layar penuh, satu langkah besar sekaligus
+- **Mode masak**: layar penuh, satu langkah besar sekaligus, dengan rincian
+  bahan per langkah dan tata letak dua kolom saat video dibuka
 
 **Kenapa dibuat?** Dua masalah saat mengikuti resep internet: takarannya
 kabur ("garam secukupnya" tidak membantu orang yang belum pernah masak), dan
@@ -95,12 +96,12 @@ letmecook/
 │  ── Logika (dipanggil halaman) ──────────────────────────────
 ├── skrip/
 │   ├── skrip/resep-data.js     (2.599 baris)  DATA: 67 resep + tabel video
-│   ├── store.js          (1.150 baris)  ALAT: 32 fungsi bersama
-│   └── halaman.js        ( 865 baris)  LOGIKA: 5 fungsi + router
+│   ├── store.js        (1.239 baris)  ALAT: 32 fungsi bersama
+│   └── halaman.js      ( 865 baris)  LOGIKA: 5 fungsi + router
 │
 │  ── Tampilan (aset yang diunduh) ────────────────────────────
 ├── aset/
-│   ├── style.css         (1.704 baris)  Seluruh tampilan (18 bagian)
+│   ├── style.css       (1.825 baris)  Seluruh tampilan (18 bagian)
 │   ├── aset/icons.svg                      32 ikon SVG, dipanggil per id
 │   ├── ikon-192.png                   Ikon aplikasi 192px (manifest)
 │   └── ikon-512.png                   Ikon aplikasi 512px (manifest)
@@ -349,7 +350,7 @@ tidak perlu ditulis ulang di tujuh tempat.
 
 ## 5. store.js — Peralatan Bersama
 
-1.150 baris, 32 fungsi. Dibagi jadi beberapa bagian dengan komentar pembatas
+1.239 baris, 32 fungsi. Dibagi jadi beberapa bagian dengan komentar pembatas
 `// ====...====`. Berikut peta lengkapnya:
 
 ### 5.1 Penyimpanan (baris 1–75)
@@ -834,7 +835,7 @@ Jalankan setiap kali menambah resep baru, supaya resep ke-68 ikut terdaftar.
 
 ## 9. style.css — 18 Bagian
 
-1.704 baris, dibagi 18 bagian bernomor. Tekan `Ctrl+F` lalu ketik `12)` untuk
+1.825 baris, dibagi 18 bagian bernomor. Tekan `Ctrl+F` lalu ketik `12)` untuk
 langsung lompat ke bagian dropdown, misalnya.
 
 | No | Baris | Bagian | Isinya |
@@ -1014,7 +1015,101 @@ Ada dua timer, **logikanya satu** (`hitungMundur`, `skrip/store.js:124`):
 Aturan penting: **satu timer saja yang jalan**. Memulai timer baru otomatis
 menghentikan yang lama, supaya tidak ada dua hitungan bersamaan.
 
-### 10.4 Favorit
+### 10.4 Mode masak saat video TIDAK dipakai
+
+Saat video tertutup, ruang layar jadi lega — jadi tiap langkah diperkaya
+dengan dua rincian tambahan. Ini yang membuat mode masak tetap berguna
+walau videonya tidak diputar sama sekali.
+
+**Daftar bahan di langkah ini** (`gambarRinci` di `skrip/store.js`):
+
+Sistem mencocokkan **teks langkah** dengan **daftar bahan**. Contoh, kalau
+langkah menulis "Blender cabai dan bawang merah", maka yang muncul hanya
+bahan yang benar-benar disebut di situ — bukan seluruh daftar bahan resep.
+
+Pencocokannya longgar, supaya tidak ada bahan yang terlewat:
+
+| Langkah menulis | Bahan di data | Cocok? | Kenapa |
+|---|---|---|---|
+| "bawang merah" | "bawang merah" | Ya | Nama persis |
+| "bawang" | "bawang merah" | Ya | Kata pertama bahan muncul |
+| "santan" | "santan kental" | Ya | Kata pertama bahan muncul |
+| "garam" | "gula pasir" | Tidak | Tidak ada kata yang sama |
+
+Aturan "kata pertama bahan" dipakai karena orang menulis langkah secara
+singkat ("masukkan bawang"), sedangkan daftar bahan ditulis lengkap
+("bawang merah 80 gram"). Syarat minimal 4 huruf mencegah kata pendek
+seperti "air" cocok ke mana-mana.
+
+Hasilnya ditampilkan sebagai label kecil yang bisa dibaca sekilas:
+
+```
+BAHAN DI LANGKAH INI
+[100 gram cabai merah giling]  [80 gram bawang merah]  [40 gram bawang putih]
+```
+
+**Daftar posisi langkah**:
+
+Semua langkah ditampilkan berurutan, dengan yang **sedang aktif** ditandai
+garis kuning dan huruf tebal, sedangkan yang **sudah lewat** diredupkan:
+
+```
+POSISI LANGKAH
+ 1  Blender cabai dan bawang merah hingga halus merah pekat.   ← aktif
+ 2  Didihkan santan sambil aduk hingga keluar minyak.          ← redup
+ 3  Masukkan daging dan bumbu.                                 ← redup
+ 4  Aduk tiap 15 menit hingga daging empuk.
+ 5  Angkat saat rendang hitam kecokelatan.
+```
+
+Gunanya: orang tahu **sudah sampai mana** dan **apa yang masih tersisa**,
+tanpa perlu keluar dari layar penuh.
+
+**Kenapa rincian ini disembunyikan saat video dibuka?** Karena layarnya
+berubah jadi dua kolom (video kiri, teks kanan). Di ruang yang separuh,
+daftar bahan dan posisi langkah akan membuat teks langkah sesak. Jadi
+rincian ditampilkan hanya saat ada ruang.
+
+### 10.5 Tata letak dua kolom saat video dibuka
+
+Saat pengunjung menekan tombol Video, tata letaknya berubah jadi dua kolom:
+
+```
+┌──────────────────────────┬──────────────────┐
+│                          │  Langkah 3 dari 5│
+│      VIDEO YOUTUBE       │                  │
+│      (kiri, lebih        │  Masukkan daging │
+│       lebar)             │  dan bumbu...    │
+│                          │                  │
+│                          │  [badge] [api]   │
+│                          │  Matang kalau... │
+│                          │  [Timer 8 menit] │
+├──────────────────────────┴──────────────────┤
+│   [Sebelumnya]              [Lanjut →]      │
+└─────────────────────────────────────────────┘
+```
+
+**Kenapa dua kolom?** Supaya video dan teks bisa dilihat **bersamaan**
+tanpa menggulir naik-turun. Saat memasak, tangan sibuk — menggulir layar
+untuk membandingkan video dengan langkah itu merepotkan.
+
+**Di layar sempit, kolomnya ditumpuk lagi** (video di atas, teks di bawah).
+Dua kolom di layar HP akan membuat keduanya terlalu sempit untuk dibaca.
+
+**Cara kerjanya di kode:** kelas `ada-video` ditambahkan ke elemen `.masak`
+saat panel video dibuka. CSS memakai kelas itu sebagai pemicu:
+
+```css
+.masak.ada-video .masak-tengah {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+}
+```
+
+Di layar di bawah 860px, media query mengembalikannya jadi satu kolom
+tersusun. Jadi satu kelas penanda mengatur seluruh perubahan tata letak.
+
+### 10.6 Favorit
 
 Tombol hati ada di dua tempat: di kartu katalog dan di halaman resep.
 Keduanya memanggil `toggleFav(id)` yang sama.
@@ -1024,7 +1119,7 @@ Satu detail kecil yang penting: di halaman favorit, melepas simpan harus
 `setelahSimpan: gambar` (`skrip/halaman.js:817`) — setelah tombol diklik, halaman
 menggambar ulang daftarnya.
 
-### 10.5 Pencarian
+### 10.7 Pencarian
 
 Dua jenis, sengaja dibedakan:
 
@@ -1038,7 +1133,7 @@ Pencarian di katalog juga tetap membawa filter kategori yang sedang aktif —
 kalau kamu sedang membuka "Makan malam" lalu mencari, hasilnya tetap dibatasi
 ke makan malam. Ini membuat URL bisa dibagikan apa adanya.
 
-### 10.6 Cetak
+### 10.8 Cetak
 
 Tombol Cetak memakai `window.print()` biasa, tapi CSS `@media print`
 (`aset/style.css:1413`) dirapikan khusus supaya hasil cetaknya benar-benar berguna

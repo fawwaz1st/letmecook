@@ -616,6 +616,19 @@ function siapkanMasak() {
     + '<p class="masak-teks"></p>'
     + '<div class="masak-tanda"></div>'
     + '<button class="masak-timer" type="button" hidden></button>'
+    // Rincian tambahan, hanya tampil saat panel video TERTUTUP.
+    // Saat video terbuka, layarnya jadi dua kolom dan ruangnya sempit,
+    // jadi rincian ini disembunyikan supaya teks langkah tetap lega.
+    + '<div class="masak-rinci">'
+    + '<div class="masak-bahan" hidden>'
+    + '<h4><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-list-checks"/></svg>Bahan di langkah ini</h4>'
+    + '<ul></ul>'
+    + "</div>"
+    + '<div class="masak-urut" hidden>'
+    + '<h4><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-book"/></svg>Posisi langkah</h4>'
+    + "<ol></ol>"
+    + "</div>"
+    + "</div>"
     + "</div></div>"
     + '<div class="masak-nav">'
     + '<button class="masak-mundur" type="button">'
@@ -845,10 +858,20 @@ function bukaModeMasak(resep) {
       + '" target="_blank" rel="noopener">Buka di YouTube</a>';
   }
 
+  // ---- Buka dan tutup panel video ----
+  //
+  // Saat video terbuka, tata letaknya berubah jadi dua kolom: video di
+  // kiri, teks langkah di kanan. Ini supaya keduanya bisa dilihat
+  // bersamaan tanpa menggulir naik-turun. Di layar sempit, kolomnya
+  // ditumpuk lagi (video di atas, teks di bawah) lewat CSS.
   function bukaVideo() {
     const terbuka = panelVideo.hidden === false;
     panelVideo.hidden = terbuka;
     tombolVideo.classList.toggle("aktif", !terbuka);
+    // Kelas penanda: dipakai CSS untuk mengubah tata letak jadi dua kolom.
+    el.classList.toggle("ada-video", !terbuka);
+    // Rincian langkah disembunyikan saat dua kolom, supaya teks lega.
+    gambarRinci(masakState.indeks);
     if (!terbuka && !masakState.pemutar && !panelVideo.dataset.dibuat) {
       panelVideo.dataset.dibuat = "1";
       bangunPemutar();
@@ -889,7 +912,73 @@ function bukaModeMasak(resep) {
       tombolTimer.hidden = true;
     }
 
+    gambarRinci(i);
     sorotBabAktif(i);
+  }
+
+  // ---- Rincian langkah: bahan terkait dan posisi langkah ----
+  //
+  // Saat video tertutup, ruangnya lega, jadi tiap langkah diperkaya:
+  // bahan apa saja yang dipakai di langkah ini, dan langkah itu ada di
+  // posisi berapa dari keseluruhan. Ini yang membuat mode masak tetap
+  // berguna walau videonya tidak diputar.
+  //
+  // Saat video terbuka, layarnya jadi dua kolom dan ruangnya sempit,
+  // jadi rincian ini disembunyikan supaya teks langkah tetap lega.
+  function gambarRinci(i) {
+    const rinci = el.querySelector(".masak-rinci");
+    const kotakBahan = el.querySelector(".masak-bahan");
+    const kotakUrut = el.querySelector(".masak-urut");
+    if (!rinci) return;
+
+    // Kalau panel video terbuka, tidak perlu rincian.
+    if (!panelVideo.hidden) {
+      rinci.hidden = true;
+      return;
+    }
+    rinci.hidden = false;
+
+    // --- Bahan di langkah ini ---
+    // Nama bahan dicocokkan dengan teks langkah, termasuk kata dasarnya.
+    // Contoh: langkah menulis "bawang", bahan tertulis "bawang merah" —
+    // keduanya cocok karena salah satu memuat yang lain.
+    const kalimat = " " + (resep.langkah[i] || "").toLowerCase() + " ";
+    const dipakai = resep.bahan.filter((b) => {
+      // Buang keterangan dalam tanda kurung supaya pencocokan lebih longgar.
+      const inti = b.nama.toLowerCase().split("(")[0].trim();
+      if (!inti) return false;
+      // Cocok kalau nama bahan muncul di langkah, atau kata pertama bahan
+      // (mis. "bawang") muncul di langkah.
+      const kataDasar = inti.split(" ")[0];
+      return kalimat.includes(inti) || (kataDasar.length >= 4 && kalimat.includes(kataDasar));
+    });
+
+    const ul = kotakBahan.querySelector("ul");
+    ul.innerHTML = "";
+    if (dipakai.length) {
+      dipakai.forEach((b) => {
+        const li = document.createElement("li");
+        li.textContent = teksBahan(b, 1);
+        ul.appendChild(li);
+      });
+      kotakBahan.hidden = false;
+    } else {
+      kotakBahan.hidden = true;
+    }
+
+    // --- Posisi langkah ---
+    // Menampilkan semua langkah dengan yang sedang aktif ditandai,
+    // supaya orang tahu sudah sampai mana dan apa yang masih tersisa.
+    const ol = kotakUrut.querySelector("ol");
+    ol.innerHTML = "";
+    langkah.forEach((u, n) => {
+      const li = document.createElement("li");
+      li.textContent = u.sisa.length > 60 ? u.sisa.slice(0, 58).trim() + "…" : u.sisa;
+      if (n === i) li.className = "kini";
+      else if (n < i) li.className = "lewat";
+      ol.appendChild(li);
+    });
+    kotakUrut.hidden = false;
   }
 
   // Tandai bab yang sedang berjalan, supaya penonton tahu posisinya.

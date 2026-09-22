@@ -54,7 +54,10 @@ teksnya besar supaya kebaca dari jauh. Isinya:
 - Badge teknik masak dan meter besar api
 - Kotak "Matang kalau" berisi tanda yang bisa kamu periksa sendiri
 - Timer yang muncul otomatis di langkah yang menyebut menit
-- Pemutar video dengan daftar bab
+- **Daftar bahan di langkah ini** — hanya bahan yang dipakai di langkah itu
+- **Daftar posisi langkah** — semua langkah dengan yang aktif ditandai
+- Pemutar video, dan **saat video dibuka tata letaknya jadi dua kolom**:
+  video di kiri, teks langkah di kanan, supaya bisa dilihat bersamaan
 - Layar dibiarkan menyala selama memasak, kalau browser mendukung
 - Geser kiri/kanan di layar sentuh untuk pindah langkah
 - Papan tuntas: panah kiri/kanan pindah langkah, spasi menyalakan timer,

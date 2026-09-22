@@ -1059,6 +1059,110 @@ p:last-child { margin-bottom: 0; }
 .masak-maju { background: var(--aksen); border: none; color: var(--tinta); }
 .masak-maju:hover { background: oklch(0.78 0.15 75); }
 
+/* ---- Tata letak dua kolom saat video terbuka ----
+   Video di kiri, teks langkah di kanan, supaya keduanya bisa dilihat
+   bersamaan tanpa menggulir naik-turun. Di layar sempit, kolomnya
+   ditumpuk lagi lewat media query di bagian responsif. */
+.masak.ada-video .masak-tengah {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+  grid-template-rows: auto minmax(0, 1fr);
+  gap: var(--s4);
+  align-content: start;
+  overflow: hidden;
+}
+.masak.ada-video .masak-video {
+  grid-column: 1;
+  grid-row: 1 / -1;
+  align-self: start;
+  overflow-y: auto;
+  max-height: 100%;
+}
+.masak.ada-video .masak-isi {
+  grid-column: 2;
+  grid-row: 1 / -1;
+  margin: 0;
+  max-width: none;
+  overflow-y: auto;
+  max-height: 100%;
+  padding: var(--s2) 0;
+  /* Teks dikecilkan sedikit karena ruangnya separuh. */
+  font-size: 0.95em;
+}
+.masak.ada-video .masak-teks { font-size: clamp(1.05rem, 1.8vw, 1.35rem); }
+
+/* ---- Rincian langkah (hanya saat video tertutup) ---- */
+.masak-rinci {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s4);
+  margin-top: var(--s2);
+}
+.masak-rinci h4 {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: rgb(255 255 255 / 0.6);
+  margin-bottom: var(--s2);
+}
+.masak-rinci h4 .ikon { width: 1.1em; height: 1.1em; }
+
+/* Daftar bahan di langkah ini. */
+.masak-bahan ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--s2);
+}
+.masak-bahan li {
+  background: rgb(255 255 255 / 0.1);
+  border: 1px solid rgb(255 255 255 / 0.16);
+  border-radius: var(--pil);
+  padding: var(--s1) var(--s3);
+  font-size: 0.88rem;
+}
+
+/* Daftar posisi langkah: yang lewat diredupkan, yang aktif disorot. */
+.masak-urut ol {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.masak-urut li {
+  display: flex;
+  gap: var(--s2);
+  padding: var(--s1) var(--s2);
+  border-radius: var(--r-kecil);
+  font-size: 0.86rem;
+  color: rgb(255 255 255 / 0.5);
+  border-left: 2px solid transparent;
+}
+.masak-urut li.lewat { color: rgb(255 255 255 / 0.32); }
+.masak-urut li.kini {
+  color: #fff;
+  background: rgb(255 255 255 / 0.1);
+  border-left-color: var(--aksen);
+  font-weight: 600;
+}
+.masak-urut li::before {
+  counter-increment: urut;
+  content: counter(urut);
+  flex: none;
+  width: 1.4em;
+  text-align: right;
+  color: rgb(255 255 255 / 0.4);
+}
+.masak-urut ol { counter-reset: urut; }
+
 /* Petunjuk papan tuntas di mode masak. Disembunyikan di layar kecil
    karena tidak ada papan ketik. */
 .masak-papan {
@@ -1070,6 +1174,23 @@ p:last-child { margin-bottom: 0; }
 }
 @media (max-width: 700px) {
   .masak-papan { display: none; }
+}
+
+/* Di layar sempit, dua kolom ditumpuk lagi: video di atas, teks di
+   bawah. Dua kolom di layar HP akan membuat keduanya terlalu sempit. */
+@media (max-width: 860px) {
+  .masak.ada-video .masak-tengah {
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    gap: var(--s3);
+  }
+  .masak.ada-video .masak-video,
+  .masak.ada-video .masak-isi {
+    max-height: none;
+    overflow-y: visible;
+  }
+  .masak.ada-video .masak-teks { font-size: clamp(1.15rem, 3.2vw, 1.5rem); }
 }
 
 /* Panel video di dalam mode masak. */

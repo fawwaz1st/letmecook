@@ -139,36 +139,66 @@ untuk presentasi kelas, wawancara, atau demo ke teman.
 
 ---
 
-## Bagian 5 — Mode Masak (3 menit) — BAGIAN UTAMA
+## Bagian 5 — Mode Masak (4 menit) — BAGIAN UTAMA
 
 **Yang kamu lakukan:** klik tombol **"Mode masak"** (tombol hijau di atas).
 
-**Yang kamu tunjukkan:**
+### 5A. Saat video BELUM dibuka — tunjukkan dulu bagian ini
 
 1. **Layar penuh satu langkah** — "Layar jadi penuh, satu langkah sekali
    tampil, teksnya besar supaya kebaca dari jauh. Ini karena saat memasak,
    tangan kita sibuk dan tidak bisa memegang HP."
 
-2. **Tombol "Video"** — klik. Tunggu video muncul.
-   > "Videonya menyatu dengan langkahnya."
+2. **Badge teknik + meter api** — "Tiap langkah punya label tekniknya, dan
+   tiga batang ini menunjukkan besar apinya."
 
-3. **Klik "Lanjut"** — tunjukkan langkah pindah **dan** video ikut pindah.
-   > "Perhatikan: waktu saya tekan Lanjut, videonya ikut melompat ke bagian
-   > yang cocok dengan langkah baru. Jadi tidak perlu mencari menitnya
-   > sendiri."
+3. **Kotak "Matang kalau"** — "Ini tanda yang bisa diperiksa sendiri, bukan
+   cuma lama waktunya."
 
-4. **Klik "Sebelumnya"** — tunjukkan video mundur juga.
+4. **"Bahan di langkah ini"** — ini bagian yang penting untuk ditunjukkan.
+   > "Perhatikan: di bawah ada daftar **hanya bahan yang dipakai di langkah
+   > ini**. Jadi saya tidak perlu melihat 8 bahan sekaligus — cuma yang
+   > relevan. Bahan yang tidak disebut di langkah ini tidak muncul."
+
+5. **"Posisi langkah"** — tunjukkan daftar bernomor dengan yang aktif
+   ditandai garis kuning.
+   > "Dan ini posisi saya sekarang. Langkah yang sedang aktif ditandai,
+   > yang sudah lewat diredupkan. Jadi saya tahu sudah sampai mana dan
+   > masih berapa langkah lagi — tanpa keluar dari layar penuh."
+
+6. **Timer** — kalau ada tombol timer, klik sekali.
+   > "Kalau langkahnya menyebut menit, tombol timer muncul otomatis."
+
+### 5B. Sekarang buka videonya — tunjukkan tata letak dua kolom
+
+7. **Tombol "Video"** — klik. Tunggu video muncul.
+   > "Sekarang saya buka videonya. Perhatikan: tata letaknya berubah jadi
+   > **dua kolom** — video di kiri, teks langkah di kanan. Jadi saya bisa
+   > melihat video dan membaca langkahnya **bersamaan**, tidak perlu
+   > menggulir naik-turun."
+
+8. **Klik "Lanjut"** — tunjukkan langkah pindah **dan** video ikut pindah.
+   > "Waktu saya tekan Lanjut, videonya ikut melompat ke bagian yang cocok
+   > dengan langkah baru. Jadi tidak perlu mencari menitnya sendiri."
+
+9. **Klik "Sebelumnya"** — tunjukkan video mundur juga.
    > "Ini juga berlaku kalau mundur."
 
-5. **Klik salah satu bab video** (daftar waktu di bawah pemutar)
-   > "Daftar babnya bisa diklik langsung."
+10. **Klik salah satu bab video** (daftar waktu di bawah pemutar)
+    > "Daftar babnya bisa diklik langsung."
 
-6. **Geser layar** (kalau presentasi pakai layar sentuh) atau sebutkan:
-   > "Di HP, cukup geser kiri-kanan untuk pindah langkah. Ini karena tangan
-   > yang berminyak susah menekan tombol kecil."
+11. **Tutup video lagi** — tunjukkan rincian bahan & posisi langkah balik.
+    > "Kalau videonya ditutup, rincian bahan dan posisi langkahnya muncul
+    > lagi. Jadi tampilannya menyesuaikan: waktu video terbuka, ruangnya
+    > dibagi dua; waktu video tertutup, ruangnya lega dan rinciannya
+    > kembali."
 
-7. **Tekan tombol Esc** — mode masak tertutup.
-   > "Bisa ditutup dengan tombol Esc di keyboard."
+12. **Geser layar** (kalau presentasi pakai layar sentuh) atau sebutkan:
+    > "Di HP, cukup geser kiri-kanan untuk pindah langkah. Ini karena tangan
+    > yang berminyak susah menekan tombol kecil."
+
+13. **Tekan tombol Esc** — mode masak tertutup.
+    > "Bisa ditutup dengan tombol Esc di keyboard."
 
 **Kalimat penutup bagian ini:**
 
@@ -256,7 +286,8 @@ Kalau waktu terbatas, lakukan hanya ini:
 | 0:30 | Beranda | Foto + judul "Dituntun di setiap langkah" |
 | 1:00 | Katalog | Ketik "soto", tunjukkan saran + filter |
 | 2:00 | Resep | Tombol porsi (bahan berubah) + penunjuk "Menit 02:52" |
-| 3:00 | **Mode masak** | Video + klik Lanjut (video ikut pindah) |
+| 3:00 | **Mode masak** | Rincian bahan per langkah + posisi langkah |
+| 3:30 | **Mode masak + video** | Buka video → dua kolom; klik Lanjut → video ikut pindah |
 | 4:00 | Rencana makan | Isi slot → daftar belanja tersusun sendiri |
 | 4:30 | Teknis | Tanpa framework, tanpa server, data di browser sendiri |
 
@@ -289,6 +320,21 @@ Kalau waktu terbatas, lakukan hanya ini:
 > "Ada fungsi `daftarBab` yang selalu membuat **satu bab per langkah**.
 > Kalau resepnya punya data bab tulisan tangan, waktunya diambil dari situ.
 > Kalau tidak, durasi video dibagi rata sesuai jumlah langkah."
+
+**"Kenapa tampilannya berubah jadi dua kolom saat video dibuka?"**
+
+> "Supaya video dan teks langkah bisa dilihat **bersamaan** tanpa menggulir
+> naik-turun. Saat memasak, tangan sibuk — menggulir layar untuk
+> membandingkan video dengan langkah itu merepotkan. Di layar HP, kolomnya
+> ditumpuk lagi karena dua kolom akan terlalu sempit."
+
+**"Bagaimana sistem tahu bahan apa yang dipakai di langkah tertentu?"**
+
+> "Sistem mencocokkan **teks langkah** dengan **nama bahan**. Contoh, kalau
+> langkah menulis 'blender cabai dan bawang merah', maka yang muncul hanya
+> bahan yang disebut di situ. Pencocokannya longgar: kata pertama bahan juga
+> dihitung, karena orang menulis langkah secara singkat — 'masukkan bawang' —
+> sedangkan daftar bahan ditulis lengkap, 'bawang merah 80 gram'."
 
 **"Kenapa ratingnya 4,9? Itu dari mana?"**
 
