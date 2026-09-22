@@ -94,7 +94,7 @@ function halamanKatalog() {
     const v = document.getElementById("inputCari").value.trim();
     const bagian = [];
     if (v) bagian.push("q=" + encodeURIComponent(v));
-    if (kat) bagian.push("kat=" + kat);
+    if (kat) bagian.push("kat=" + encodeURIComponent(kat));
     location.href = "katalog.html" + (bagian.length ? "?" + bagian.join("&") : "");
   });
 
@@ -130,8 +130,11 @@ function halamanKatalog() {
   function gambar() {
     const daftar = saring();
 
+    // NAMA_KAT dibaca lewat Object.hasOwn supaya nilai seperti "constructor"
+    // di alamat halaman tidak bocor dari rantai prototipe bawaan JavaScript.
+    const namaKat = Object.hasOwn(NAMA_KAT, kat) ? NAMA_KAT[kat] : NAMA_KAT[""];
     document.getElementById("judul").textContent =
-      (NAMA_KAT[kat] || NAMA_KAT[""]) + (q ? ' untuk "' + q + '"' : "");
+      namaKat + (q ? ' untuk "' + q + '"' : "");
     jumlahTeks.textContent = "Menampilkan " + daftar.length + " dari " + RESEP.length + " resep";
 
     const adaSaringan = Boolean(q || fLevel.value || fWaktu.value || fDiet.value || kat);
@@ -265,14 +268,14 @@ function halamanResep() {
     + '<span class="baris-info kepala-prog" id="progTeks"></span></div>'
     + '<ol class="langkah" id="langkahList"></ol>'
     + '<div class="kotak kuning"><h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-bulb"/></svg>Sering gagal di sini</h3><p>' + esc(r.tips) + "</p></div>"
-    + '<div class="kotak hijau"><h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>Kalau sudah terjadi</h3><p>' + esc(r.selamat) + "</p></div>"
+    + '<div class="kotak hijau"><h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>Kalau gagal</h3><p>' + esc(r.selamat) + "</p></div>"
     + '<div class="kotak biru"><h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>Menyimpan sisa</h3><p>' + esc(r.simpan) + "</p></div>"
     + "</section></div>"
 
     + '<section class="panel jarak-atas" aria-label="Rasa dan gizi">'
     + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-leaf"/></svg>Rasa dan gizi</h2></div>'
     + '<div class="isi">'
-    + "<p><strong>Rasanya dari mana.</strong> " + esc(r.rasa) + "</p>"
+    + "<p><strong>Rasa.</strong> " + esc(r.rasa) + "</p>"
     + '<div class="gizi">'
     + "<div><strong>" + esc(r.kalori) + "</strong><span>per porsi</span></div>"
     + "<div><strong>" + esc(r.protein) + "</strong><span>protein</span></div>"
@@ -507,7 +510,8 @@ function halamanResep() {
       description: r.deskripsi,
       thumbnailUrl: "https://i.ytimg.com/vi/" + r.video + "/hqdefault.jpg",
       embedUrl: "https://www.youtube-nocookie.com/embed/" + r.video,
-      uploadDate: "2026-01-01T00:00:00+07:00",
+      // Tanggal unggah asli dari YouTube, bukan tanggal karangan.
+      uploadDate: (TANGGAL_VIDEO[r.id] || "2024-01-01") + "T00:00:00+07:00",
       duration: "PT" + (DURASI_VIDEO[r.id] || 0) + "S",
     },
   });
@@ -690,9 +694,12 @@ function halamanMealplan() {
   }
 
   // Bahan yang ditulis sendiri, disimpan supaya tidak hilang saat digambar ulang.
+  // Isinya disaring: data rusak di localStorage (misalnya berisi null atau
+  // angka) tidak boleh membuat halaman gagal dimuat selamanya.
   function ambilTambahan() {
     const isi = baca(KEY.gmanual, []);
-    return Array.isArray(isi) ? isi : [];
+    if (!Array.isArray(isi)) return [];
+    return isi.filter((t) => t && typeof t.teks === "string" && t.teks.trim());
   }
 
   // Satu baris bahan.

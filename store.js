@@ -22,7 +22,11 @@ function baca(kunci, cadangan) {
     const nilai = JSON.parse(mentah);
     if (Array.isArray(cadangan)) return Array.isArray(nilai) ? nilai : cadangan;
     if (cadangan && typeof cadangan === "object") {
-      return nilai && typeof nilai === "object" ? nilai : cadangan;
+      // Array tidak boleh dipakai di tempat objek. Tanpa pemeriksaan ini,
+      // data berbentuk larik yang tersimpan di kunci objek akan lolos
+      // dan menimpa data dengan bentuk yang salah.
+      const cocok = nilai && typeof nilai === "object" && !Array.isArray(nilai);
+      return cocok ? nilai : cadangan;
     }
     return nilai ?? cadangan;
   } catch {
@@ -658,6 +662,9 @@ function bukaModeMasak(resep) {
     pemutar: null,
     wakeLock: null,
     pendengar: {},
+    mintaDetik: null,   // target waktu video yang sedang diminta
+    jedaCari: null,     // pengatur percobaan ulang seek
+    sisaCoba: 0,        // batas percobaan ulang, supaya tidak tanpa henti
   };
 
   const $ = (sel) => el.querySelector(sel);
@@ -747,7 +754,19 @@ function bukaModeMasak(resep) {
         host: "https://www.youtube-nocookie.com",
         playerVars: { origin: location.origin, playsinline: 1, rel: 0 },
         events: {
-          onReady: (e) => e.target.playVideo(),
+          onReady: (e) => {
+            // Mulai dari bagian langkah yang sedang dibuka, bukan dari
+            // detik nol. Kalau tidak, membuka video di langkah 4 tetap
+            // memutar bagian awal.
+            e.target.playVideo();
+            const bab = masakState.bab[masakState.indeks];
+            if (bab) lompatKe(bab[0]);
+          },
+          onStateChange: () => {
+            // Saat pemutar baru siap (selesai iklan atau buffering),
+            // permintaan pindah waktu yang tertunda langsung diterapkan.
+            cekMintaTertunda();
+          },
           onError: () => tampilkanTautanVideo("Video ini tidak bisa diputar di sini."),
         },
       });
@@ -779,11 +798,45 @@ function bukaModeMasak(resep) {
     sorotBabAktif(masakState.indeks);
   }
 
+  // Pindah video ke detik tertentu. Kalau ada iklan atau buffering,
+  // perintah seek diabaikan YouTube — jadi dicoba ulang beberapa kali,
+  // tidak selamanya, supaya tidak ada percobaan tanpa henti.
   function lompatKe(detik) {
-    if (masakState.pemutar && masakState.pemutar.seekTo) {
-      masakState.pemutar.seekTo(detik, true);
-      masakState.pemutar.playVideo();
-    }
+    if (!masakState.pemutar || !masakState.pemutar.seekTo) return;
+    masakState.mintaDetik = detik;
+    masakState.sisaCoba = 8;
+    terapkanMinta();
+  }
+
+  function terapkanMinta() {
+    const p = masakState.pemutar;
+    if (!p || !p.seekTo || masakState.mintaDetik === null) return;
+
+    p.seekTo(masakState.mintaDetik, true);
+    p.playVideo();
+
+    clearTimeout(masakState.jedaCari);
+    masakState.jedaCari = setTimeout(() => {
+      if (masakState.mintaDetik === null || !p.getCurrentTime || masakState.sisaCoba <= 0) {
+        masakState.mintaDetik = null;
+        return;
+      }
+      masakState.sisaCoba--;
+      // Bandingkan dengan permintaan TERKINI, bukan target lama. Kalau
+      // memakai target lama, timer sisa dari klik sebelumnya bisa
+      // membatalkan permintaan yang baru.
+      if (Math.abs(p.getCurrentTime() - masakState.mintaDetik) > 3) terapkanMinta();
+      else masakState.mintaDetik = null;
+    }, 1200);
+  }
+
+  // Dipanggil saat keadaan pemutar berubah (mis. iklan selesai). Kalau
+  // masih ada permintaan pindah waktu yang belum tercapai, coba lagi.
+  function cekMintaTertunda() {
+    if (masakState.mintaDetik === null) return;
+    const p = masakState.pemutar;
+    if (!p || !p.getCurrentTime) return;
+    if (Math.abs(p.getCurrentTime() - masakState.mintaDetik) > 3) terapkanMinta();
   }
 
   function tampilkanTautanVideo(pesan) {
@@ -849,10 +902,21 @@ function bukaModeMasak(resep) {
   }
 
   // ---- Pindah langkah ----
+  // Kalau panel video sedang terbuka, video ikut pindah ke bagian yang
+  // cocok dengan langkah baru — maju maupun mundur. Dulu hanya maju yang
+  // memindahkan video, jadi menekan Sebelumnya membiarkan videonya jalan
+  // terus ke depan.
+  function pindahVideo() {
+    if (panelVideo.hidden) return;
+    const bab = masakState.bab[masakState.indeks];
+    if (bab) lompatKe(bab[0]);
+  }
+
   function mundur() {
     if (masakState.indeks > 0) {
       masakState.indeks--;
       gambar();
+      pindahVideo();
     }
   }
 
@@ -860,11 +924,7 @@ function bukaModeMasak(resep) {
     if (masakState.indeks < langkah.length - 1) {
       masakState.indeks++;
       gambar();
-      // Kalau video sedang terbuka, ikut lompat ke bagian langkah ini.
-      if (!panelVideo.hidden) {
-        const bab = masakState.bab[masakState.indeks];
-        if (bab) lompatKe(bab[0]);
-      }
+      pindahVideo();
     } else {
       tutup();
     }
@@ -876,6 +936,8 @@ function bukaModeMasak(resep) {
     document.body.classList.remove("masak-jalan");
     hentikanTimer();
     lepasLayar();
+    clearTimeout(masakState.jedaCari);
+    masakState.mintaDetik = null;
     // Pemutar dibuang supaya sesi berikutnya membangun ulang dari bersih.
     if (masakState.pemutar && masakState.pemutar.destroy) {
       try { masakState.pemutar.destroy(); } catch { /* sudah hilang */ }
@@ -974,22 +1036,28 @@ function bukaModeMasak(resep) {
 // dari langkah itu sendiri. Jadi SEMUA resep punya bab yang bisa diklik.
 // ============================================================
 function daftarBab(resep, langkahTerurai) {
-  if (Array.isArray(resep.bab) && resep.bab.length >= 2) return resep.bab;
-
-  const durasi = DURASI_VIDEO[resep.id];
-  if (!durasi || durasi < 30) return [];
-
   const langkah = langkahTerurai || resep.langkah.map(parseLangkah);
   const jumlah = langkah.length;
-  // Tanpa langkah, tidak ada yang bisa dibagi. Cegah pembagian nol.
   if (!jumlah) return [];
 
-  // Sisakan 8 detik di akhir untuk penutup, lalu bagi rata.
-  const bisaDipakai = Math.max(10, durasi - 8);
-  const jarak = bisaDipakai / jumlah;
+  // Bab manual dipakai sebagai titik acuan waktu, bukan daftar terpisah.
+  const manual = Array.isArray(resep.bab) && resep.bab.length >= 2 ? resep.bab : null;
+  const durasi = DURASI_VIDEO[resep.id] || 0;
+  if (!manual && durasi < 30) return [];
 
+  // Sisakan 8 detik di akhir untuk penutup.
+  const bisaDipakai = Math.max(10, durasi - 8);
+
+  // Satu bab per langkah, supaya bab ke-i SELALU bagian video untuk
+  // langkah ke-i. Dulu bab manual dipakai apa adanya, padahal jumlahnya
+  // beda dengan jumlah langkah — akibatnya video melompat ke bagian yang
+  // tidak nyambung dengan langkah yang sedang dibuka.
   return langkah.map((urai, i) => {
-    const detik = Math.round(i * jarak);
+    const posisi = jumlah === 1 ? 0 : i / (jumlah - 1);
+    const detik = manual
+      ? manual[Math.round(posisi * (manual.length - 1))][0]
+      : Math.round(posisi * bisaDipakai);
+
     // Label dari awal kalimat langkah, dipendekkan supaya muat di tombol.
     let label = urai.sisa.split(/[.,]/)[0].trim();
     if (label.length > 34) label = label.slice(0, 32).trim() + "…";
@@ -1063,9 +1131,15 @@ function segarkanAngka() {
 // Dipanggil sekali di setiap halaman, setelah isi siap.
 // ============================================================
 function siapkanHalaman() {
-  // Tandai elemen yang ikut animasi gulir.
-  document.querySelectorAll(".wrap > section, .kartu, .hari, .sorot")
-    .forEach((el) => el.classList.add("muncul"));
+  // Tandai elemen yang ikut animasi gulir. Hanya elemen yang masih di
+  // bawah layar saat halaman dibuka; elemen yang sudah terlihat dibiarkan
+  // apa adanya. Kalau ikut dianimasikan, browser mencatatnya sebagai
+  // pergeseran tata letak (CLS naik).
+  const tinggiLayar = window.innerHeight;
+  document.querySelectorAll(".wrap > section:not(.hero), .kartu, .hari, .sorot")
+    .forEach((el) => {
+      if (el.getBoundingClientRect().top > tinggiLayar) el.classList.add("muncul");
+    });
 
   segarkanAngka();
   pasangKeAtas();

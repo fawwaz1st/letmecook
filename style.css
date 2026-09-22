@@ -309,10 +309,10 @@ p:last-child { margin-bottom: 0; }
   transition: border-color var(--dur) var(--gerak), box-shadow var(--dur) var(--gerak), transform var(--dur) var(--gerak);
   /* Kartu di luar layar tidak digambar dulu. Katalog berisi 67 kartu,
      jadi ini menghemat kerja render tanpa perlu virtualisasi JS.
-     contain-intrinsic-size menjaga tinggi cadangan supaya gulir tidak
-     meloncat saat kartu baru masuk layar. */
+     Angka 215px harus SAMA dengan tinggi kartu sungguhan. Kalau tidak
+     sama, tata letak bergeser saat kartu mulai digambar (CLS naik). */
   content-visibility: auto;
-  contain-intrinsic-size: auto 320px;
+  contain-intrinsic-size: auto 215px;
 }
 .kartu:hover {
   border-color: oklch(0.80 0.03 155);
@@ -453,6 +453,14 @@ p:last-child { margin-bottom: 0; }
 
 .isi { padding: var(--s4); }
 .isi-grup { padding: var(--s4); }
+
+/* Wadah yang isinya baru dibuat JavaScript (kartu, langkah resep).
+   Tinggi minimum dipesan lebih dulu supaya saat isinya muncul, bagian
+   di bawahnya tidak meloncat turun. Ini menekan CLS halaman katalog,
+   halaman resep, dan rencana makan. */
+.isi-grup:has(> .grup),
+.isi-grup:has(> .kosong) { min-height: 60vh; }
+#area:empty { min-height: 85vh; }
 
 /* Baris info di bawah kepala panel. */
 .baris-info {
@@ -1109,6 +1117,9 @@ p:last-child { margin-bottom: 0; }
 
 /* ---------- 10) RENCANA MAKAN ----------------------------- */
 .meal-grup { display: grid; gap: var(--s3); padding: var(--s4); }
+/* Tinggi minimum dipesan supaya saat JavaScript mengisi 7 kartu hari,
+   isi di bawahnya tidak meloncat turun. 7 kartu x ±80px + celah. */
+.meal-grup:empty { min-height: 640px; }
 .hari { border: 1px solid var(--garis); border-radius: var(--r-kecil); overflow: hidden; }
 .hari h3 {
   background: var(--bg);
@@ -1386,18 +1397,17 @@ p:last-child { margin-bottom: 0; }
 .ke-atas .ikon { width: 1.4em; height: 1.4em; }
 
 /* ---------- 15) GERAK ------------------------------------- */
-/* Muncul saat masuk layar. Tanpa JavaScript, isinya tetap terlihat. */
+/* Muncul saat masuk layar. Tanpa JavaScript, isinya tetap terlihat.
+   Hanya opacity yang dianimasikan, bukan transform: menggeser elemen
+   ikut tercatat sebagai pergeseran tata letak (CLS) oleh browser. */
 .muncul {
   opacity: 0;
-  transform: translateY(10px);
-  transition:
-    opacity 0.45s var(--gerak) var(--jeda, 0ms),
-    transform 0.45s var(--gerak) var(--jeda, 0ms);
+  transition: opacity 0.4s var(--gerak) var(--jeda, 0ms);
 }
-.muncul.tampil { opacity: 1; transform: none; }
+.muncul.tampil { opacity: 1; }
 
 @media (scripting: none) {
-  .muncul { opacity: 1; transform: none; }
+  .muncul { opacity: 1; }
 }
 
 /* ---------- 16) AKSESIBILITAS & CETAK --------------------- */
