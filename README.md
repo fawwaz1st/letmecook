@@ -6,6 +6,21 @@ Situs resep masakan Indonesia. Statis, tanpa server, tanpa build tools.
 
 ---
 
+## Kenapa dibuat
+
+Dua masalah saat mengikuti resep internet: takarannya kabur ("garam
+secukupnya" tidak membantu orang yang belum pernah masak), dan langkahnya
+tidak memberi tanda ("masak sampai matang" — matang yang seperti apa?).
+
+LetMeCook menjawab keduanya: semua bahan punya angka, dan tiap langkah
+menyebut tanda yang bisa diperiksa sendiri. Videonya juga menyatu dengan
+langkah — tekan Lanjut, videonya ikut pindah ke bagian yang cocok.
+
+Untuk apa: masak dengan angka pasti (porsi bisa disesuaikan), tahu kapan
+sesuatu sudah matang (tanda + timer otomatis), dan merencanakan makan
+seminggu (21 slot + daftar belanja yang tersusun sendiri). Tanpa akun,
+tanpa iklan, tanpa pelacak.
+
 ## Isinya apa
 
 67 resep dari seluruh Indonesia. Setiap resep punya bahan bertakar gram,

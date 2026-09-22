@@ -45,6 +45,20 @@ berbagai daerah, masing-masing dengan:
 - **Timer** otomatis yang muncul kalau langkah menyebut waktu
 - **Mode masak**: layar penuh, satu langkah besar sekaligus
 
+**Kenapa dibuat?** Dua masalah saat mengikuti resep internet: takarannya
+kabur ("garam secukupnya" tidak membantu orang yang belum pernah masak), dan
+langkahnya tidak memberi tanda ("masak sampai matang" — matang yang seperti
+apa?). Situs ini menjawab keduanya: semua bahan punya angka, dan tiap langkah
+menyebut tanda yang bisa diperiksa sendiri.
+
+**Untuk apa?** Tiga hal: masak dengan angka pasti (porsi bisa disesuaikan),
+tahu kapan sesuatu sudah matang (tanda + timer otomatis), dan merencanakan
+makan seminggu (21 slot makan + daftar belanja yang tersusun sendiri).
+
+**Siapa yang cocok memakainya?** Orang yang baru mulai masak, perantau yang
+ingin masak masakan rumah, dan siapa pun yang lebih suka mengikuti angka
+daripada menebak.
+
 Website ini **tidak punya server dan tidak punya database**. Semua data resep
 tertanam di dalam berkas JavaScript, dan semua data pengguna (favorit, rencana
 makan, centang belanja) disimpan di **localStorage** — penyimpanan kecil di
@@ -1025,6 +1039,61 @@ langkah yang bagus — tapi harus diuji di semua browser dulu.
 ---
 
 ## 14. Pertanyaan yang Sering Muncul
+
+**T: Kenapa website ini dibuat?**
+
+J: Karena dua masalah yang sering ditemui saat mengikuti resep internet.
+
+Pertama, takarannya kabur. "Garam secukupnya", "santan secukupnya" tidak
+membantu orang yang belum pernah masak — berapa itu secukupnya? Di sini
+semua bahan punya angka: gram, mililiter, sendok, butir.
+
+Kedua, langkahnya tidak memberi tanda. "Masak sampai matang" — matang yang
+seperti apa? Di sini tiap langkah menyebut tanda yang bisa dilihat: kuah
+menyusut, minyak keluar, warna kuning tua. Jadi kamu tidak perlu menebak.
+
+**T: Untuk apa website ini? Apa saja yang bisa dilakukan?**
+
+J: Tiga hal utama:
+
+1. **Masak dengan angka pasti.** Bahan bertakar gram, dan porsi bisa
+   disesuaikan — jumlah semua bahan ikut berubah sendiri.
+2. **Tahu kapan sesuatu sudah matang.** Tiap langkah menyebut tanda yang
+   bisa diperiksa mata, bukan cuma lama waktunya. Ada juga timer otomatis
+   untuk langkah yang menyebut menit.
+3. **Merencanakan makan seminggu.** Isi 21 slot (7 hari × 3 waktu makan),
+   lalu daftar belanja tersusun sendiri dari bahan resep yang kamu pilih.
+
+**T: Siapa yang cocok memakai website ini?**
+
+J: Orang yang baru mulai masak, perantau yang ingin masak masakan rumah, dan
+siapa pun yang lebih suka mengikuti angka daripada menebak. Isinya 67
+masakan Indonesia dari berbagai daerah — rendang, soto, gudeg, sampai juhu
+singkah umbut rotan dari Kalimantan.
+
+**T: Apa bedanya dengan situs resep lain?**
+
+J: Empat hal:
+
+- **Takaran gram, bukan "secukupnya"** — di semua 67 resep.
+- **Tanda matang di tiap langkah** — bukan cuma di akhir.
+- **Video menyatu dengan langkah** — tekan Lanjut, videonya ikut pindah ke
+  bagian yang cocok. Tidak perlu mencari menitnya sendiri.
+- **Tanpa akun, tanpa iklan, tanpa pelacak** — favorit, rencana makan, dan
+  centangmu tersimpan di browser sendiri dan tidak dikirim ke mana pun.
+
+**T: Apakah website ini gratis? Perlu akun?**
+
+J: Gratis, dan tidak perlu akun. Tidak ada iklan, tidak ada langganan,
+tidak ada pendaftaran. Buka langsung pakai.
+
+**T: Kenapa tidak ada kolom komentar, akun, atau fitur sosial?**
+
+J: Karena website ini sengaja tidak punya server. Kolom komentar dan akun
+butuh server untuk menyimpan data, plus orang untuk memoderasi — keduanya
+menambah biaya dan menghilangkan alasan utama situs ini dibuat: privasi
+pengunjung. Semua datamu disimpan di browser sendiri, dan itu tidak mungkin
+kalau ada fitur sosial.
 
 **T: Kenapa ada tiga berkas JavaScript? Kenapa tidak satu saja?**
 
