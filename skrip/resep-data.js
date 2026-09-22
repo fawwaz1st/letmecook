@@ -730,7 +730,7 @@ var RESEP = [
     id: "nasi-liwet-solo", nama: "Nasi Liwet Solo", daerah: "Jawa Tengah", kategori: "malam",
     waktuTotal: 60, waktuAktif: 30, level: "mudah", porsi: 4, rating: 4.8, dimasak: 987,
     // Foto: ESCapade (CC BY-SA 3.0) — https://commons.wikimedia.org/wiki/File:Nasi_Liwet_A.JPG
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Nasi_Liwet_A.JPG/500px-Nasi_Liwet_A.JPG",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Nasi_Liwet_Solo.jpg/500px-Nasi_Liwet_Solo.jpg",
     video: "TVzSvLZw-M4",
     deskripsi: "Beras 400 gram diaron dengan 600 ml santan sampai menyusut. Setelah itu dikukus 20 menit hingga empuk dan pulen, lalu disajikan dengan ayam goreng dan lodeh labu.",
     rasa: "Santan diaron bersama beras, jadi gurihnya merata sampai butir bawah. Bawang merah iris yang ditumis sampai kuning bikin wangi manis.", pedas: 0, veg: false, anak: true,
@@ -1213,7 +1213,7 @@ var RESEP = [
     id: "ikan-dabu-dabu", nama: "Ikan Bakar Dabu-Dabu", daerah: "Sulawesi Utara", kategori: "siang",
     waktuTotal: 60, waktuAktif: 35, level: "sedang", porsi: 4, rating: 4.8, dimasak: 845,
     // Foto: Midori (CC BY-SA 3.0) — https://commons.wikimedia.org/wiki/File:Dabu-dabu_manta.JPG
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/ce/Ikan_Kakap_Merah_Bakar.jpg/500px-Ikan_Kakap_Merah_Bakar.jpg",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Ikan_Tude_Bakar.JPG/500px-Ikan_Tude_Bakar.JPG",
     video: "lEyhDqtC_Uc",
     deskripsi: "Ikan cakalang dibakar 20 menit tiap sisi hingga kecokelatan, lalu disiram sambal tomat yang baru diberi minyak kelapa panas.",
     rasa: "Air jeruk limau dicampur ke irisan tomat, dan terasi bakar meninggalkan asin yang tajam di ujung lidah.", pedas: 3, veg: false, anak: false,
@@ -1399,7 +1399,7 @@ var RESEP = [
     id: "kohu-kohu", nama: "Kohu-Kohu", daerah: "Maluku", kategori: "siang",
     waktuTotal: 40, waktuAktif: 30, level: "mudah", porsi: 4, rating: 4.6, dimasak: 389,
     // Foto: Ans~jawiki at Japanese Wikipedia (CC BY-SA 3.0) — https://commons.wikimedia.org/wiki/File:Kohu-jo.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Bali_cuisine.jpg/500px-Bali_cuisine.jpg",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Urap.JPG/500px-Urap.JPG",
     video: "uxlFrgYjAg4",
     deskripsi: "Tongkol dikukus 15 menit lalu disuwir, dan kelapa parutnya dikukus lagi bersama bawang merah sampai harum.",
     rasa: "Perasan jeruk nipis dicampur ke sayuran segar. Kelapa kukus bikin gurih lembut.", pedas: 2, veg: false, anak: false,
@@ -2081,7 +2081,7 @@ var RESEP = [
     id: "laksa-bogor", nama: "Laksa Bogor", daerah: "Jawa Barat", kategori: "siang",
     waktuTotal: 80, waktuAktif: 45, level: "sedang", porsi: 6, rating: 4.8, dimasak: 255,
     // Foto: Gunawan Kartapranata (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Laksa_Bogor_2.JPG
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Laksa_Bogor_1.JPG/500px-Laksa_Bogor_1.JPG",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/51/Laksa_Betawi_1.jpg/500px-Laksa_Betawi_1.jpg",
     video: "pMr4ZbYL4gE",
     deskripsi: "Santan 1500 ml dan kaldu ayam 400 ml dididihkan bersama bumbu kunyit, lalu dikentalkan dengan 100 gram kelapa sangrai yang ditumbuk. Kuahnya disiram ke bihun 200 gram, oncom, dan kemangi.",
     rasa: "Kelapa sangrai 100 gram yang ditumbuk halus bikin kuahnya kental tanpa perlu banyak santan. Oncom 150 gram dan kemangi bikin rasa fermentasi khas, wangi segar di ujung suapan.", pedas: 1, veg: false, anak: true,
@@ -2276,7 +2276,7 @@ var RESEP = [
     id: "sei-sapi", nama: "Se'i Sapi", daerah: "Nusa Tenggara Timur", kategori: "malam",
     waktuTotal: 230, waktuAktif: 45, level: "sulit", porsi: 6, rating: 4.8, dimasak: 319,
     // Foto: Kembangraps (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Sei_sapi_Pj_DSC_2925.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Sei_sapi_Pj_DSC_2925.jpg/500px-Sei_sapi_Pj_DSC_2925.jpg",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/Sei_sapi_Kupang.jpg/500px-Sei_sapi_Kupang.jpg",
     video: "IGmMVN2ahZM",
     deskripsi: "Se'i itu daging sapi asap khas Timor yang diiris tipis memanjang setelah matang. Daging 1000 gram dilumuri garam dan gula 20 gram, didiamkan 60 menit, lalu diasapi 90 menit sampai permukaannya cokelat gelap.",
     rasa: "Garam 2 sdt dan gula merah 20 gram dipakai buat curing, jadi rasanya asin manis sampai ke dalam daging. Asap dari serbuk kayu 100 gram dan daun jeruk 5 lembar nempel di permukaan. Lada hitam 1 sdt bikin rasa hangat di ujung suapan.", pedas: 0, veg: false, anak: true,

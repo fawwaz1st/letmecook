@@ -3,7 +3,7 @@
    Susunan: 1 token · 2 dasar · 3 kepala · 4 tombol · 5 kartu
             6 panel · 7 beranda · 8 resep · 9 mode masak
             10 rencana makan · 11 isian · 12 dropdown · 13 saran
-            14 gulir · 15 gerak · 16 cetak · 17 responsif
+            14 gulir · 15 gerak · 16 aksesibilitas · 17 responsif
    Warna dan jarak selalu dari token di bagian 1.
    ============================================================ */
 
@@ -1605,7 +1605,7 @@ p:last-child { margin-bottom: 0; }
   .muncul { opacity: 1; }
 }
 
-/* ---------- 16) AKSESIBILITAS & CETAK --------------------- */
+/* ---------- 16) AKSESIBILITAS --------------------- */
 .skip { position: absolute; left: -999px; }
 .skip:focus {
   left: var(--s2);
@@ -1716,50 +1716,7 @@ footer a:hover { text-decoration: underline; }
   }
 }
 
-@media print {
-  /* Halaman cetak khusus resep: hanya isi yang penting.
-     Kepala, navigasi, tombol, video, dan footer disembunyikan. */
-  .kepala, .chip, .aksi-resep, .masak, footer, .baris-porsi, .tb-mini,
-  .remah, .baris-info, .saring, .kartu-simpan, .ke-atas, .saran,
-  .masak-video, .dd, .pilih-daftar { display: none !important; }
 
-  body { background: #fff; font-size: 11pt; color: #000; line-height: 1.5; }
-  .wrap { padding: 0; max-width: none; }
-  .wrap > * + * { margin-top: 12pt; }
-
-  .panel, .kartu { box-shadow: none; border: 1px solid #999; border-radius: 0; }
-  .panel-kepala { padding: 8pt 0; border-bottom: 2px solid #000; }
-  .isi, .isi-grup { padding: 8pt 0; }
-
-  /* Foto kepala diperkecil supaya tidak menghabiskan tinta. */
-  .kepala-resep { grid-template-columns: 1fr 2fr; gap: 12pt; }
-  .kepala-resep img { max-height: 180pt; object-fit: cover; }
-  .kepala-resep .teks { padding: 0; gap: 6pt; }
-
-  /* Bahan dua kolom supaya muat satu halaman. */
-  .dua-kolom { grid-template-columns: 1fr 1.4fr; gap: 12pt; }
-  .bahan { padding: 0; }
-  .bahan li { padding: 3pt 0; font-size: 10pt; }
-  .langkah { padding: 0; }
-  .langkah li { padding: 5pt 0; font-size: 10.5pt; }
-  .langkah .nomor { width: 22pt; height: 22pt; font-size: 11pt; background: #000; }
-
-  .kotak { margin: 6pt 0; font-size: 10pt; border: 1px solid #999; }
-  .tag { border: 1px solid #999; background: none; color: #000; }
-  .badge, .badge-matang, .tanda { border: 1px solid #999; background: none; color: #000; }
-  .api i.on { background: #000; }
-
-  /* Daftar belanja dan rencana makan: tombol tidak berguna di kertas. */
-  .slot button, .belanja button, .isian { display: none !important; }
-  .meal-grup { grid-template-columns: repeat(2, 1fr); gap: 8pt; padding: 8pt 0; }
-  .hari { border: 1px solid #999; break-inside: avoid; }
-  .belanja { padding: 8pt 0; }
-
-  /* Tautan ditulis lengkap supaya berguna di kertas. */
-  a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; }
-
-  .panel, .kotak, .langkah li, .bahan li { break-inside: avoid; }
-}
 
 /* ---------- 18) RESPONSIF --------------------------------- */
 /* Tablet dan ke atas: dua kolom, foto lebih tinggi. */

@@ -246,7 +246,6 @@ function halamanResep() {
     + '<div class="aksi-resep">'
     + '<button class="tb tb-isi" id="bMasak" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-play"/></svg>Mode masak</button>'
     + '<button class="tb" id="bFav" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-heart"/></svg><span>' + (sudahFav(r.id) ? "Tersimpan" : "Simpan") + "</span></button>"
-    + '<button class="tb tb-halus" id="bPrint" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-printer"/></svg>Cetak</button>'
     + '<button class="tb tb-halus" id="bShare" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-share"/></svg>Salin tautan</button>'
     + "</div></div></div></article>"
 
@@ -291,13 +290,11 @@ function halamanResep() {
     + '<div class="isi"><p>' + esc(r.alat.join(" · ")) + "</p></div>"
     + "</section>";
 
-  // ---- Simpan, cetak, salin tautan ----
+  // ---- Simpan dan salin tautan ----
   document.getElementById("bFav").addEventListener("click", (e) => {
     toggleFav(r.id);
     e.currentTarget.querySelector("span").textContent = sudahFav(r.id) ? "Tersimpan" : "Simpan";
   });
-
-  document.getElementById("bPrint").addEventListener("click", () => window.print());
 
   document.getElementById("bShare").addEventListener("click", async (e) => {
     const tombol = e.currentTarget;
@@ -813,8 +810,6 @@ function halamanMealplan() {
     e.target.reset();
     gambarBelanja();
   });
-
-  document.getElementById("tautanCetak").addEventListener("click", () => window.print());
 
   gambarRencana();
   gambarBelanja();
