@@ -1,0 +1,13 @@
+# Konfigurasi GitHub Pages (mode "Deploy from a branch").
+#
+# Berkas di bawah ini memberi tahu GitHub Pages berkas mana yang TIDAK
+# ikut diterbitkan ke situs publik. Ini penting karena mode cabang
+# menyalin seluruh isi repo, termasuk berkas pengembang.
+#
+# Catatan: folder berawalan garis bawah (_qa) dan berkas berawalan titik
+# (.gitignore) sudah otomatis dikecualikan. Yang perlu ditambahkan
+# manual hanya berkas dokumentasi.
+
+exclude:
+  - README.md
+  - PENJELASAN.MD
