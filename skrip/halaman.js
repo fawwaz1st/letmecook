@@ -218,7 +218,7 @@ function halamanResep() {
   const label = ['<span class="tag">' + esc(r.level) + "</span>",
     '<span class="tag">' + esc(r.kategori) + "</span>"];
   if (r.veg) label.push('<span class="tag hijau">Vegetarian</span>');
-  if (r.anak) label.push('<span class="tag hijau">Aman anak</span>');
+  if (r.anak) label.push('<span class="tag hijau">Aman untuk anak</span>');
   if (r.pedas > 0) {
     label.push('<span class="tag merah"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-flame-kindling"/></svg>Pedas ' + r.pedas + "/3</span>");
   }
@@ -267,22 +267,22 @@ function halamanResep() {
     + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-cooking-pot"/></svg>Langkah</h2>'
     + '<span class="baris-info kepala-prog" id="progTeks"></span></div>'
     + '<ol class="langkah" id="langkahList"></ol>'
-    + '<div class="kotak kuning"><h3><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-bulb"/></svg>Sering gagal di sini</h3><p>' + esc(r.tips) + "</p></div>"
-    + '<div class="kotak hijau"><h3><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-check"/></svg>Kalau gagal</h3><p>' + esc(r.selamat) + "</p></div>"
-    + '<div class="kotak biru"><h3><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-clock"/></svg>Menyimpan sisa</h3><p>' + esc(r.simpan) + "</p></div>"
+    + '<div class="kotak kuning"><h3><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-bulb"/></svg>Sering bikin gagal</h3><p>' + esc(r.tips) + "</p></div>"
+    + '<div class="kotak hijau"><h3><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-check"/></svg>Kalau sudah telanjur gagal</h3><p>' + esc(r.selamat) + "</p></div>"
+    + '<div class="kotak biru"><h3><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-clock"/></svg>Menyimpan sisa masakan</h3><p>' + esc(r.simpan) + "</p></div>"
     + "</section></div>"
 
     + '<section class="panel jarak-atas" aria-label="Rasa dan gizi">'
     + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-leaf"/></svg>Rasa dan gizi</h2></div>'
     + '<div class="isi">'
-    + "<p><strong>Rasa.</strong> " + esc(r.rasa) + "</p>"
+    + "<p><strong>Rasanya.</strong> " + esc(r.rasa) + "</p>"
     + '<div class="gizi">'
     + "<div><strong>" + esc(r.kalori) + "</strong><span>per porsi</span></div>"
     + "<div><strong>" + esc(r.protein) + "</strong><span>protein</span></div>"
     + "</div>"
     + '<p><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-alert"/></svg> <strong>Perhatikan.</strong> ' + esc(r.pantangan) + "</p>"
-    + "<p><strong>Enak dimakan dengan.</strong> " + esc(r.sanding.join(", ")) + "</p>"
-    + "<p><strong>Minumnya.</strong> " + esc(r.minum) + "</p>"
+    + "<p><strong>Cocok dimakan dengan.</strong> " + esc(r.sanding.join(", ")) + "</p>"
+    + "<p><strong>Cocok diminum dengan.</strong> " + esc(r.minum) + "</p>"
     + '<p class="pesan">' + esc(r.suasana) + "</p>"
     + "</div></section>"
 
@@ -377,6 +377,10 @@ function halamanResep() {
   // ---- Daftar langkah ----
   const langkahList = document.getElementById("langkahList");
   const langkahTerurai = r.langkah.map(parseLangkah);
+  // Bab video dihitung sekali. Satu bab per langkah, jadi tiap langkah
+  // tahu menit berapa di videonya. Dipakai untuk menampilkan penunjuk
+  // waktu "Menit 02:52" di tiap langkah.
+  const babLangkah = daftarBab(r, langkahTerurai);
 
   r.langkah.forEach((teks, i) => {
     const urai = langkahTerurai[i];
@@ -390,12 +394,29 @@ function halamanResep() {
     const isi = document.createElement("div");
     isi.className = "isi";
 
+    // Baris atas: badge teknik + penunjuk waktu video.
+    const kepalaBaris = document.createElement("div");
+    kepalaBaris.className = "langkah-kepala";
+
     const badge = badgeTeknikHTML(urai);
     if (badge) {
       const kepala = document.createElement("div");
       kepala.innerHTML = badge;
-      isi.appendChild(kepala);
+      kepalaBaris.appendChild(kepala);
     }
+
+    // Penunjuk waktu video: menit berapa langkah ini dibahas di video.
+    // Membantu orang menyambungkan teks dengan tayangan videonya.
+    if (babLangkah[i]) {
+      const waktu = document.createElement("span");
+      waktu.className = "langkah-menit";
+      waktu.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-play"/></svg>'
+        + '<span></span>';
+      waktu.querySelector("span").textContent = "Menit " + fmtDetik(babLangkah[i][0]);
+      kepalaBaris.appendChild(waktu);
+    }
+
+    if (kepalaBaris.childElementCount) isi.appendChild(kepalaBaris);
 
     const pTeks = document.createElement("p");
     pTeks.className = "teks-langkah";
@@ -628,10 +649,17 @@ function halamanMealplan() {
       return (r.nama + " " + r.daerah + " " + r.kategori).toLowerCase().includes(kata);
     }).slice(0, 40);
 
+    // Tiap pilihan menampilkan foto, nama, dan keterangan singkat.
+    // Foto membuat pemilihan lebih cepat: orang mengenali masakan dari
+    // tampilannya, bukan dari namanya.
     daftarPilih.innerHTML = hasil.map((r) =>
       '<li><button type="button" data-id="' + esc(r.id) + '">'
+      + '<img class="pilih-foto" src="' + esc(r.foto) + '" alt="" loading="lazy" width="56" height="56">'
+      + '<span class="pilih-teks">'
       + '<span class="pilih-nama">' + esc(r.nama) + "</span>"
       + '<span class="pilih-ket">' + esc(r.daerah) + " · " + fmtWaktu(r.waktuTotal) + " · " + esc(r.level) + "</span>"
+      + "</span>"
+      + '<span class="pilih-tag">' + esc(r.kategori) + "</span>"
       + "</button></li>"
     ).join("");
 

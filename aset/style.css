@@ -216,6 +216,7 @@ p:last-child { margin-bottom: 0; }
   display: inline-flex;
   align-items: center;
   gap: var(--s1);
+  min-height: 40px;
   transition: background var(--dur) var(--gerak);
 }
 .nav a:hover { background: rgb(255 255 255 / 0.16); }
@@ -252,16 +253,20 @@ p:last-child { margin-bottom: 0; }
   text-decoration: none;
   font-size: 0.83rem;
   font-weight: 600;
-  padding: var(--s1) var(--s3);
+  padding: var(--s2) var(--s4);
   border: 1px solid rgb(255 255 255 / 0.35);
   border-radius: var(--pil);
   white-space: nowrap;
   display: inline-flex;
   align-items: center;
   gap: var(--s1);
-  transition: background var(--dur) var(--gerak), color var(--dur) var(--gerak);
+  /* Tinggi minimum 40px supaya nyaman ditekan jari, bukan cuma pas
+     untuk kursor tetikus. */
+  min-height: 40px;
+  transition: background var(--dur) var(--gerak), color var(--dur) var(--gerak), transform var(--dur) var(--gerak);
 }
 .chip a:hover { background: rgb(255 255 255 / 0.16); }
+.chip a:active { transform: scale(0.97); }
 .chip a.aktif { background: #fff; color: var(--merek-tua); border-color: #fff; }
 
 /* ---------- 4) TOMBOL ------------------------------------- */
@@ -322,10 +327,19 @@ p:last-child { margin-bottom: 0; }
 
 .kartu-tautan { display: block; text-decoration: none; }
 
-.kartu-foto { display: block; position: relative; }
+.kartu-foto { display: block; position: relative; overflow: hidden; }
 /* height:auto wajib, kalau tidak atribut height di HTML dipakai sebagai
    tinggi pasti dan aspect-ratio diabaikan sehingga kartu jadi sangat tinggi. */
-.kartu-foto img { width: 100%; height: auto; aspect-ratio: 3 / 2; object-fit: cover; }
+.kartu-foto img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  /* Foto membesar sedikit saat disorot. Memberi umpan balik bahwa
+     kartunya bisa diklik, tanpa menggeser tata letak. */
+  transition: transform 0.4s var(--gerak);
+}
+.kartu:hover .kartu-foto img { transform: scale(1.04); }
 
 /* Latar pengganti kalau foto gagal dimuat dua kali. Tanpa ini,
    imgFallback tahap 2 hanya menyembunyikan gambar dan menyisakan ruang kosong. */
@@ -376,13 +390,16 @@ p:last-child { margin-bottom: 0; }
 }
 .kartu-bintang .ikon { fill: currentColor; stroke: none; }
 
-/* Tombol simpan mengambang di pojok foto. */
+/* Tombol simpan mengambang di pojok foto.
+   Lingkaran visualnya 36px, tapi area yang bisa ditekan 44px — ukuran
+   nyaman untuk jari. Padding negatif tidak dipakai karena bikin tata
+   letak kacau; sebagai gantinya ::before yang menutupi area lebih luas. */
 .kartu-simpan {
   position: absolute;
   top: var(--s2);
   right: var(--s2);
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--pil);
   border: none;
   background: rgb(255 255 255 / 0.92);
@@ -391,9 +408,16 @@ p:last-child { margin-bottom: 0; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  transition: color var(--dur) var(--gerak), background var(--dur) var(--gerak);
+  transition: color var(--dur) var(--gerak), background var(--dur) var(--gerak), transform var(--dur) var(--gerak);
 }
-.kartu-simpan:hover { color: var(--bahaya); }
+.kartu-simpan::before {
+  content: "";
+  position: absolute;
+  inset: -4px;
+  border-radius: var(--pil);
+}
+.kartu-simpan:hover { color: var(--bahaya); background: #fff; transform: scale(1.08); }
+.kartu-simpan:active { transform: scale(0.96); }
 .kartu-simpan[aria-pressed="true"] { color: var(--bahaya); }
 .kartu-simpan[aria-pressed="true"] .ikon { fill: currentColor; }
 
@@ -758,6 +782,31 @@ p:last-child { margin-bottom: 0; }
 .langkah li.selesai .teks-langkah { color: var(--redup); }
 .langkah .isi { flex: 1; min-width: 0; }
 .langkah .isi > * + * { margin-top: var(--s2); }
+
+/* Baris atas tiap langkah: badge teknik di kiri, penunjuk menit video
+   di kanan. Penunjuk ini menyambungkan langkah tertulis dengan bagian
+   videonya, jadi orang tahu harus menonton menit berapa. */
+.langkah-kepala {
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+  flex-wrap: wrap;
+}
+.langkah-menit {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--merek);
+  background: var(--merek-muda);
+  padding: 3px var(--s2);
+  border-radius: var(--pil);
+  white-space: nowrap;
+}
+.langkah-menit .ikon { width: 0.9em; height: 0.9em; }
+
 .teks-langkah { margin: 0; font-size: 0.96rem; }
 
 .baris-aksi { display: flex; gap: var(--s2); flex-wrap: wrap; }
@@ -1103,17 +1152,42 @@ p:last-child { margin-bottom: 0; }
   border: none;
   color: #fff;
   font: inherit;
-  padding: var(--s3) var(--s4);
+  padding: var(--s2) var(--s3);
   cursor: pointer;
   display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-height: 52px;
+  align-items: center;
+  gap: var(--s3);
+  min-height: 60px;
   transition: background var(--dur) var(--gerak);
 }
 .pilih-daftar button:hover { background: rgb(255 255 255 / 0.14); }
-.pilih-nama { font-weight: 700; font-size: 0.94rem; }
-.pilih-ket { color: rgb(255 255 255 / 0.66); font-size: 0.8rem; }
+
+/* Foto kecil supaya masakan dikenali dari tampilannya, bukan cuma
+   namanya. Bentuknya persegi membulat agar seragam walau rasio
+   foto aslinya beda-beda. */
+.pilih-foto {
+  width: 44px;
+  height: 44px;
+  object-fit: cover;
+  border-radius: var(--r-kecil);
+  flex: none;
+  background: rgb(255 255 255 / 0.1);
+}
+.pilih-teks { display: flex; flex-direction: column; gap: 1px; min-width: 0; flex: 1; }
+.pilih-nama { font-weight: 700; font-size: 0.92rem; }
+.pilih-ket { color: rgb(255 255 255 / 0.66); font-size: 0.78rem; }
+
+/* Label kategori waktu makan di ujung kanan. */
+.pilih-tag {
+  flex: none;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: capitalize;
+  padding: 2px var(--s2);
+  border-radius: var(--pil);
+  background: rgb(255 255 255 / 0.14);
+  color: rgb(255 255 255 / 0.85);
+}
 
 /* ---------- 10) RENCANA MAKAN ----------------------------- */
 .meal-grup { display: grid; gap: var(--s3); padding: var(--s4); }
