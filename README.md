@@ -15,7 +15,7 @@ langkah yang menyebut tanda matang, dan video YouTube di dalam mode masak.
 |---|---|---|
 | Resep | 67 | Dari 22 provinsi, 4 kategori waktu makan |
 | Video YouTube | 67 | Diputar di dalam mode masak |
-| Bab video | 67 | Semua resep, 8 pakai data asli, sisanya dihitung otomatis |
+| Bab video | 67 | Semua resep, satu bab per langkah |
 | Foto | 67 | Wikimedia Commons, berlisensi bebas |
 
 ## Yang bisa dipakai
@@ -46,10 +46,11 @@ teksnya besar supaya kebaca dari jauh. Isinya:
   Esc menutup
 
 **Video mengikuti langkah.** Tekan "Lanjut", dan videonya ikut melompat ke
-bagian yang cocok dengan langkah itu. Untuk resep yang videonya sudah punya
-penanda bagian asli, babnya dipakai apa adanya. Untuk sisanya, bab dihitung
-dari durasi video dibagi rata sesuai jumlah langkah, lalu diberi nama dari
-teks langkahnya sendiri. Jadi seluruh 67 resep punya bab yang bisa diklik.
+bagian yang cocok dengan langkah itu. Tombol "Sebelumnya" juga memundurkan
+videonya. Bab video selalu dibuat **satu per langkah**, jadi bab ke-3 selalu
+bagian video untuk langkah ke-3. Waktunya diambil dari penanda bagian asli
+kalau videonya punya, atau dihitung dari durasi video kalau tidak. Jadi
+seluruh 67 resep punya bab yang bisa diklik dan selalu nyambung.
 
 **Rencana makan 7 hari.** 21 slot (7 hari × 3 waktu makan). Daftar belanja
 tersusun sendiri dari resep yang kamu isi, digabung kalau bahan dan satuannya
@@ -93,7 +94,7 @@ mealplan.html   Rencana 7 hari + daftar belanja otomatis
 favorit.html    Resep yang disimpan
 tentang.html    Cara membaca takaran + ke mana data pergi
 404.html        Halaman tidak ditemukan
-resep-data.js   DATA saja: larik RESEP + tabel durasi video
+resep-data.js   DATA saja: larik RESEP + tabel durasi & tanggal video
 store.js        ALAT BERSAMA: penyimpanan, kartu, dropdown, mode masak, timer
 halaman.js      LOGIKA HALAMAN: satu fungsi per halaman, dipilih lewat
                 <body data-halaman="...">
@@ -102,15 +103,16 @@ icons.svg       Sprite 32 ikon garis 24px
 manifest.webmanifest  Info aplikasi (nama, ikon, warna)
 ikon-192.png    Ikon aplikasi 192px
 ikon-512.png    Ikon aplikasi 512px
-sitemap.xml     Daftar halaman untuk mesin pencari
+sitemap.xml     Daftar 72 URL untuk mesin pencari
 robots.txt      Aturan untuk mesin pencari
-PENJELASAN.MD   Panduan lengkap kode, ditulis untuk pemula
+PENJELASAN.MD   Panduan lengkap kode baris per baris, ditulis untuk pemula
 _qa/            Skrip pemeriksaan (tidak dipakai website)
 ```
 
 Data, alat, dan logika halaman dipisah supaya tiap berkas punya satu tugas.
-`resep-data.js` 2.525 baris isinya data; `store.js` 1.075 baris isinya alat
-bersama; `halaman.js` 831 baris isinya apa yang dilakukan tiap halaman.
+`resep-data.js` 2.598 baris isinya data (termasuk tabel durasi dan tanggal
+video); `store.js` 1.149 baris isinya alat bersama (32 fungsi);
+`halaman.js` 838 baris isinya apa yang dilakukan tiap halaman.
 Ketiganya dimuat berurutan sebagai skrip biasa:
 
 ```html
@@ -141,7 +143,9 @@ CSP (`frame-ancestors`, `sandbox`) tidak tersedia. Itu batasan host.
 node _qa/audit-mojibake.js   # cari karakter rusak (huruf aksen nyasar)
 node _qa/audit-video.js      # periksa 67 video YouTube masih bisa diputar
 node _qa/audit-foto.js       # periksa pola URL foto
-node _qa/audit-srcset.js     # periksa varian ukuran foto Wikimedia
+node _qa/analisis-slop2.js   # periksa gaya penulisan resep
+node _qa/buat-sitemap.js     # buat ulang sitemap.xml
+node _qa/cari-mati.js        # cari fungsi atau berkas yang tidak dipakai
 ```
 
 ## Menambah resep
@@ -184,6 +188,9 @@ Aturan kecil yang perlu diikuti:
   harus mulai dari detik `0` dan angkanya naik terus.
 - Tambahkan durasi videonya ke `DURASI_VIDEO` di berkas yang sama (detik).
   Ini yang dipakai untuk menghitung bab otomatis.
+- Tambahkan tanggal unggahnya ke `TANGGAL_VIDEO` (YYYY-MM-DD). Ini yang
+  dipakai untuk field uploadDate di VideoObject, karena Google mewajibkannya.
+- Jalankan `node _qa/buat-sitemap.js` supaya sitemap ikut memuat resep baru.
 - Langkah yang menyebut menit otomatis dapat tombol timer, jadi tulis
   waktunya sebagai angka: `"Masak 40 menit"`, bukan `"masak sampai matang"`.
 - Kalau langkah memuat `"Tanda matang: ..."`, kalimat itu dipindah ke kotak
