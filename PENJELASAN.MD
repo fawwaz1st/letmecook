@@ -96,11 +96,11 @@ letmecook/
 ├── skrip/
 │   ├── skrip/resep-data.js     (2.599 baris)  DATA: 67 resep + tabel video
 │   ├── store.js          (1.150 baris)  ALAT: 32 fungsi bersama
-│   └── halaman.js        (  839 baris)  LOGIKA: 5 fungsi + router
+│   └── halaman.js        ( 865 baris)  LOGIKA: 5 fungsi + router
 │
 │  ── Tampilan (aset yang diunduh) ────────────────────────────
 ├── aset/
-│   ├── style.css         (1.630 baris)  Seluruh tampilan (18 bagian)
+│   ├── style.css         (1.704 baris)  Seluruh tampilan (18 bagian)
 │   ├── aset/icons.svg                      32 ikon SVG, dipanggil per id
 │   ├── ikon-192.png                   Ikon aplikasi 192px (manifest)
 │   └── ikon-512.png                   Ikon aplikasi 512px (manifest)
@@ -113,14 +113,15 @@ letmecook/
 │  ── Dokumentasi ─────────────────────────────────────────────
 ├── README.md             Panduan singkat untuk pengembang
 ├── PENJELASAN.MD         Dokumen yang sedang kamu baca
+├── PANDUAN-PRESENTASI.md Naskah presentasi 8 bagian, siap dibaca
 │
 │  ── Alat bantu (tidak ikut ter-deploy) ──────────────────────
 └── _qa/
-    ├── audit-*.js        Pemeriksa: video, foto, mojibake
-    ├── buat-*.js         Pembuat: sitemap, ikon
-    ├── cari-*.js         Pencari: kode mati, ikon mati
-    ├── laporan/          Hasil audit (arsip, bukan alat)
-    └── arsip/            Skrip sekali-pakai yang sudah selesai
+    ├── periksa.js        Satu perintah: mojibake, kode mati, ikon, data
+    ├── audit-video.js    Periksa 67 video YouTube masih bisa diputar
+    ├── buat-sitemap.js   Buat ulang sitemap.xml
+    ├── buat-ikon.js      Buat ulang ikon aplikasi
+    └── pasang-meta.js    Pasang meta ke halaman baru (sekali pakai)
 ```
 
 ### Kenapa HTML tetap di folder utama?
@@ -158,25 +159,45 @@ dipakai oleh website** (dan tidak ikut ter-deploy, karena tertulis di
 `.gitignore`); hanya alat bantu saat mengembangkan. Jalankan dengan
 `node _qa/nama-berkas.js`.
 
-Folder `_qa/` punya tiga bagian:
+### Isi `_qa/` — hanya lima berkas, semuanya berguna
 
-| Bagian | Isinya |
-|---|---|
-| `_qa/*.js` | Skrip yang **masih berguna** dan dijalankan berulang |
-| `_qa/laporan/` | Hasil keluaran audit (teks laporan), hanya untuk riwayat |
-| `_qa/arsip/` | Skrip sekali-pakai yang tugasnya sudah selesai |
-
-### Aturan penamaan berkas
-
-| Pola | Artinya | Contoh |
+| Berkas | Gunanya | Butuh jaringan? |
 |---|---|---|
-| `audit-*.js` | **Memeriksa** sesuatu, tidak mengubah apa pun | `audit-video.js` memeriksa video masih hidup |
-| `buat-*.js` | **Membuat** berkas baru | `buat-sitemap.js` menghasilkan `sitemap.xml` |
-| `cari-*.js` | **Mencari** sesuatu yang tidak berguna | `cari-mati.js` mencari fungsi tak terpakai |
-| `analisis-*.js` | **Mengukur** gaya atau kualitas | `analisis-slop2.js` mengukur gaya tulisan resep |
+| `periksa.js` | Empat pemeriksaan sekaligus: mojibake, kode mati, ikon mati, kelengkapan data resep | Tidak |
+| `audit-video.js` | Memeriksa 67 video YouTube masih bisa diputar | Ya |
+| `buat-sitemap.js` | Membuat ulang `sitemap.xml` dari data resep | Tidak |
+| `buat-ikon.js` | Membuat ulang ikon aplikasi PNG | Tidak |
+| `pasang-meta.js` | Memasang meta tag 2026 ke halaman baru (sekali pakai) | Tidak |
 
-Jadi dari namanya saja kamu sudah tahu apakah skrip itu aman dijalankan
-(tidak mengubah berkas) atau menghasilkan berkas baru.
+**Kenapa cuma lima?** Sebelumnya ada puluhan skrip untuk memeriksa satu hal
+masing-masing. Sekarang pemeriksaan yang sering dipakai digabung jadi satu
+(`periksa.js`), dan skrip sekali-pakai dihapus setelah tugasnya selesai —
+supaya folder alat tidak berubah jadi tempat sampah.
+
+**Aturan yang dipegang:** satu berkas = satu tugas yang jelas, dan kalau
+tugasnya sudah selesai, berkasnya dihapus. Kalau nanti butuh lagi, skrip
+baru lebih mudah ditulis daripada mencari di tumpukan berkas lama.
+
+### Cara pakai `periksa.js`
+
+```bash
+node _qa/periksa.js
+```
+
+Keluarannya seperti ini kalau semua bersih:
+
+```
+OK   Karakter rusak (mojibake)
+OK   Fungsi dan konstanta tak terpakai
+OK   Ikon SVG (32 ikon)
+OK   Data resep (67 resep)
+
+Semua bersih.
+```
+
+Kalau ada temuan, barisnya berubah jadi `XX` diikuti daftar lokasinya, dan
+kode keluarnya bukan nol — jadi bisa dipakai di pemeriksaan otomatis (CI)
+kalau nanti diperlukan.
 
 ---
 
@@ -328,7 +349,7 @@ tidak perlu ditulis ulang di tujuh tempat.
 
 ## 5. store.js — Peralatan Bersama
 
-1.149 baris, 32 fungsi. Dibagi jadi beberapa bagian dengan komentar pembatas
+1.150 baris, 32 fungsi. Dibagi jadi beberapa bagian dengan komentar pembatas
 `// ====...====`. Berikut peta lengkapnya:
 
 ### 5.1 Penyimpanan (baris 1–75)
@@ -544,7 +565,7 @@ halaman ikut berubah sendiri.
 
 ## 6. halaman.js — Logika Tiap Halaman
 
-838 baris, 5 fungsi halaman + 1 router. Satu fungsi per halaman.
+865 baris, 5 fungsi halaman + 1 router. Satu fungsi per halaman.
 
 ### 6.1 Router (baris 823–838)
 
@@ -645,7 +666,7 @@ daftar disusun ulang dari rencana makan.
 
 ## 7. skrip/resep-data.js — Data 67 Resep
 
-2.598 baris. **Hanya data. Tidak ada fungsi, tidak ada logika.** Strukturnya
+2.599 baris. **Hanya data. Tidak ada fungsi, tidak ada logika.** Strukturnya
 dijelaskan di bagian 3.
 
 Bagian akhir berkas berisi dua tabel:
@@ -813,7 +834,7 @@ Jalankan setiap kali menambah resep baru, supaya resep ke-68 ikut terdaftar.
 
 ## 9. style.css — 18 Bagian
 
-1.629 baris, dibagi 18 bagian bernomor. Tekan `Ctrl+F` lalu ketik `12)` untuk
+1.704 baris, dibagi 18 bagian bernomor. Tekan `Ctrl+F` lalu ketik `12)` untuk
 langsung lompat ke bagian dropdown, misalnya.
 
 | No | Baris | Bagian | Isinya |
@@ -1392,13 +1413,25 @@ ke tautan YouTube.
 ### Menjalankan pemeriksaan QA
 
 ```bash
-node _qa/audit-mojibake.js    # cari karakter rusak (huruf aksen nyasar)
+node _qa/periksa.js           # satu perintah: mojibake, kode mati, ikon, data
 node _qa/audit-video.js       # periksa 67 video YouTube masih bisa diputar
-node _qa/audit-foto.js        # periksa pola URL foto
-node _qa/analisis-slop2.js    # periksa gaya penulisan resep
 node _qa/buat-sitemap.js      # buat ulang sitemap.xml
-node _qa/cari-mati.js         # cari fungsi atau berkas yang tidak dipakai
+node _qa/buat-ikon.js         # buat ulang ikon aplikasi (jarang dipakai)
+node _qa/pasang-meta.js       # pasang meta 2026 ke halaman baru (sekali pakai)
 ```
+
+`periksa.js` menjalankan empat pemeriksaan sekaligus:
+
+| Pemeriksaan | Yang dicari |
+|---|---|
+| Karakter rusak | Mojibake seperti `â€` atau `Â` di seluruh berkas situs |
+| Kode mati | Fungsi dan konstanta yang tidak dipakai lagi |
+| Ikon mati | Ikon SVG yang tidak dipanggil halaman mana pun |
+| Data resep | Pola foto, ID video, durasi, dan tanggal yang belum lengkap |
+
+Karena tidak butuh jaringan, pemeriksaan ini aman dijalankan sebelum setiap
+commit. Kalau ada temuan, kode keluarnya bukan nol — jadi bisa dipasang di
+alur otomatis (CI) kalau nanti diperlukan.
 
 ---
 

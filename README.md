@@ -134,14 +134,15 @@ letmecook/
 │  ── Dokumentasi ──────────────────────────────────────────
 ├── README.md             Berkas yang sedang kamu baca
 ├── PENJELASAN.MD         Panduan lengkap kode, baris per baris
+├── PANDUAN-PRESENTASI.md Naskah presentasi 8 bagian, siap dibaca
 │
 │  ── Alat bantu (tidak ikut ter-deploy) ───────────────────
 └── _qa/
-    ├── audit-*.js        Pemeriksa: video, foto, mojibake
-    ├── buat-*.js         Pembuat: sitemap, ikon
-    ├── cari-*.js         Pencari kode mati
-    ├── laporan/          Hasil audit (riwayat)
-    └── arsip/            Skrip sekali-pakai yang sudah selesai
+    ├── periksa.js        Satu perintah: mojibake, kode mati, ikon, data
+    ├── audit-video.js    Periksa 67 video YouTube masih bisa diputar
+    ├── buat-sitemap.js   Buat ulang sitemap.xml
+    ├── buat-ikon.js      Buat ulang ikon aplikasi
+    └── pasang-meta.js    Pasang meta ke halaman baru (sekali pakai)
 ```
 
 **Kenapa HTML tetap di folder utama?** Karena alamatnya sudah terindeks mesin
@@ -174,7 +175,7 @@ Buat ulang setiap kali menambah resep: `node _qa/buat-sitemap.js`
 Data, alat, dan logika halaman dipisah supaya tiap berkas punya satu tugas.
 `skrip/resep-data.js` 2.599 baris isinya data (termasuk tabel durasi dan
 tanggal video); `skrip/store.js` 1.150 baris isinya alat bersama (32 fungsi);
-`skrip/halaman.js` 839 baris isinya apa yang dilakukan tiap halaman.
+`skrip/halaman.js` 865 baris isinya apa yang dilakukan tiap halaman.
 Ketiganya dimuat berurutan sebagai skrip biasa:
 
 ```html
@@ -201,27 +202,15 @@ CSP (`frame-ancestors`, `sandbox`) tidak tersedia. Itu batasan host.
 
 ## Pemeriksaan (QA)
 
-Skrip di `_qa/` diberi nama menurut tugasnya:
-
-| Pola nama | Artinya | Contoh |
-|---|---|---|
-| `audit-*.js` | **Memeriksa** sesuatu, tidak mengubah apa pun | `audit-video.js` |
-| `buat-*.js` | **Membuat** berkas baru | `buat-sitemap.js` |
-| `cari-*.js` | **Mencari** yang tidak berguna | `cari-mati.js` |
-| `analisis-*.js` | **Mengukur** kualitas | `analisis-slop2.js` |
-
 ```bash
-node _qa/audit-mojibake.js   # cari karakter rusak (huruf aksen nyasar)
+node _qa/periksa.js          # satu perintah: mojibake, kode mati, ikon, data
 node _qa/audit-video.js      # periksa 67 video YouTube masih bisa diputar
-node _qa/audit-foto.js       # periksa pola URL foto
-node _qa/analisis-slop2.js   # periksa gaya penulisan resep
 node _qa/buat-sitemap.js     # buat ulang sitemap.xml
-node _qa/cari-mati.js        # cari fungsi atau berkas yang tidak dipakai
 ```
 
-Hasil keluaran audit disimpan di `_qa/laporan/`, dan skrip yang sudah selesai
-tugasnya dipindah ke `_qa/arsip/` — supaya `_qa/` hanya berisi alat yang
-masih berguna.
+`periksa.js` menjalankan empat pemeriksaan sekaligus dan tidak butuh
+jaringan, jadi aman dijalankan sebelum setiap commit. Kalau ada masalah,
+kode keluarnya bukan nol (bisa dipakai di CI).
 
 ## Menambah resep
 
