@@ -259,7 +259,26 @@ untuk presentasi kelas, wawancara, atau demo ke teman.
 >
 > Dari sisi keamanan, tiap halaman memasang **Content-Security-Policy**:
 > aturan yang memberi tahu browser hanya boleh memuat kode dari domain
-> tertentu. Jadi kalau ada kode asing yang disuntikkan, browser menolaknya."
+> tertentu. Jadi kalau ada kode asing yang disuntikkan, browser menolaknya.
+>
+> Kalau ada yang mau melihat kodenya, ada **PENJELASAN.MD** yang menuntun
+> baris per baris — tiap bagian menyebut berkas dan nomor barisnya."
+
+**Kalau kamu ingin menunjukkan kode** (opsional, 30 detik):
+
+Buka `skrip/store.js` dan tunjukkan **fungsi `baca`** (baris 18):
+
+> "Ini fungsi yang dipanggil puluhan kali di seluruh website. Tugasnya
+> mengambil data dari localStorage, tapi tidak boleh sampai website rusak
+> kalau datanya aneh. Ada tiga lapis pertahanan: `try/catch` untuk data yang
+> bukan JSON, pemeriksaan bentuk supaya larik tidak masuk ke tempat objek,
+> dan nilai cadangan kalau semuanya gagal."
+
+Lalu tunjukkan **`skrip/store.js:593`** (`siapkanMasak`):
+
+> "Dan ini kerangka mode masak. Dibangun **sekali** lalu dipakai ulang —
+> kalau dibangun ulang tiap kali tombol diklik, membuka mode masak jadi
+> lambat."
 
 ---
 
@@ -370,6 +389,62 @@ Kalau waktu terbatas, lakukan hanya ini:
 > videonya dan tanggal unggahnya. Semua angka '67 resep' di seluruh halaman
 > ikut berubah sendiri, dan tinggal jalankan `node _qa/buat-sitemap.js`
 > supaya resep barunya masuk sitemap."
+
+**"Kok tidak ada tombol Cetak?"**
+
+> "Betul, fitur cetak sengaja **dihapus**. Ada beberapa alasan: tidak banyak
+> dipakai, dan blok CSS `@media print`-nya panjang sekali (2.093 karakter)
+> yang harus dirawat setiap kali tata letak berubah. Menghapusnya membuat
+> kode lebih sederhana. Kalau nanti ingin dikembalikan, cukup tambah satu
+> tombol yang memanggil `window.print()` dan satu blok `@media print` di
+> akhir CSS."
+
+**"Kenapa foto resepnya bukan foto asli masakan itu semua?"**
+
+> "Betul, beberapa tidak ada fotonya di Wikimedia Commons. Untuk kasus itu
+> saya pakai foto terdekat yang masih jujur: contohnya **kohu-kohu**, yang
+> sebenarnya adalah urap dari Maluku, jadi saya pakai foto urap sayur.
+> **Serombotan** juga sejenis urap Bali, jadi fotonya serupa. Yang penting
+> tidak menampilkan foto yang salah sama sekali — dulu ada yang memakai foto
+> warung dan gerobak, itu sudah saya ganti."
+
+**"Bagaimana memastikan fotonya tidak rusak?"**
+
+> "Ada alat pemeriksa di `_qa/audit-foto.js` yang menguji semua 67 URL foto
+> satu per satu dan melaporkan yang gagal. Saya juga membuat halaman grid
+> sementara untuk melihat semua foto sekaligus dengan mata — karena URL yang
+> bisa dimuat belum tentu fotonya sesuai."
+
+**"Videonya dari mana? Apa bisa mati sewaktu-waktu?"**
+
+> "Semua video dari YouTube, disimpan hanya sebagai ID 11 karakter. Ada alat
+> pemeriksa `_qa/audit-video.js` yang memakai oEmbed YouTube untuk memastikan
+> 67 videonya masih ada dan **judulnya cocok dengan resepnya**. Kalau ada
+> video yang dihapus pemiliknya, alat itu akan melaporkannya."
+
+**"Kalau videonya tidak bisa diputar, apa yang terjadi?"**
+
+> "Website tidak akan menampilkan layar kosong. Ada empat jalur kegagalan
+> yang ditangani: ID video tidak valid, halaman dibuka dari berkas
+> (`file://`), API YouTube gagal dimuat, dan video tidak bisa diputar.
+> Semuanya menampilkan pesan yang jelas plus tautan ke YouTube."
+
+**"Bagaimana kode ini dijelaskan ke orang lain?"**
+
+> "Ada **PENJELASAN.MD** yang menuntun dari atas ke bawah. Tiap bagian
+> menyebut berkas dan **nomor barisnya** — misalnya `skrip/store.js:124` untuk
+> fungsi hitung mundur — jadi pembaca bisa langsung membuka kodenya. Untuk
+> fungsi paling penting (`baca` dan `bukaModeMasak`), ada penjelasan
+> **baris per baris** lengkap dengan alasan tiap keputusan."
+
+**"Apa pelajaran terbesar dari proyek ini?"**
+
+> "Dua hal. Pertama, **bug yang paling menjengkelkan biasanya berasal dari
+> asumsi yang tidak diperiksa** — misalnya menyembunyikan panel video
+> ternyata tidak menghentikan suaranya, dan menyimpan data di localStorage
+> bisa menghasilkan bentuk yang tidak terduga. Kedua, **ukur, jangan
+> menebak** — CLS halaman katalog turun dari 0,58 ke 0,03 hanya setelah
+> saya mengukur dan menemukan bahwa tinggi cadangan kartu salah tulis."
 
 ---
 

@@ -275,7 +275,7 @@ Contoh nyata saat membuka `resep.html?id=rendang`:
 3. Ketemu objek resep → seluruh HTML halaman dibangun dari objek itu
 4. `skrip/store.js:237` (`parseLangkah`) memecah tiap langkah jadi: teknik masak,
    besar api, tanda matang, dan teks sisa
-5. `skrip/store.js:1038` (`daftarBab`) menentukan bab video: satu bab per langkah
+5. `skrip/store.js:1152` (`daftarBab`) menentukan bab video: satu bab per langkah
 6. Hasilnya dipasang ke `#area` dengan `innerHTML` (baris `skrip/halaman.js:262`)
 
 ---
@@ -290,7 +290,7 @@ Setiap halaman HTML memuat tiga skrip di bagian bawah `<body>`:
 <script src="halaman.js"></script>     <!-- 3. logika halaman -->
 ```
 
-`skrip/halaman.js` diakhiri router kecil (baris `skrip/halaman.js:823`) yang membaca
+`skrip/halaman.js` diakhiri router kecil (baris `skrip/halaman.js:837`) yang membaca
 penanda di `<body>`:
 
 ```html
@@ -332,7 +332,7 @@ ketat**: tidak ada satu pun `<script>` yang ditulis langsung di dalam HTML.
 4. halaman.js dimuat        → router (baris 823) memanggil fungsi halaman
 5. Fungsi halaman:
    a. mengisi konten (kartu, langkah, bahan, dst.)
-   b. memanggil siapkanHalaman() — "sapuan akhir" bersama (skrip/store.js:1133):
+   b. memanggil siapkanHalaman() — "sapuan akhir" bersama (skrip/store.js:1247):
       - menandai elemen di bawah layar untuk animasi gulir
       - menyamakan semua angka resep (data-jumlah)
       - mengisi tahun di kaki halaman (data-tahun)
@@ -376,6 +376,65 @@ const KEY = {
   gmanual: "letmecook:gmanual",// bahan tambahan yang ditulis sendiri
   prog: "letmecook:prog",      // centang bahan + langkah per resep
 };
+```
+
+#### Penjelasan per baris: `baca()` — fungsi paling penting untuk dipahami
+
+Fungsi ini dipanggil puluhan kali di seluruh website. Tugasnya: **ambil data
+dari localStorage, tapi jangan sampai website rusak kalau datanya aneh.**
+Berikut penjelasan tiap barisnya:
+
+```js
+function baca(kunci, cadangan) {              // (18) kunci = nama lemari, cadangan = nilai kalau gagal
+  try {                                        // (19) mulai blok percobaan
+    const mentah = localStorage.getItem(kunci); // (20) ambil teks mentah dari browser
+    if (mentah === null) return cadangan;      // (21) belum pernah disimpan? pakai cadangan
+    const nilai = JSON.parse(mentah);          // (22) ubah teks jadi data JavaScript
+    if (Array.isArray(cadangan)) return Array.isArray(nilai) ? nilai : cadangan;
+                                               // (23) kalau yang diminta larik, pastikan hasilnya larik juga
+    if (cadangan && typeof cadangan === "object") {  // (24) kalau yang diminta objek...
+      const cocok = nilai && typeof nilai === "object" && !Array.isArray(nilai);
+                                               // (25) ...pastikan hasilnya objek DAN bukan larik
+      return cocok ? nilai : cadangan;         // (26) cocok? pakai. tidak? pakai cadangan
+    }
+    return nilai ?? cadangan;                  // (27) untuk tipe sederhana (angka/teks)
+  } catch {                                    // (28) kalau JSON.parse gagal...
+    return cadangan;                           // (29) ...jangan error, pakai cadangan saja
+  }
+}
+```
+
+**Tiga hal yang membuat fungsi ini penting:**
+
+1. **Baris 19 dan 28 (`try` / `catch`)** — Kalau isi localStorage bukan JSON
+   yang sah (misalnya pengunjung mengubahnya sendiri lewat alat pengembang),
+   `JSON.parse` akan melempar error. Tanpa `try/catch`, **seluruh halaman
+   berhenti bekerja**. Dengan `try/catch`, website tetap jalan pakai nilai
+   cadangan.
+
+2. **Baris 23–26 (pemeriksaan bentuk)** — Ini jebakan halus. Kalau fungsi
+   minta **objek** (`{}`) tapi yang tersimpan ternyata **larik** (`[]`),
+   JavaScript menganggap keduanya sama-sama `"object"`. Tanpa pemeriksaan
+   `!Array.isArray(nilai)`, larik akan lolos masuk dan menimpa data dengan
+   bentuk yang salah — dan bug-nya sulit dicari karena tidak melempar error.
+
+3. **Baris 27 (`??`)** — Operator *nullish coalescing*. Artinya: "pakai
+   `nilai`, tapi kalau `nilai` bernilai `null` atau `undefined`, pakai
+   `cadangan`". Beda dengan `||` yang juga menolak `0` dan `""` — padahal
+   angka nol dan teks kosong itu nilai yang sah.
+
+**Contoh nyata kegunaannya:**
+
+```js
+// Pengunjung menyimpan rencana makan yang rusak:
+localStorage.setItem("letmecook:meal", "[1,2,3]");  // larik, bukan objek!
+
+// Tanpa pemeriksaan bentuk, kode berikut akan error:
+const rencana = baca(KEY.meal, {});   // dapat [1,2,3]
+rencana["Senin"] = {};                 // tetap jalan, tapi aneh
+
+// Dengan pemeriksaan, hasilnya objek kosong yang aman:
+const rencana = baca(KEY.meal, {});   // dapat {} — data rusak diabaikan
 ```
 
 ### 5.2 Format angka dan waktu (baris 77–148)
@@ -438,7 +497,7 @@ Dipecah otomatis oleh `parseLangkah` (baris 237) menjadi:
 
 Hasilnya dipakai untuk:
 - **badge berwarna** di atas langkah — warna per teknik diatur di CSS lewat
-  `[data-teknik="tumis"]` (`aset/style.css:800`), bukan ditulis JS
+  `[data-teknik="tumis"]` (`aset/style.css:852`), bukan ditulis JS
 - **meter api** (3 batang kecil, menyala sesuai besar api)
 - **kotak "Matang kalau:"**
 
@@ -486,7 +545,7 @@ Elemen ber-class `.muncul` memudar masuk saat masuk layar, memakai
    (baris 560), bukan seluruh dokumen — kalau tidak, menggambar 67 kartu
    berarti 67 pemindaian penuh dan halaman jadi lambat
 
-### 5.10 Mode masak (baris 566–1036)
+### 5.10 Mode masak (baris 566–1186)
 
 Bagian terpanjang dan paling rumit. Dipecah begini:
 
@@ -495,55 +554,150 @@ Bagian terpanjang dan paling rumit. Dipecah begini:
 | 566 | `masakEl`, `masakState`, `apiYouTube` | Tiga variabel penyimpan keadaan |
 | 571 | `muatApiYouTube()` | Muat API pemutar YouTube **sekali saja**, saat benar-benar dibutuhkan |
 | 593 | `siapkanMasak()` | Bangun kerangka mode masak **sekali**, lalu dipakai ulang |
-| 635 | `lepasPendengarMasak()` | Lepas semua pendengar dari sesi sebelumnya |
-| 648 | `bukaModeMasak(resep)` | Fungsi utama: membuka dan menjalankan mode masak |
-| 1038 | `daftarBab(resep, langkahTerurai)` | Tentukan bab video |
+| 648 | `lepasPendengarMasak()` | Lepas semua pendengar dari sesi sebelumnya |
+| 661 | `bukaModeMasak(resep)` | Fungsi utama: membuka dan menjalankan mode masak |
+| 1152 | `daftarBab(resep, langkahTerurai)` | Tentukan bab video |
+
+#### Penjelasan per baris: kenapa mode masak dibangun begini
+
+Mode masak adalah bagian yang paling banyak menyimpan pelajaran. Berikut
+alasan tiap keputusan pentingnya:
+
+**1. Kerangka dibangun sekali, bukan tiap kali dibuka** (`siapkanMasak`, 593)
+
+```js
+function siapkanMasak() {
+  if (masakEl) return masakEl;        // (594) sudah pernah dibangun? pakai itu
+  masakEl = document.createElement("div");  // (596) baru pertama kali: bangun
+  // ... isi kerangkanya ...
+  document.body.appendChild(masakEl); // (642) pasang ke halaman
+  return masakEl;                     // (643)
+}
+```
+
+**Kenapa begitu?** Kalau kerangkanya dibangun ulang setiap kali tombol Mode
+masak diklik, browser harus membuat ratusan elemen dari nol setiap kali — dan
+HTML lama harus dibuang dulu. Dengan membangun sekali lalu menyimpannya di
+`masakEl`, membuka mode masak jadi **instan** setelah pertama kali.
+
+**2. Semua pendengar disimpan supaya bisa dilepas** (`masakState.pendengar`)
+
+```js
+const p = masakState.pendengar;                        // (650)
+p.mundur = () => tombolMundur.removeEventListener("click", mundur);  // (651)
+p.maju   = () => tombolMaju.removeEventListener("click", maju);      // (652)
+// ... dan seterusnya untuk tutup, video, timer, geser ...
+```
+
+**Kenapa begitu?** Ini jawaban dari bug yang paling menjengkelkan: **buka
+mode masak → tutup → buka lagi → tombol Lanjut melompat dua langkah.**
+Penyebabnya, setiap kali dibuka, `addEventListener` menambah pendengar baru
+ke tombol yang sama. Setelah dua kali buka, satu klik dijalankan dua kali.
+
+Solusinya: sebelum memasang pendengar baru, lepas dulu yang lama lewat
+`lepasPendengarMasak()` (648). Karena setiap pendengar disimpan sebagai
+fungsi pelepas di `masakState.pendengar`, melepasnya cukup memanggil satu
+per satu.
+
+**3. Bagian tengah dipisah supaya tombol tidak ikut tergeser**
+
+```
+.masak (flex, layar penuh)
+├── .masak-atas    → bilah kemajuan + tombol Video/Tutup   (flex: none)
+├── .masak-tengah  → isi yang BISA DIGULIR                 (flex: 1)
+└── .masak-nav     → tombol Sebelumnya/Lanjut              (flex: none)
+```
+
+**Kenapa begitu?** Kalau seluruh layar bisa digulir, tombol navigasi akan
+terdorong keluar layar saat teks langkahnya panjang atau saat panel video
+dibuka. Dengan memisahkan `.masak-tengah` sebagai satu-satunya bagian yang
+bisa digulir, tombol navigasi **selalu terlihat dan bisa diklik**.
+
+**4. Video dijeda saat panel ditutup** (`bukaVideo`, 876)
+
+```js
+if (masakState.pemutar && masakState.pemutar.pauseVideo) {
+  if (terbuka) masakState.pemutar.pauseVideo();  // (889) panel ditutup -> jeda
+  else masakState.pemutar.playVideo();            // (890) panel dibuka -> putar
+}
+```
+
+**Kenapa begitu?** Menyembunyikan elemen HTML (`hidden = true`) **tidak**
+menghentikan video — videonya tetap diputar di latar belakang dan suaranya
+tetap berbunyi. Ini bug nyata yang pernah terjadi. Jadi setiap kali panel
+ditutup, videonya harus dijeda secara eksplisit.
+
+**5. Seek diulang kalau diabaikan YouTube** (`lompatKe`, 822)
+
+```js
+function lompatKe(detik) {
+  if (!masakState.pemutar || !masakState.pemutar.seekTo) return;  // (823)
+  masakState.mintaDetik = detik;    // (824) simpan target
+  masakState.sisaCoba = 8;          // (825) batas percobaan
+  terapkanMinta();                  // (826)
+}
+```
+
+**Kenapa begitu?** Saat video sedang memuat iklan atau buffering, perintah
+`seekTo` **diabaikan** YouTube tanpa pemberitahuan. Kalau hanya dicoba sekali,
+videonya tidak akan pindah. Karena itu dicoba ulang maksimal 8 kali — dipicu
+oleh timer 1,2 detik **dan** oleh perubahan keadaan pemutar
+(`onStateChange`). Batas 8 percobaan mencegah perulangan tanpa henti.
 
 **Masalah yang pernah terjadi dan solusinya** — ini pelajaran penting:
 
 1. **Bug: buka mode masak → tutup → buka lagi → tombol Lanjut melompat dua
    langkah.** Penyebabnya: setiap kali dibuka, pendengar klik ditambahkan lagi
    ke tombol yang sama. Setelah dua kali buka, satu klik dijalankan dua kali.
-   **Solusinya:** `lepasPendengarMasak` (baris 635) melepas semua pendengar
+   **Solusinya:** `lepasPendengarMasak` (baris 648) melepas semua pendengar
    sesi lama sebelum memasang yang baru. Setiap pendengar disimpan di objek
    `masakState.pendengar`, jadi bisa dilepas satu per satu.
 
 2. **Bug: tombol navigasi terdorong keluar layar saat video dibuka.**
    **Solusinya:** bagian tengah dibungkus `.masak-tengah` yang bisa digulir
-   (`aset/style.css:882`), sedangkan tombol navigasi di bawahnya tetap di tempat
+   (`aset/style.css:931`), sedangkan tombol navigasi di bawahnya tetap di tempat
    (`flex: none`).
 
 3. **Bug: video tidak bisa diputar saat halaman dibuka dari berkas
    (`file://`).** YouTube menolak embed tanpa alamat `http/https` (Error 153).
-   **Solusinya:** kalau `lewatServer()` bernilai salah (baris 712), panel
+   **Solusinya:** kalau `lewatServer()` bernilai salah (baris 881), panel
    video tidak mencoba embed sama sekali, tapi menampilkan tautan "Buka di
    YouTube".
 
 4. **Bug: video melompat ke bagian yang tidak nyambung dengan langkahnya.**
    Penyebabnya: bab manual jumlahnya beda dengan jumlah langkah, tapi dipakai
-   apa adanya. **Solusinya:** `daftarBab` (baris 1038) sekarang selalu
+   apa adanya. **Solusinya:** `daftarBab` (baris 1152) sekarang selalu
    menghasilkan **satu bab per langkah**, dengan waktu diambil dari bab manual
    kalau ada, atau dibagi rata dari durasi video kalau tidak ada.
 
 5. **Bug: tombol Sebelumnya tidak memundurkan video.** Dulu hanya `maju()`
    yang memindahkan video. **Solusinya:** fungsi `pindahVideo()` dipanggil
-   oleh **kedua** arah (baris 907 dan 928).
+   oleh **kedua** arah (baris 1016 dan 1027).
 
 6. **Bug: perintah pindah waktu diabaikan YouTube saat iklan/buffering.**
-   **Solusinya:** `lompatKe` (baris 800) mencoba ulang maksimal 8 kali,
+   **Solusinya:** `lompatKe` (baris 822) mencoba ulang maksimal 8 kali,
    dipicu oleh timer 1,2 detik **dan** oleh perubahan keadaan pemutar
    (`onStateChange`). Ada batas percobaan supaya tidak berputar tanpa henti.
+
+7. **Bug: suara video tetap berbunyi walau panelnya sudah ditutup.**
+   Penyebabnya: `hidden = true` hanya menyembunyikan elemen, bukan
+   menghentikan videonya. **Solusinya:** `bukaVideo` (baris 876) menjeda
+   video saat ditutup, dan memutarnya lagi saat dibuka. Tiga tempat lain
+   juga diperiksa: `onReady` tidak memutar kalau panel tertutup,
+   `terapkanMinta` hanya memutar kalau panel terbuka, dan `tutup()` menjeda
+   video sebelum membuang pemutarnya.
 
 **Fitur di dalamnya:**
 
 | Fitur | Di baris | Cara kerja |
 |---|---|---|
-| Timer | 693 | Tombol muncul kalau langkah menyebut waktu. Spasi juga bisa menghidupkan. |
-| Wake Lock | 678 | `navigator.wakeLock.request("screen")` — layar HP tidak mati saat memasak |
-| Bab video | 795 | Daftar tombol waktu di bawah pemutar. Klik → `seekTo(detik)`. |
-| Lanjut = ikut lompat video | 907 | Kalau panel video terbuka, pindah langkah memindahkan video juga |
-| Geser layar | 917 | Geser kiri = Lanjut, geser kanan = Sebelumnya. Minimal 60px dan harus lebih mendatar daripada menurun, supaya menggulir layar tidak ikut pindah langkah. |
-| Papan tuntas | 951 | ← → pindah langkah, Esc menutup, Spasi menghidupkan timer |
+| Timer | 702 | Tombol muncul kalau langkah menyebut waktu. Spasi juga bisa menghidupkan. |
+| Wake Lock | 716 | `navigator.wakeLock.request("screen")` — layar HP tidak mati saat memasak |
+| Bab video | 801 | Daftar tombol waktu di bawah pemutar. Klik → `seekTo(detik)`. |
+| Lanjut = ikut lompat video | 1016 | Kalau panel video terbuka, pindah langkah memindahkan video juga |
+| Geser layar | 1088 | Geser kiri = Lanjut, geser kanan = Sebelumnya. Minimal 60px dan harus lebih mendatar daripada menurun, supaya menggulir layar tidak ikut pindah langkah. |
+| Papan tuntas | 1067 | ← → pindah langkah, Esc menutup, Spasi menghidupkan timer |
+| Rincian langkah | 946 | Daftar bahan per langkah + posisi langkah, hanya saat video tertutup |
 
 ### 5.11 Tombol kembali ke atas (baris 1072–1098)
 
@@ -555,8 +709,8 @@ masuk layar** (baris 1088) supaya tidak menutupi teksnya di layar sempit.
 | Baris | Isi | Gunanya |
 |---|---|---|
 | 1100 | `JUMLAH_RESEP` | Dibaca sekali dari `RESEP.length` |
-| 1104 | `segarkanAngka()` | Isi semua `<span data-jumlah>` dan `<span data-tahun>` di halaman |
-| 1133 | `siapkanHalaman()` | Sapuan akhir bersama: animasi, angka, tombol ke atas, dropdown, saran |
+| 1218 | `segarkanAngka()` | Isi semua `<span data-jumlah>` dan `<span data-tahun>` di halaman |
+| 1247 | `siapkanHalaman()` | Sapuan akhir bersama: animasi, angka, tombol ke atas, dropdown, saran |
 
 **Kenapa angka tidak ditulis manual di HTML?** Supaya menambah resep cukup di
 satu tempat. Kalau nanti resepnya jadi 70, semua tulisan "67 resep" di seluruh
@@ -611,7 +765,7 @@ Bagian terpanjang di halaman.js. Urutannya:
 | 205 | Ubah judul halaman + meta deskripsi + OG + canonical sesuai resep |
 | 227 | Bangun label kecil (level, kategori, vegetarian, aman anak, pedas) |
 | 236 | Bangun seluruh HTML halaman (kepala resep, bahan, langkah, gizi, alat) |
-| 306 | Tombol Simpan, Cetak, Salin tautan |
+| 306 | Tombol Simpan dan Salin tautan |
 | 329 | `gambarBahan`: gambar daftar bahan + centangnya |
 | 358 | `simpanProg`: simpan kemajuan ke localStorage |
 | 364 | `gambarPorsi`: ubah jumlah porsi, semua bahan ikut menyesuaikan |
@@ -639,7 +793,7 @@ Bagian terpanjang di halaman.js. Urutannya:
 | 694 | `barisBahan`: satu baris bahan dengan centang |
 | 727 | `gambarBelanja`: gambar seluruh daftar belanja |
 | 767 | Form tambah bahan manual |
-| 784 | Tombol cetak |
+| 783 | Panggil `siapkanHalaman()` |
 | 798 | Panggil `siapkanHalaman()` |
 
 **Cara kerja daftar belanja otomatis** (baris 652):
@@ -843,21 +997,25 @@ langsung lompat ke bagian dropdown, misalnya.
 | 1 | 10 | Token | Semua variabel `:root` |
 | 2 | 58 | Dasar | Reset, `body`, judul, tautan, fokus |
 | 3 | 139 | Kepala | Kepala lengket, pencarian, navigasi, chip kategori |
-| 4 | 267 | Tombol | `.tb`, `.tb-isi`, `.tb-halus`, `.tb-mini` |
-| 5 | 295 | Kartu | Kartu resep (foto, nama, meta, tombol hati) |
-| 6 | 400 | Panel | Wadah putih bertepi yang membungkus hampir semua isi |
-| 7 | 538 | Beranda | Sorotan resep hari ini, kotak kategori |
-| 8 | 603 | Halaman resep | Kepala resep, bahan, langkah, badge, kotak tips |
-| 9 | 865 | Mode masak | Layar penuh, panel video, tombol navigasi |
-| 10 | 1118 | Rencana makan | Grid 7 hari, slot makan, daftar belanja |
-| 11 | 1183 | Isian | Input, label, form bahan manual |
-| 12 | 1235 | Dropdown kustom | Tombol + daftar pengganti `<select>` |
-| 13 | 1315 | Saran pencarian | Kotak saran di bawah kotak cari |
-| 14 | 1349 | Gulir kustom | Bilah gulir yang dirapikan (tipis, warna merek) |
-| 15 | 1399 | Gerak | Animasi `.muncul` → `.tampil` |
-| 16 | 1413 | Aksesibilitas & cetak | Fokus, `prefers-reduced-motion`, `@media print` |
-| 17 | 1445 | Kaki halaman | Kaki dua kolom dengan tautan dan hak cipta |
-| 18 | 1569 | Responsif | Titik ubah 760px, 900px, 560px, 380px |
+| 4 | 272 | Tombol | `.tb`, `.tb-isi`, `.tb-halus`, `.tb-mini` |
+| 5 | 300 | Kartu | Kartu resep (foto, nama, meta, tombol hati) |
+| 6 | 424 | Panel | Wadah putih bertepi yang membungkus hampir semua isi |
+| 7 | 562 | Beranda | Sorotan resep hari ini, kotak kategori |
+| 8 | 627 | Halaman resep | Kepala resep, bahan, langkah, badge, kotak tips |
+| 9 | 914 | Mode masak | Layar penuh, panel video, rincian langkah, tombol navigasi |
+| 10 | 1313 | Rencana makan | Grid 7 hari, slot makan, daftar belanja |
+| 11 | 1378 | Isian | Input, label, form bahan manual |
+| 12 | 1430 | Dropdown kustom | Tombol + daftar pengganti `<select>` |
+| 13 | 1510 | Saran pencarian | Kotak saran di bawah kotak cari |
+| 14 | 1544 | Gulir kustom | Bilah gulir yang dirapikan (tipis, warna merek) |
+| 15 | 1594 | Gerak | Animasi `.muncul` → `.tampil` |
+| 16 | 1608 | Aksesibilitas | Fokus, `prefers-reduced-motion`, ukuran sasaran sentuh |
+| 17 | 1640 | Kaki halaman | Kaki dua kolom dengan tautan dan hak cipta |
+| 18 | 1721 | Responsif | Titik ubah 860px, 760px, 700px, 560px, 380px |
+
+**Catatan:** bagian 16 dulunya bernama "Aksesibilitas & Cetak". Fitur cetak
+sudah dihapus dari seluruh website (tombol, fungsi, ikon, dan blok
+`@media print`), jadi namanya sekarang "Aksesibilitas" saja.
 
 ### 9.1 Token — satu tempat untuk semua nilai (baris 10–56)
 
@@ -1021,7 +1179,7 @@ Saat video tertutup, ruang layar jadi lega — jadi tiap langkah diperkaya
 dengan dua rincian tambahan. Ini yang membuat mode masak tetap berguna
 walau videonya tidak diputar sama sekali.
 
-**Daftar bahan di langkah ini** (`gambarRinci` di `skrip/store.js`):
+**Daftar bahan di langkah ini** (`gambarRinci` di `skrip/store.js:946`):
 
 Sistem mencocokkan **teks langkah** dengan **daftar bahan**. Contoh, kalau
 langkah menulis "Blender cabai dan bawang merah", maka yang muncul hanya
@@ -1116,7 +1274,7 @@ Keduanya memanggil `toggleFav(id)` yang sama.
 
 Satu detail kecil yang penting: di halaman favorit, melepas simpan harus
 **langsung menghilangkan kartunya**. Ini dilakukan lewat opsi
-`setelahSimpan: gambar` (`skrip/halaman.js:817`) — setelah tombol diklik, halaman
+`setelahSimpan: gambar` (`skrip/halaman.js:829`) — setelah tombol diklik, halaman
 menggambar ulang daftarnya.
 
 ### 10.7 Pencarian
@@ -1133,19 +1291,28 @@ Pencarian di katalog juga tetap membawa filter kategori yang sedang aktif —
 kalau kamu sedang membuka "Makan malam" lalu mencari, hasilnya tetap dibatasi
 ke makan malam. Ini membuat URL bisa dibagikan apa adanya.
 
-### 10.8 Cetak
+ke makan malam. Ini membuat URL bisa dibagikan apa adanya.
 
-Tombol Cetak memakai `window.print()` biasa, tapi CSS `@media print`
-(`aset/style.css:1413`) dirapikan khusus supaya hasil cetaknya benar-benar berguna
-di dapur:
+### 10.8 Fitur cetak sudah dihapus
 
-- Kepala halaman, navigasi, tombol, video, dan kaki halaman disembunyikan
-- Foto resep diperkecil (hemat tinta)
-- Bahan dan langkah disusun dua kolom supaya muat satu halaman
-- Warna dihilangkan (hitam-putih), garis tipis tetap ada
-- Tombol di rencana makan dan daftar belanja disembunyikan
-- Tautan luar ditulis lengkap (`contoh.com` tercetak di sebelah tautannya)
-- `break-inside: avoid` mencegah satu langkah terpotong ke halaman berikutnya
+Dulu ada tombol Cetak di halaman resep dan di rencana makan, plus blok
+`@media print` di CSS. Semuanya sudah **dihapus** supaya website lebih
+sederhana. Yang dihapus:
+
+| Yang dihapus | Di mana |
+|---|---|
+| Tombol Cetak | `skrip/halaman.js` (halaman resep) |
+| Tombol Cetak | `mealplan.html` (rencana makan) |
+| Dua pemanggil `window.print()` | `skrip/halaman.js` |
+| Blok `@media print` (2.093 karakter) | `aset/style.css` |
+| Ikon `i-printer` | `aset/icons.svg` |
+
+**Kenapa dihapus?** Karena tidak banyak dipakai, dan menambah 2.093 karakter
+CSS yang harus dirawat setiap kali tata letak berubah. Sekarang jumlah ikon
+31 (dari 32), dan semuanya masih dipakai.
+
+Kalau nanti ingin dikembalikan, cukup tambah tombol yang memanggil
+`window.print()` dan satu blok `@media print` di akhir CSS.
 
 ---
 
@@ -1230,7 +1397,7 @@ tahu cara memperbaikinya). Tiga lapis pertahanan:
    tempat objek (`skrip/store.js:29`)
 2. `ambilTambahan()` (`skrip/halaman.js:686`) menyaring entri yang bukan objek
    dengan teks
-3. `ambilRencana()` (`skrip/halaman.js:543`) memastikan hasilnya objek
+3. `ambilRencana()` (`skrip/halaman.js:561`) memastikan hasilnya objek
 
 ### 11.4 Privasi
 
@@ -1252,7 +1419,7 @@ tanpa alat uji khusus.
 | Semua tombol ikon punya `aria-label` | Tombol hati, tombol hapus, tombol tutup |
 | Ikon hiasan diberi `aria-hidden="true"` | Semua `<svg class="ikon">` |
 | Kontras teks minimal 4.5:1 | `--aksen-teks` sengaja digelapkan jadi 4.95:1 |
-| Fokus keyboard terlihat jelas | `:focus-visible` dengan garis kontras (`aset/style.css:1415`) |
+| Fokus keyboard terlihat jelas | `:focus-visible` dengan garis kontras (`aset/style.css:1621`) |
 | Angka porsi bisa diubah tanpa mouse | Tombol `+`/`−`, bukan slider |
 | Mode masak bisa ditutup dengan Esc | `papanTuntas` (`skrip/store.js:951`) |
 | "Kurangi gerak" dihormati | `prefers-reduced-motion` (`skrip/store.js:518`) |
@@ -1276,9 +1443,9 @@ langkah yang bagus — tapi harus diuji di semua browser dulu.
 | `loading="lazy"` | `skrip/store.js:298` | Foto di bawah layar tidak diunduh dulu |
 | `fetchpriority="high"` | `index.html:62` | Foto hero diunduh lebih dulu |
 | `width` + `height` di semua `<img>` | Semua | Tidak ada lompatan tata letak saat foto muncul (CLS) |
-| `content-visibility: auto` | `aset/style.css:310` | 67 kartu tidak digambar sekaligus |
-| Tinggi minimum wadah JS | `aset/style.css:461` | CLS turun dari 0,58 ke 0,03 |
-| Animasi hanya opacity | `aset/style.css:1399` | Menggeser elemen ikut tercatat sebagai CLS |
+| `content-visibility: auto` | `aset/style.css:319` | 67 kartu tidak digambar sekaligus |
+| Tinggi minimum wadah JS | `aset/style.css:486` | CLS turun dari 0,58 ke 0,03 |
+| Animasi hanya opacity | `aset/style.css:482` | Menggeser elemen ikut tercatat sebagai CLS |
 | API YouTube dimuat saat diklik | `skrip/store.js:571` | Pengunjung yang tidak menonton tidak membayar biayanya |
 | Daftar favorit dibaca sekali | `skrip/store.js:321` | Dari 67 pembacaan localStorage jadi 1 |
 | Teks pencarian digabung sekali | `skrip/store.js:441` | Tidak menggabung ulang nama 67 bahan tiap ketikan |
@@ -1476,9 +1643,9 @@ satu token mengubah seluruh situs secara konsisten.
 1. Buka `aset/icons.svg`, tambahkan `<symbol id="i-nama-baru" viewBox="0 0 24 24">`
 2. Pakai di HTML: `<svg class="ikon"><use href="aset/icons.svg#i-nama-baru"/></svg>`
 
-32 ikon yang sudah ada: `i-clock`, `i-timer`, `i-users`, `i-gauge`, `i-flame`,
+31 ikon yang sudah ada: `i-clock`, `i-timer`, `i-users`, `i-gauge`, `i-flame`,
 `i-flame-kindling`, `i-cooking-pot`, `i-chef-hat`, `i-soup`, `i-utensils`,
-`i-list-checks`, `i-check`, `i-printer`, `i-share`, `i-heart`, `i-search`,
+`i-list-checks`, `i-check`, `i-share`, `i-heart`, `i-search`,
 `i-plus`, `i-minus`, `i-arrow-left`, `i-arrow-right`, `i-star`, `i-pin`,
 `i-calendar`, `i-basket`, `i-book`, `i-bulb`, `i-alert`, `i-leaf`, `i-play`,
 `i-x`, `i-chevron-down`, `i-panah-atas`.
@@ -1572,7 +1739,7 @@ Prinsip yang dipegang di seluruh proyek ini:
 
 2. **Jelaskan "kenapa", bukan hanya "apa".** Hampir setiap fungsi punya
    komentar yang menjelaskan alasan keputusannya, bukan hanya kegiatannya.
-   Contoh: komentar di `aset/style.css:310` menjelaskan kenapa angka `215px` harus
+   Contoh: komentar di `aset/style.css:319` menjelaskan kenapa angka `215px` harus
    sama dengan tinggi kartu.
 
 3. **Tangani kegagalan dengan ramah.** Video gagal? Muncul tautan YouTube.
