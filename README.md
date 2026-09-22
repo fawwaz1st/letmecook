@@ -121,7 +121,7 @@ letmecook/
 │  ── Tampilan ─────────────────────────────────────────────
 ├── aset/
 │   ├── style.css         Seluruh tampilan (18 bagian bernomor)
-│   ├── icons.svg         Sprite 32 ikon garis 24px
+│   ├── icons.svg         Sprite 31 ikon garis 24px
 │   ├── ikon-192.png      Ikon aplikasi 192px (manifest)
 │   └── ikon-512.png      Ikon aplikasi 512px (manifest)
 │
@@ -130,10 +130,11 @@ letmecook/
 ├── sitemap.xml           Daftar 72 URL situs (5 halaman + 67 resep)
 ├── manifest.webmanifest  Info aplikasi (nama, ikon, warna)
 │
-│  ── Dokumentasi ──────────────────────────────────────────
+│  ── Dokumentasi (tidak ikut ter-deploy) ───────────────────
 ├── README.md             Berkas yang sedang kamu baca
-├── PENJELASAN.MD         Panduan lengkap kode, baris per baris
-├── PANDUAN-PRESENTASI.md Naskah presentasi 8 bagian, siap dibaca
+└── docs/
+    ├── PENJELASAN.MD      Panduan lengkap kode, baris per baris
+    └── PANDUAN-PRESENTASI.md  Naskah presentasi + seluruh tanya-jawab
 │
 │  ── Alat bantu (tidak ikut ter-deploy) ───────────────────
 └── _qa/
@@ -172,9 +173,9 @@ Daftar **72 URL** (5 halaman utama + 67 resep), lengkap dengan:
 Buat ulang setiap kali menambah resep: `node _qa/buat-sitemap.js`
 
 Data, alat, dan logika halaman dipisah supaya tiap berkas punya satu tugas.
-`skrip/resep-data.js` 2.599 baris isinya data (termasuk tabel durasi dan
-tanggal video); `skrip/store.js` 1.150 baris isinya alat bersama (32 fungsi);
-`skrip/halaman.js` 865 baris isinya apa yang dilakukan tiap halaman.
+`skrip/resep-data.js` 2.598 baris isinya data (termasuk tabel durasi dan
+tanggal video); `skrip/store.js` 1.263 baris isinya alat bersama (32 fungsi);
+`skrip/halaman.js` 859 baris isinya apa yang dilakukan tiap halaman.
 Ketiganya dimuat berurutan sebagai skrip biasa:
 
 ```html
@@ -281,9 +282,11 @@ Aturan kecil yang perlu diikuti:
 
 ## Dokumen lain
 
-- **[PENJELASAN.MD](PENJELASAN.MD)** — panduan lengkap seluruh kode: alur data,
-  penjelasan tiap fungsi, sistem desain, keamanan, dan tanya-jawab. Ditulis
-  untuk pemula yang ingin memahami atau mempresentasikan situs ini.
+- **[docs/PENJELASAN.MD](docs/PENJELASAN.MD)** — panduan lengkap seluruh kode: alur data,
+  penjelasan tiap fungsi (termasuk baris per baris), sistem desain,
+  keamanan. Ditulis untuk pemula yang ingin memahami situs ini.
+- **[docs/PANDUAN-PRESENTASI.md](docs/PANDUAN-PRESENTASI.md)** — naskah
+  presentasi 12 menit (plus versi 5 menit) dan seluruh tanya-jawab.
 
 ## Kontak
 

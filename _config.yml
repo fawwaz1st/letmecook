@@ -6,8 +6,7 @@
 #
 # Catatan: folder berawalan garis bawah (_qa) dan berkas berawalan titik
 # (.gitignore) sudah otomatis dikecualikan. Yang perlu ditambahkan
-# manual hanya berkas dokumentasi.
+# manual hanya folder dokumentasi pengembang.
 
 exclude:
-  - README.md
-  - PENJELASAN.MD
+  - docs

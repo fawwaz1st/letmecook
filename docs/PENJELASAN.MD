@@ -28,7 +28,7 @@ di mana harus mengubah kalau mau menambah sesuatu.
 11. [Keamanan](#11-keamanan)
 12. [Aksesibilitas](#12-aksesibilitas)
 13. [Optimasi Performa](#13-optimasi-performa)
-14. [Pertanyaan yang Sering Muncul](#14-pertanyaan-yang-sering-muncul)
+14. [Tanya-jawab (pindah ke panduan)](#14-pertanyaan-yang-sering-muncul)
 15. [Cara Menambah atau Mengubah Sesuatu](#15-cara-menambah-atau-mengubah-sesuatu)
 16. [Istilah Teknis](#16-istilah-teknis)
 
@@ -95,13 +95,13 @@ letmecook/
 │
 │  ── Logika (dipanggil halaman) ──────────────────────────────
 ├── skrip/
-│   ├── resep-data.js     (2.595 baris)  DATA: 67 resep + tabel video
-│   ├── store.js          (1.111 baris)  ALAT: 32 fungsi bersama
-│   └── halaman.js        (  741 baris)  LOGIKA: 5 fungsi + router
+│   ├── resep-data.js     (2.598 baris)  DATA: 67 resep + tabel video
+│   ├── store.js          (1.263 baris)  ALAT: 32 fungsi bersama
+│   └── halaman.js        (  859 baris)  LOGIKA: 5 fungsi + router
 │
 │  ── Tampilan (aset yang diunduh) ────────────────────────────
 ├── aset/
-│   ├── style.css       (1.659 baris)  Seluruh tampilan (18 bagian)
+│   ├── style.css       (1.781 baris)  Seluruh tampilan (18 bagian)
 │   ├── icons.svg                       31 ikon SVG, dipanggil per id
 │   ├── ikon-192.png                   Ikon aplikasi 192px (manifest)
 │   └── ikon-512.png                   Ikon aplikasi 512px (manifest)
@@ -113,8 +113,9 @@ letmecook/
 │
 │  ── Dokumentasi ─────────────────────────────────────────────
 ├── README.md             Panduan singkat untuk pengembang
-├── PENJELASAN.MD         Dokumen yang sedang kamu baca
-├── PANDUAN-PRESENTASI.md Naskah presentasi 8 bagian, siap dibaca
+└── docs/
+    ├── PENJELASAN.MD      Dokumen yang sedang kamu baca
+    └── PANDUAN-PRESENTASI.md  Naskah presentasi + seluruh tanya-jawab
 │
 │  ── Alat bantu (tidak ikut ter-deploy) ──────────────────────
 └── _qa/
@@ -190,7 +191,7 @@ Keluarannya seperti ini kalau semua bersih:
 ```
 OK   Karakter rusak (mojibake)
 OK   Fungsi dan konstanta tak terpakai
-OK   Ikon SVG (32 ikon)
+OK   Ikon SVG (31 ikon)
 OK   Data resep (67 resep)
 
 Semua bersih.
@@ -350,7 +351,7 @@ tidak perlu ditulis ulang di tujuh tempat.
 
 ## 5. store.js — Peralatan Bersama
 
-1.239 baris, 32 fungsi. Dibagi jadi beberapa bagian dengan komentar pembatas
+1.263 baris, 32 fungsi. Dibagi jadi beberapa bagian dengan komentar pembatas
 `// ====...====`. Berikut peta lengkapnya:
 
 ### 5.1 Penyimpanan (baris 1–75)
@@ -437,7 +438,7 @@ rencana["Senin"] = {};                 // tetap jalan, tapi aneh
 const rencana = baca(KEY.meal, {});   // dapat {} — data rusak diabaikan
 ```
 
-### 5.2 Format angka dan waktu (baris 77–148)
+### 5.2 Format angka dan waktu (baris 77–157)
 
 | Baris | Fungsi | Contoh |
 |---|---|---|
@@ -470,7 +471,7 @@ memanggil fungsi yang sama.
 | 203 | Pendengar galat gambar | **Satu** pendengar untuk semua `<img>`. Kejadian `error` tidak menggelembung, jadi dipasang di fase tangkap (argumen ketiga `true`). |
 | 209 | Pemeriksaan manual | Gambar yang telanjur gagal sebelum pendengar terpasang tidak memicu kejadian apa pun lagi, jadi diperiksa langsung dengan `naturalWidth === 0`. |
 
-### 5.5 Membaca langkah (baris 216–291)
+### 5.5 Membaca langkah (baris 216–284)
 
 Ini bagian paling menarik. Satu kalimat langkah seperti:
 
@@ -497,7 +498,7 @@ Dipecah otomatis oleh `parseLangkah` (baris 237) menjadi:
 
 Hasilnya dipakai untuk:
 - **badge berwarna** di atas langkah — warna per teknik diatur di CSS lewat
-  `[data-teknik="tumis"]` (`aset/style.css:852`), bukan ditulis JS
+  `[data-teknik="tumis"]` (`aset/style.css:854`), bukan ditulis JS
 - **meter api** (3 batang kecil, menyala sesuai besar api)
 - **kotak "Matang kalau:"**
 
@@ -554,7 +555,7 @@ Hasilnya untuk contoh di atas:
 menyusut", bagian "kuah menyusut" tetap bisa dipakai sebagai tanda matang —
 lebih baik ada tanda yang kurang sempurna daripada tidak ada sama sekali.
 
-### 5.6 Kartu resep (baris 293–339)
+### 5.6 Kartu resep (baris 293–335)
 
 | Baris | Fungsi | Gunanya |
 |---|---|---|
@@ -568,7 +569,7 @@ Dua optimasi penting di `isiKartu`:
 2. Opsi `setelahSimpan` memanggil fungsi setelah tombol hati diklik — dipakai
    halaman favorit untuk langsung menghapus kartu yang dilepas.
 
-### 5.7 Dropdown kustom (baris 341–429)
+### 5.7 Dropdown kustom (baris 341–425)
 
 `<select>` bawaan browser diganti tombol + daftar buatan sendiri, tapi
 **nilainya tetap disimpan di `<select>` asli** (baris 386). Kenapa? Supaya
@@ -577,7 +578,7 @@ sekali — hanya tampilannya yang diganti.
 
 Fitur papan tuntas di baris 408: panah atas/bawah memilih, Esc menutup.
 
-### 5.8 Saran pencarian (baris 431–515)
+### 5.8 Saran pencarian (baris 431–511)
 
 Saat mengetik di kotak cari, muncul daftar maksimal 7 resep yang cocok,
 lengkap dengan foto kecil. Dua optimasi:
@@ -587,7 +588,7 @@ lengkap dengan foto kecil. Dua optimasi:
 2. Ketikan ditunda 120ms sebelum digambar (baris 487), supaya mengetik
    cepat tidak membuat layar berkedip
 
-### 5.9 Animasi gulir (baris 517–564)
+### 5.9 Animasi gulir (baris 517–556)
 
 Elemen ber-class `.muncul` memudar masuk saat masuk layar, memakai
 `IntersectionObserver`. Dua hal penting:
@@ -598,7 +599,7 @@ Elemen ber-class `.muncul` memudar masuk saat masuk layar, memakai
    (baris 560), bukan seluruh dokumen — kalau tidak, menggambar 67 kartu
    berarti 67 pemindaian penuh dan halaman jadi lambat
 
-### 5.10 Mode masak (baris 566–1186)
+### 5.10 Mode masak dan bab video (baris 566–1181)
 
 Bagian terpanjang dan paling rumit. Dipecah begini:
 
@@ -752,12 +753,12 @@ oleh timer 1,2 detik **dan** oleh perubahan keadaan pemutar
 | Papan tuntas | 1067 | ← → pindah langkah, Esc menutup, Spasi menghidupkan timer |
 | Rincian langkah | 946 | Daftar bahan per langkah + posisi langkah, hanya saat video tertutup |
 
-### 5.11 Tombol kembali ke atas (baris 1072–1098)
+### 5.11 Tombol kembali ke atas (baris 1186–1208)
 
 Muncul setelah digulir 600px, tapi **disembunyikan lagi saat kaki halaman
 masuk layar** (baris 1088) supaya tidak menutupi teksnya di layar sempit.
 
-### 5.12 Sinkronisasi angka dan sapuan akhir (baris 1100–1147)
+### 5.12 Sinkronisasi angka dan sapuan akhir (baris 1218–1263)
 
 | Baris | Isi | Gunanya |
 |---|---|---|
@@ -773,9 +774,9 @@ halaman ikut berubah sendiri.
 
 ## 6. halaman.js — Logika Tiap Halaman
 
-865 baris, 5 fungsi halaman + 1 router. Satu fungsi per halaman.
+859 baris, 5 fungsi halaman + 1 router. Satu fungsi per halaman.
 
-### 6.1 Router (baris 823–838)
+### 6.1 Router (baris 842–859)
 
 Dijelaskan di bagian 4. Membaca `<body data-halaman="...">` lalu memanggil
 fungsi yang cocok.
@@ -807,7 +808,7 @@ fungsi yang cocok.
 | 175 | Bangun JSON-LD `ItemList` untuk mesin pencari |
 | 185 | Panggil `siapkanHalaman()` |
 
-### 6.4 `halamanResep` — Halaman Resep (baris 188–537)
+### 6.4 `halamanResep` — Halaman Resep (baris 188–555)
 
 Bagian terpanjang di halaman.js. Urutannya:
 
@@ -861,7 +862,7 @@ Bahan yang ditulis sendiri disimpan **terpisah** (`KEY.gmanual`) dengan alasan
 penting: kalau disimpan bersama bahan resep, dia akan terhapus setiap kali
 daftar disusun ulang dari rencana makan.
 
-### 6.6 `halamanFavorit` — Favorit (baris 802–821)
+### 6.6 `halamanFavorit` — Favorit (baris 823–841)
 
 | Baris | Yang dilakukan |
 |---|---|
@@ -874,7 +875,7 @@ daftar disusun ulang dari rencana makan.
 
 ## 7. skrip/resep-data.js — Data 67 Resep
 
-2.599 baris. **Hanya data. Tidak ada fungsi, tidak ada logika.** Strukturnya
+2.598 baris. **Hanya data. Tidak ada fungsi, tidak ada logika.** Strukturnya
 dijelaskan di bagian 3.
 
 Bagian akhir berkas berisi dua tabel:
@@ -926,13 +927,13 @@ Bagian akhir berkas berisi dua tabel:
 
 | Berkas | Baris | `data-halaman` | Isi utama |
 |---|---|---|---|
-| `index.html` | 127 | `index` | Hero, `#hariIni`, `#katGrup`, `#popGrup`, `#babGrup` |
-| `katalog.html` | 134 | `katalog` | Form pencarian, chip kategori `#chipKategori`, tiga filter (`fLevel`, `fWaktu`, `fDiet`), `#grup`, `#kosong` |
-| `resep.html` | 85 | `resep` | Cuma kerangka kosong + `#area` (diisi JavaScript) + `#sanding` |
-| `mealplan.html` | 117 | `mealplan` | `#mealGrup` (21 slot), `#belanja`, form manual, dialog `#pilih` |
-| `favorit.html` | 88 | `favorit` | `#grup` + `#kosong` |
-| `tentang.html` | 125 | `tentang` | Tabel konversi, penjelasan video, penjelasan privasi |
-| `404.html` | 72 | `404` | Pesan "Alamat ini tidak ada" + tombol ke katalog |
+| `index.html` | 137 | `index` | Hero, `#hariIni`, `#katGrup`, `#popGrup`, `#babGrup` |
+| `katalog.html` | 143 | `katalog` | Form pencarian, chip kategori `#chipKategori`, tiga filter (`fLevel`, `fWaktu`, `fDiet`), `#grup`, `#kosong` |
+| `resep.html` | 92 | `resep` | Cuma kerangka kosong + `#area` (diisi JavaScript) + `#sanding` |
+| `mealplan.html` | 126 | `mealplan` | `#mealGrup` (21 slot), `#belanja`, form manual, dialog `#pilih` |
+| `favorit.html` | 96 | `favorit` | `#grup` + `#kosong` |
+| `tentang.html` | 136 | `tentang` | Tabel konversi, penjelasan video, penjelasan privasi |
+| `404.html` | 77 | `404` | Pesan "Alamat ini tidak ada" + tombol ke katalog |
 
 ### 8.3 Kaki halaman (baris ~60 di tiap berkas)
 
@@ -1042,7 +1043,7 @@ Jalankan setiap kali menambah resep baru, supaya resep ke-68 ikut terdaftar.
 
 ## 9. style.css — 18 Bagian
 
-1.825 baris, dibagi 18 bagian bernomor. Tekan `Ctrl+F` lalu ketik `12)` untuk
+1.781 baris, dibagi 18 bagian bernomor. Tekan `Ctrl+F` lalu ketik `12)` untuk
 langsung lompat ke bagian dropdown, misalnya.
 
 | No | Baris | Bagian | Isinya |
@@ -1108,7 +1109,7 @@ warna yang cocok dengan cara mata manusia melihat. Keuntungan praktisnya:
 kalau dua warna punya angka "kecerahan" (L) yang sama, keduanya benar-benar
 terlihat sama terangnya. Ini membuat kontras teks lebih mudah dijaga.
 
-### 9.2 Jebakan `[hidden]` (baris ~52)
+### 9.2 Jebakan `[hidden]` (baris 85)
 
 ```css
 [hidden] { display: none !important; }
@@ -1119,7 +1120,7 @@ Ini penyebab bug yang menjengkelkan: elemen yang seharusnya tersembunyi tetap
 tampil karena aturan `display` lain lebih kuat. Aturan di atas memastikan
 `hidden` selalu menang.
 
-### 9.3 Kartu compact (baris 295–330)
+### 9.3 Kartu compact (baris 308–342)
 
 Kartu resep sengaja dibuat pendek (±215px) supaya katalog terasa padat:
 
@@ -1129,7 +1130,7 @@ Kartu resep sengaja dibuat pendek (±215px) supaya katalog terasa padat:
 - Nama dibatasi maksimal 2 baris (`-webkit-line-clamp: 2`)
 - Hanya 3 informasi di kartu: waktu, daerah, rating
 
-### 9.4 `content-visibility` (baris 310–318)
+### 9.4 `content-visibility` (baris 317–320)
 
 ```css
 .kartu {
@@ -1327,7 +1328,7 @@ Keduanya memanggil `toggleFav(id)` yang sama.
 
 Satu detail kecil yang penting: di halaman favorit, melepas simpan harus
 **langsung menghilangkan kartunya**. Ini dilakukan lewat opsi
-`setelahSimpan: gambar` (`skrip/halaman.js:858`) — setelah tombol diklik, halaman
+`setelahSimpan: gambar` (`skrip/halaman.js:834`) — setelah tombol diklik, halaman
 menggambar ulang daftarnya.
 
 ### 10.7 Pencarian
@@ -1477,7 +1478,7 @@ tanpa alat uji khusus.
 | Mode masak bisa ditutup dengan Esc | `papanTuntas` (`skrip/store.js:1067`) |
 | "Kurangi gerak" dihormati | `prefers-reduced-motion` (`skrip/store.js:518`) |
 | Dialog pemilih resep punya `role="dialog"` | `mealplan.html:78` |
-| Tabel konversi pakai `<th scope="col">` | `tentang.html:52` |
+| Tabel konversi pakai `<th scope="col">` | `tentang.html:63` |
 | Ukuran sasaran sentuh ≥ 44px | Semua tombol utama |
 
 **Catatan untuk pengembangan lanjutan:** HTML sekarang punya elemen `<dialog>`
@@ -1493,12 +1494,12 @@ langkah yang bagus — tapi harus diuji di semua browser dulu.
 | Teknik | Di mana | Manfaat |
 |---|---|---|
 | Foto berukuran 500px | `skrip/resep-data.js` | Total ±2MB untuk 67 foto (dari ±10MB di 1280px) |
-| `loading="lazy"` | `skrip/store.js:288` | Foto di bawah layar tidak diunduh dulu |
-| `fetchpriority="high"` | `index.html:62` | Foto hero diunduh lebih dulu |
+| `loading="lazy"` | `skrip/store.js:305` | Foto di bawah layar tidak diunduh dulu |
+| `fetchpriority="high"` | `index.html:60` | Foto hero diunduh lebih dulu |
 | `width` + `height` di semua `<img>` | Semua | Tidak ada lompatan tata letak saat foto muncul (CLS) |
 | `content-visibility: auto` | `aset/style.css:319` | 67 kartu tidak digambar sekaligus |
 | Tinggi minimum wadah JS | `aset/style.css:486` | CLS turun dari 0,58 ke 0,03 |
-| Animasi hanya opacity | `aset/style.css:482` | Menggeser elemen ikut tercatat sebagai CLS |
+| Animasi hanya opacity | `aset/style.css:1598` | Menggeser elemen ikut tercatat sebagai CLS |
 | API YouTube dimuat saat diklik | `skrip/store.js:571` | Pengunjung yang tidak menonton tidak membayar biayanya |
 | Daftar favorit dibaca sekali | `skrip/store.js:321` | Dari 67 pembacaan localStorage jadi 1 |
 | Teks pencarian digabung sekali | `skrip/store.js:444` | Tidak menggabung ulang nama 67 bahan tiap ketikan |
@@ -1524,140 +1525,14 @@ langkah yang bagus — tapi harus diuji di semua browser dulu.
 
 ## 14. Pertanyaan yang Sering Muncul
 
-**T: Kenapa website ini dibuat?**
+Seluruh tanya-jawab (untuk presentasi maupun pembaca kode) **pindah ke
+[`docs/PANDUAN-PRESENTASI.md`](PANDUAN-PRESENTASI.md)** — satu tempat untuk
+semua pertanyaan, supaya tidak ada jawaban yang dobel di dua berkas.
 
-J: Karena dua masalah yang sering ditemui saat mengikuti resep internet.
-
-Pertama, takarannya kabur. "Garam secukupnya", "santan secukupnya" tidak
-membantu orang yang belum pernah masak — berapa itu secukupnya? Di sini
-semua bahan punya angka: gram, mililiter, sendok, butir.
-
-Kedua, langkahnya tidak memberi tanda. "Masak sampai matang" — matang yang
-seperti apa? Di sini tiap langkah menyebut tanda yang bisa dilihat: kuah
-menyusut, minyak keluar, warna kuning tua. Jadi kamu tidak perlu menebak.
-
-**T: Untuk apa website ini? Apa saja yang bisa dilakukan?**
-
-J: Tiga hal utama:
-
-1. **Masak dengan angka pasti.** Bahan bertakar gram, dan porsi bisa
-   disesuaikan — jumlah semua bahan ikut berubah sendiri.
-2. **Tahu kapan sesuatu sudah matang.** Tiap langkah menyebut tanda yang
-   bisa diperiksa mata, bukan cuma lama waktunya. Ada juga timer otomatis
-   untuk langkah yang menyebut menit.
-3. **Merencanakan makan seminggu.** Isi 21 slot (7 hari × 3 waktu makan),
-   lalu daftar belanja tersusun sendiri dari bahan resep yang kamu pilih.
-
-**T: Siapa yang cocok memakai website ini?**
-
-J: Orang yang baru mulai masak, perantau yang ingin masak masakan rumah, dan
-siapa pun yang lebih suka mengikuti angka daripada menebak. Isinya 67
-masakan Indonesia dari berbagai daerah — rendang, soto, gudeg, sampai juhu
-singkah umbut rotan dari Kalimantan.
-
-**T: Apa bedanya dengan situs resep lain?**
-
-J: Empat hal:
-
-- **Takaran gram, bukan "secukupnya"** — di semua 67 resep.
-- **Tanda matang di tiap langkah** — bukan cuma di akhir.
-- **Video menyatu dengan langkah** — tekan Lanjut, videonya ikut pindah ke
-  bagian yang cocok. Tidak perlu mencari menitnya sendiri.
-- **Tanpa akun, tanpa iklan, tanpa pelacak** — favorit, rencana makan, dan
-  centangmu tersimpan di browser sendiri dan tidak dikirim ke mana pun.
-
-**T: Apakah website ini gratis? Perlu akun?**
-
-J: Gratis, dan tidak perlu akun. Tidak ada iklan, tidak ada langganan,
-tidak ada pendaftaran. Buka langsung pakai.
-
-**T: Kenapa tidak ada kolom komentar, akun, atau fitur sosial?**
-
-J: Karena website ini sengaja tidak punya server. Kolom komentar dan akun
-butuh server untuk menyimpan data, plus orang untuk memoderasi — keduanya
-menambah biaya dan menghilangkan alasan utama situs ini dibuat: privasi
-pengunjung. Semua datamu disimpan di browser sendiri, dan itu tidak mungkin
-kalau ada fitur sosial.
-
-**T: Kenapa ada tiga berkas JavaScript? Kenapa tidak satu saja?**
-
-J: Karena tanggung jawabnya berbeda. `skrip/resep-data.js` hanya data — kalau mau
-menambah resep, kamu tidak perlu menyentuh logika sama sekali. `skrip/store.js`
-berisi alat yang dipakai semua halaman. `skrip/halaman.js` berisi apa yang dilakukan
-tiap halaman. Kalau digabung jadi satu, berkasnya jadi 4.600 baris yang sulit
-dicari.
-
-**T: Kenapa tidak pakai React/Vue saja?**
-
-J: Website ini isinya statis — data tidak berubah tanpa interaksi pengunjung.
-Framework akan menambah ratusan kilobyte JavaScript, alat build, dan konsep
-yang harus dipelajari, tanpa manfaat nyata untuk kebutuhan ini. Vanilla JS
-di sini juga sengaja supaya **pemula bisa membaca kodenya langsung**.
-
-**T: Kenapa video tidak bisa diputar saat file HTML diklik dua kali?**
-
-J: YouTube menolak embed dari halaman `file://` karena tidak ada alamat
-`http/https` (Error 153). Ini batasan keamanan YouTube, bukan bug website.
-Solusinya: jalankan server lokal (`python -m http.server 8899`) atau buka
-versi GitHub Pages. Website sudah menangani keadaan ini dengan menampilkan
-tautan ke YouTube, bukan layar kosong.
-
-**T: Kenapa `var RESEP`, bukan `const RESEP`?**
-
-J: Karena skrip dimuat sebagai skrip biasa (bukan modul ES). Pada skrip biasa,
-`const` di tingkat atas **tidak** menjadi properti `window`, sehingga berkas
-lain tidak bisa membacanya. `var` bisa. Ini jebakan yang mudah bikin bingung.
-
-**T: Data pengguna disimpan di mana? Apakah aman?**
-
-J: Di `localStorage` browser pengunjung sendiri, dengan awalan kunci
-`letmecook:`. Tidak ada yang dikirim ke server mana pun — karena website ini
-memang tidak punya server. Aman untuk privasi; konsekuensinya data hilang
-kalau pengunjung menghapus riwayat browser.
-
-**T: Bagaimana cara video tahu posisi menit tiap langkah?**
-
-J: `daftarBab` (`skrip/store.js:1152`) selalu menghasilkan satu bab per langkah.
-Kalau resep punya data `bab` tulisan tangan, waktu diambil dari situ (paling
-akurat). Kalau tidak, durasi video dibagi rata sesuai jumlah langkah,
-disisakan 8 detik di akhir untuk penutup.
-
-**T: Kenapa rating dan jumlah "dimasak" terlihat seperti angka asli?**
-
-J: Itu angka contoh di data, **bukan** ulasan pengguna sungguhan. Karena itu
-`aggregateRating` **sengaja tidak dimasukkan** ke JSON-LD — mengirim rating
-palsu ke Google bisa berakibat sanksi. Kalau nanti ada sistem ulasan asli,
-baru boleh ditambahkan.
-
-**T: Kenapa CSS-nya satu berkas besar 1.600 baris?**
-
-J: Karena tanpa build tool, berkas terpisah berarti banyak permintaan HTTP
-tambahan. Satu berkas + 18 bagian bernomor adalah kompromi terbaik untuk
-proyek sebesar ini: tetap mudah dicari (`Ctrl+F` lalu ketik `12)`), tetap
-hanya satu unduhan.
-
-**T: Kenapa warna pakai `oklch()`, bukan `#hex`?**
-
-J: OKLCH cocok dengan cara mata melihat warna. Kalau dua warna punya angka
-kecerahan (L) sama, keduanya benar-benar terlihat sama terang. Ini membuat
-kontras teks lebih mudah dijaga — persis yang dibutuhkan untuk WCAG.
-
-**T: Kalau mau menambah resep ke-68, apa saja yang harus diubah?**
-
-J: Hanya `skrip/resep-data.js`:
-1. Tambah satu objek di larik `RESEP` (ikuti bentuk resep yang sudah ada)
-2. Tambah satu baris di `DURASI_VIDEO` dengan durasi video barunya
-3. Tambah satu baris di `TANGGAL_VIDEO` dengan tanggal unggahnya
-4. Jalankan `node _qa/buat-sitemap.js` supaya sitemap ikut memuat resep baru
-
-Semua angka di seluruh halaman ("67 resep") otomatis menyesuaikan karena
-diambil dari `RESEP.length`. Tidak ada HTML atau CSS yang perlu disentuh.
-
-**T: Bagaimana kalau foto Wikimedia gagal dimuat?**
-
-J: Ada dua tahap cadangan (`imgFallback`, `skrip/store.js:186`): pertama diganti
-gambar SVG hijau bawaan, kalau masih gagal jadi blok warna (`img-solid`).
-Jadi tidak akan pernah ada ikon gambar rusak di halaman.
+Bagian ini menyimpan penjelasan teknis yang tempatnya memang di sini, di
+samping kode yang dibahas. Soal "kenapa dibuat", "untuk apa", "siapa
+penggunanya", sampai pertanyaan kelas seperti "kenapa tidak pakai React" —
+semuanya di panduan.
 
 ---
 
@@ -1677,7 +1552,7 @@ Jadi tidak akan pernah ada ikon gambar rusak di halaman.
 
 ### Mengubah warna seluruh situs
 
-Cukup ubah `:root` di bagian 1 `aset/style.css` (baris 10). Contoh, mau hijau
+Cukup ubah `:root` di bagian 1 `aset/style.css` (baris 11). Contoh, mau hijau
 lebih tua:
 
 ```css
@@ -1688,7 +1563,7 @@ Semua tombol, ikon, garis, dan tautan ikut berubah.
 
 ### Mengubah jarak (spacing) seluruh situs
 
-Semua jarak memakai token `--s1` sampai `--s8` (`aset/style.css:12`). Mengubah
+Semua jarak memakai token `--s1` sampai `--s8` (`aset/style.css:29`). Mengubah
 satu token mengubah seluruh situs secara konsisten.
 
 ### Menambah ikon baru
@@ -1708,7 +1583,7 @@ satu token mengubah seluruh situs secara konsisten.
 1. Salin kerangka halaman yang sudah ada (mis. `tentang.html`)
 2. Ganti `<body data-halaman="namabaru">`
 3. Tambah fungsi `halamanNamaBaru()` di `skrip/halaman.js`
-4. Daftarkan di router (`skrip/halaman.js:823`): `namabaru: halamanNamaBaru`
+4. Daftarkan di router (`skrip/halaman.js:842`): `namabaru: halamanNamaBaru`
 5. Jangan lupa: meta CSP, canonical, OG, dan `<script src="halaman.js">`
 6. Tambahkan juga kaki halaman (salin dari halaman lain)
 7. Tambahkan ke `_qa/buat-sitemap.js` lalu jalankan

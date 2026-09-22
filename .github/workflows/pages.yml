@@ -40,8 +40,8 @@ jobs:
       # alat bantu dan dokumentasi pengembang tidak ikut terbit ke publik.
       - name: Bersihkan berkas non-situs
         run: |
-          rm -rf _qa .github
-          rm -f README.md PENJELASAN.MD .gitignore
+          rm -rf _qa .github docs
+          rm -f README.md .gitignore
 
       - name: Bungkus berkas situs
         uses: actions/upload-pages-artifact@v3
