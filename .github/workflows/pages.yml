@@ -36,6 +36,13 @@ jobs:
         with:
           enablement: true
 
+      # Buang berkas yang bukan bagian situs sebelum dibungkus, supaya
+      # alat bantu dan dokumentasi pengembang tidak ikut terbit ke publik.
+      - name: Bersihkan berkas non-situs
+        run: |
+          rm -rf _qa .github
+          rm -f README.md PENJELASAN.MD .gitignore
+
       - name: Bungkus berkas situs
         uses: actions/upload-pages-artifact@v3
         with:

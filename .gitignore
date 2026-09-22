@@ -8,18 +8,19 @@ desktop.ini
 .idea/
 *.swp
 
-# Berkas sementara untuk riset dan audit (dipakai saat pengembangan)
+# Berkas sementara saat pengembangan.
 _cek/
-_qa/
 _tmp/
 _bak/
 
-# Cadangan. Pola *.bak* menangkap store.js.bak1, bak2, dan sejenisnya.
+# Alat bantu di _qa/: skripnya IKUT disimpan supaya bisa dijalankan ulang,
+# tapi hasil audit dan arsip tidak (besar dan hanya riwayat).
+_qa/laporan/
+_qa/arsip/
+
+# Cadangan berkas. Pola *.bak* menangkap store.js.bak1, bak2, dan sejenisnya.
 *.bak*
 *.old
 *.sebelum*
 *.prevideo
 *.precopy
-*.old
-*.precopy
-*.prevideo

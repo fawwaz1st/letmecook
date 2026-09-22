@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="aset/style.css">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="color-scheme" content="light">
   <meta name="robots" content="max-image-preview:large">
@@ -31,23 +31,23 @@
 
   <header class="kepala">
     <div class="kepala-in">
-      <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
+      <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-chef-hat"/></svg>LetMeCook</a>
       <form class="cari" id="formCari" role="search">
         <input id="inputCari" type="search" placeholder="Cari resep atau bahan, misal: ayam" aria-label="Cari resep" autocomplete="off">
-        <button type="submit"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>Cari</button>
+        <button type="submit"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-search"/></svg>Cari</button>
       </form>
       <nav class="nav" aria-label="Navigasi utama">
-        <a href="favorit.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg>Favorit <span class="badge-hitung" id="favCount">0</span></a>
-        <a href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
+        <a href="favorit.html"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-heart"/></svg>Favorit <span class="badge-hitung" id="favCount">0</span></a>
+        <a href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-calendar"/></svg>Rencana</a>
       </nav>
     </div>
     <nav class="chip" aria-label="Kategori resep">
       <div class="chip-in" id="chipKategori">
-        <a href="katalog.html" data-kat=""><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-book"/></svg>Semua</a>
-        <a href="katalog.html?kat=sarapan" data-kat="sarapan"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-soup"/></svg>Sarapan</a>
-        <a href="katalog.html?kat=siang" data-kat="siang"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-utensils"/></svg>Siang</a>
-        <a href="katalog.html?kat=malam" data-kat="malam"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>Malam</a>
-        <a href="katalog.html?kat=camilan" data-kat="camilan"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-star"/></svg>Camilan</a>
+        <a href="katalog.html" data-kat=""><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-book"/></svg>Semua</a>
+        <a href="katalog.html?kat=sarapan" data-kat="sarapan"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-soup"/></svg>Sarapan</a>
+        <a href="katalog.html?kat=siang" data-kat="siang"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-utensils"/></svg>Siang</a>
+        <a href="katalog.html?kat=malam" data-kat="malam"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-flame"/></svg>Malam</a>
+        <a href="katalog.html?kat=camilan" data-kat="camilan"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-star"/></svg>Camilan</a>
       </div>
     </nav>
   </header>
@@ -97,7 +97,7 @@
       <div class="isi-grup"><div class="grup" id="grup"></div></div>
 
       <div class="kosong" id="kosong" hidden>
-        <svg class="ikon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>
+        <svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-search"/></svg>
         <strong id="kosongJudul">Tidak ada yang cocok</strong>
         <p>Coba longgarkan filternya, atau cari kata lain. Misalnya "soto" atau "santan".</p>
         <button class="tb tb-isi" type="button" id="kosongAksi">Hapus semua filter</button>
@@ -109,7 +109,7 @@
     <div class="wrap">
       <div class="kaki-atas">
         <div class="kaki-merek">
-          <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
+          <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-chef-hat"/></svg>LetMeCook</a>
           <p><span data-jumlah></span> resep masakan Indonesia dengan takaran gram, tanda matang di tiap langkah, dan daftar belanja otomatis. Tanpa akun, tanpa iklan.</p>
         </div>
         <nav class="kaki-nav" aria-label="Tautan kaki halaman">
@@ -136,8 +136,8 @@
     </div>
   </footer>
 
-  <script src="resep-data.js"></script>
-  <script src="store.js"></script>
-  <script src="halaman.js"></script>
+  <script src="skrip/resep-data.js"></script>
+  <script src="skrip/store.js"></script>
+  <script src="skrip/halaman.js"></script>
 </body>
 </html>

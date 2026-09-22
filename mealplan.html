@@ -18,7 +18,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="aset/style.css">
   <link rel="manifest" href="manifest.webmanifest">
   <meta name="color-scheme" content="light">
   <meta name="robots" content="max-image-preview:large">
@@ -31,10 +31,10 @@
 
   <header class="kepala">
     <div class="kepala-in">
-      <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
+      <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-chef-hat"/></svg>LetMeCook</a>
       <nav class="nav" aria-label="Navigasi utama">
-        <a href="favorit.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg>Favorit <span class="badge-hitung" id="favCount">0</span></a>
-        <a href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana</a>
+        <a href="favorit.html"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-heart"/></svg>Favorit <span class="badge-hitung" id="favCount">0</span></a>
+        <a href="mealplan.html"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-calendar"/></svg>Rencana</a>
       </nav>
     </div>
   </header>
@@ -43,8 +43,8 @@
 
     <section class="panel" aria-labelledby="judulRencana">
       <div class="panel-kepala">
-        <h1 id="judulRencana"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>Rencana 7 hari</h1>
-        <button class="tautan-kepala" type="button" id="tautanCetak">Cetak <svg class="ikon" aria-hidden="true"><use href="icons.svg#i-printer"/></svg></button>
+        <h1 id="judulRencana"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-calendar"/></svg>Rencana 7 hari</h1>
+        <button class="tautan-kepala" type="button" id="tautanCetak">Cetak <svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-printer"/></svg></button>
       </div>
       <div class="baris-info"><span id="isiTeks">0 dari 21 slot terisi</span></div>
       <div class="meal-grup" id="mealGrup"></div>
@@ -52,7 +52,7 @@
 
     <section class="panel" aria-labelledby="judulBelanja">
       <div class="panel-kepala">
-        <h2 id="judulBelanja"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-basket"/></svg>Daftar belanja</h2>
+        <h2 id="judulBelanja"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-basket"/></svg>Daftar belanja</h2>
       </div>
       <div class="baris-info"><span id="belanjaTeks">Belum ada bahan</span></div>
       <ul class="belanja" id="belanja"></ul>
@@ -72,7 +72,7 @@
             <input id="mSatuan" placeholder="gram">
           </div>
         </div>
-        <button class="tb tb-isi" type="submit"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-plus"/></svg>Tambah ke daftar</button>
+        <button class="tb tb-isi" type="submit"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-plus"/></svg>Tambah ke daftar</button>
       </form>
     </section>
   </main>
@@ -81,7 +81,7 @@
   <div class="masak" id="pilih" role="dialog" aria-modal="true" aria-label="Pilih resep">
     <div class="masak-baris">
       <span class="masak-hitung" id="pilihJudul">Pilih resep</span>
-      <button class="masak-tombol" id="pilihTutup" type="button"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>Tutup</button>
+      <button class="masak-tombol" id="pilihTutup" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-x"/></svg>Tutup</button>
     </div>
     <div class="masak-isi pilih-isi">
       <input id="pilihCari" type="search" class="pilih-cari" placeholder="Ketik nama, misal: soto" aria-label="Cari resep untuk diisi">
@@ -93,7 +93,7 @@
     <div class="wrap">
       <div class="kaki-atas">
         <div class="kaki-merek">
-          <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-chef-hat"/></svg>LetMeCook</a>
+          <a class="merek" href="index.html"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-chef-hat"/></svg>LetMeCook</a>
           <p><span data-jumlah></span> resep masakan Indonesia dengan takaran gram, tanda matang di tiap langkah, dan daftar belanja otomatis. Tanpa akun, tanpa iklan.</p>
         </div>
         <nav class="kaki-nav" aria-label="Tautan kaki halaman">
@@ -120,8 +120,8 @@
     </div>
   </footer>
 
-  <script src="resep-data.js"></script>
-  <script src="store.js"></script>
-  <script src="halaman.js"></script>
+  <script src="skrip/resep-data.js"></script>
+  <script src="skrip/store.js"></script>
+  <script src="skrip/halaman.js"></script>
 </body>
 </html>

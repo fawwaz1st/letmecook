@@ -30,9 +30,9 @@ function halamanIndex() {
     + "<h3>" + esc(hari.nama) + "</h3>"
     + '<p class="lega">' + esc(hari.deskripsi) + "</p>"
     + '<p class="meta">'
-    + '<span><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>' + fmtWaktu(hari.waktuTotal) + "</span>"
-    + '<span><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-users"/></svg>' + hari.porsi + " porsi</span>"
-    + '<span><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-pin"/></svg>' + esc(hari.daerah) + "</span>"
+    + '<span><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-clock"/></svg>' + fmtWaktu(hari.waktuTotal) + "</span>"
+    + '<span><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-users"/></svg>' + hari.porsi + " porsi</span>"
+    + '<span><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-pin"/></svg>' + esc(hari.daerah) + "</span>"
     + "</p>"
     + '<a class="tb tb-isi" href="resep.html?id=' + esc(hari.id) + '">Masak resep ini</a>'
     + "</div></div>";
@@ -47,7 +47,7 @@ function halamanIndex() {
   document.getElementById("katGrup").innerHTML = kategori.map(([kode, nama, ket, ikon]) => {
     const jumlah = RESEP.filter((r) => r.kategori === kode).length;
     return '<a class="panel kat" href="katalog.html?kat=' + kode + '">'
-      + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#' + ikon + '"/></svg>'
+      + '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#' + ikon + '"/></svg>'
       + "<span><strong>" + nama + " · " + jumlah + "</strong>"
       + "<small>" + ket + "</small></span></a>";
   }).join("");
@@ -192,7 +192,7 @@ function halamanResep() {
 
   if (!r) {
     area.innerHTML = '<div class="panel"><div class="kosong">'
-      + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-search"/></svg>'
+      + '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-search"/></svg>'
       + "<h1>Resep itu tidak ada</h1>"
       + "<p>Mungkin ID di alamatnya salah. Semua resep ada di katalog.</p>"
       + '<a class="tb tb-isi" href="katalog.html">Buka katalog</a>'
@@ -220,7 +220,7 @@ function halamanResep() {
   if (r.veg) label.push('<span class="tag hijau">Vegetarian</span>');
   if (r.anak) label.push('<span class="tag hijau">Aman anak</span>');
   if (r.pedas > 0) {
-    label.push('<span class="tag merah"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame-kindling"/></svg>Pedas ' + r.pedas + "/3</span>");
+    label.push('<span class="tag merah"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-flame-kindling"/></svg>Pedas ' + r.pedas + "/3</span>");
   }
 
   area.innerHTML =
@@ -230,64 +230,64 @@ function halamanResep() {
     + '<div class="tag-baris">' + label.join("") + "</div>"
     + "<h1>" + esc(r.nama) + "</h1>"
     + '<p class="sub">'
-    + '<span><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-pin"/></svg>' + esc(r.daerah) + "</span>"
-    + '<span class="bintang"><svg class="ikon padat" aria-hidden="true"><use href="icons.svg#i-star"/></svg>' + r.rating + " dari 5</span>"
+    + '<span><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-pin"/></svg>' + esc(r.daerah) + "</span>"
+    + '<span class="bintang"><svg class="ikon padat" aria-hidden="true"><use href="aset/icons.svg#i-star"/></svg>' + r.rating + " dari 5</span>"
     + "<span>dimasak " + r.dimasak.toLocaleString("id-ID") + " kali</span>"
     + "</p>"
     + '<p class="lega">' + esc(r.deskripsi) + "</p>"
 
     + '<dl class="info-cepat">'
-    + '<div><dt><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>Total</dt><dd>' + fmtWaktu(r.waktuTotal) + "</dd></div>"
-    + '<div><dt><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-flame"/></svg>Di dapur</dt><dd>' + fmtWaktu(r.waktuAktif) + "</dd></div>"
-    + '<div><dt><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-users"/></svg>Hasil</dt><dd id="porsiTeks">' + r.porsi + " porsi</dd></div>"
-    + '<div><dt><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-leaf"/></svg>Kalori</dt><dd>' + esc(r.kalori) + "</dd></div>"
+    + '<div><dt><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-clock"/></svg>Total</dt><dd>' + fmtWaktu(r.waktuTotal) + "</dd></div>"
+    + '<div><dt><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-flame"/></svg>Di dapur</dt><dd>' + fmtWaktu(r.waktuAktif) + "</dd></div>"
+    + '<div><dt><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-users"/></svg>Hasil</dt><dd id="porsiTeks">' + r.porsi + " porsi</dd></div>"
+    + '<div><dt><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-leaf"/></svg>Kalori</dt><dd>' + esc(r.kalori) + "</dd></div>"
     + "</dl>"
 
     + '<div class="aksi-resep">'
-    + '<button class="tb tb-isi" id="bMasak" type="button"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-play"/></svg>Mode masak</button>'
-    + '<button class="tb" id="bFav" type="button"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg><span>' + (sudahFav(r.id) ? "Tersimpan" : "Simpan") + "</span></button>"
-    + '<button class="tb tb-halus" id="bPrint" type="button"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-printer"/></svg>Cetak</button>'
-    + '<button class="tb tb-halus" id="bShare" type="button"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-share"/></svg>Salin tautan</button>'
+    + '<button class="tb tb-isi" id="bMasak" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-play"/></svg>Mode masak</button>'
+    + '<button class="tb" id="bFav" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-heart"/></svg><span>' + (sudahFav(r.id) ? "Tersimpan" : "Simpan") + "</span></button>"
+    + '<button class="tb tb-halus" id="bPrint" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-printer"/></svg>Cetak</button>'
+    + '<button class="tb tb-halus" id="bShare" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-share"/></svg>Salin tautan</button>'
     + "</div></div></div></article>"
 
     + '<div class="dua-kolom jarak-atas">'
 
     + '<section class="panel" aria-label="Bahan">'
-    + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-list-checks"/></svg>Bahan</h2></div>'
+    + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-list-checks"/></svg>Bahan</h2></div>'
     + '<div class="baris-porsi"><span>Untuk</span>'
     + '<div class="stepper">'
-    + '<button id="pMin" type="button" aria-label="Kurangi porsi"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-minus"/></svg></button>'
+    + '<button id="pMin" type="button" aria-label="Kurangi porsi"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-minus"/></svg></button>'
     + '<span id="pVal">' + r.porsi + " porsi</span>"
-    + '<button id="pPlus" type="button" aria-label="Tambah porsi"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-plus"/></svg></button>'
+    + '<button id="pPlus" type="button" aria-label="Tambah porsi"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-plus"/></svg></button>'
     + "</div></div>"
     + '<ul class="bahan" id="bahanList"></ul>'
     + "</section>"
 
     + '<section class="panel" aria-label="Langkah">'
-    + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-cooking-pot"/></svg>Langkah</h2>'
+    + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-cooking-pot"/></svg>Langkah</h2>'
     + '<span class="baris-info kepala-prog" id="progTeks"></span></div>'
     + '<ol class="langkah" id="langkahList"></ol>'
-    + '<div class="kotak kuning"><h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-bulb"/></svg>Sering gagal di sini</h3><p>' + esc(r.tips) + "</p></div>"
-    + '<div class="kotak hijau"><h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>Kalau gagal</h3><p>' + esc(r.selamat) + "</p></div>"
-    + '<div class="kotak biru"><h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-clock"/></svg>Menyimpan sisa</h3><p>' + esc(r.simpan) + "</p></div>"
+    + '<div class="kotak kuning"><h3><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-bulb"/></svg>Sering gagal di sini</h3><p>' + esc(r.tips) + "</p></div>"
+    + '<div class="kotak hijau"><h3><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-check"/></svg>Kalau gagal</h3><p>' + esc(r.selamat) + "</p></div>"
+    + '<div class="kotak biru"><h3><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-clock"/></svg>Menyimpan sisa</h3><p>' + esc(r.simpan) + "</p></div>"
     + "</section></div>"
 
     + '<section class="panel jarak-atas" aria-label="Rasa dan gizi">'
-    + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-leaf"/></svg>Rasa dan gizi</h2></div>'
+    + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-leaf"/></svg>Rasa dan gizi</h2></div>'
     + '<div class="isi">'
     + "<p><strong>Rasa.</strong> " + esc(r.rasa) + "</p>"
     + '<div class="gizi">'
     + "<div><strong>" + esc(r.kalori) + "</strong><span>per porsi</span></div>"
     + "<div><strong>" + esc(r.protein) + "</strong><span>protein</span></div>"
     + "</div>"
-    + '<p><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-alert"/></svg> <strong>Perhatikan.</strong> ' + esc(r.pantangan) + "</p>"
+    + '<p><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-alert"/></svg> <strong>Perhatikan.</strong> ' + esc(r.pantangan) + "</p>"
     + "<p><strong>Enak dimakan dengan.</strong> " + esc(r.sanding.join(", ")) + "</p>"
     + "<p><strong>Minumnya.</strong> " + esc(r.minum) + "</p>"
     + '<p class="pesan">' + esc(r.suasana) + "</p>"
     + "</div></section>"
 
     + '<section class="panel jarak-atas" aria-label="Alat">'
-    + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-utensils"/></svg>Alat yang perlu disiapkan</h2></div>'
+    + '<div class="panel-kepala"><h2><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-utensils"/></svg>Alat yang perlu disiapkan</h2></div>'
     + '<div class="isi"><p>' + esc(r.alat.join(" · ")) + "</p></div>"
     + "</section>";
 
@@ -406,7 +406,7 @@ function halamanResep() {
     if (urai.matang) {
       const kotak = document.createElement("div");
       kotak.className = "tanda";
-      kotak.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg><span></span>';
+      kotak.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-check"/></svg><span></span>';
       const kuat = document.createElement("strong");
       kuat.textContent = "Matang kalau: ";
       kotak.querySelector("span").append(kuat, document.createTextNode(urai.matang));
@@ -420,7 +420,7 @@ function halamanResep() {
     tombolCek.type = "button";
     tombolCek.className = "tb-mini";
     const tulisCek = () => {
-      tombolCek.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>'
+      tombolCek.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-check"/></svg>'
         + (prog.langkah[i] ? "Selesai" : "Tandai selesai");
     };
     tulisCek();
@@ -438,7 +438,7 @@ function halamanResep() {
       const tombolTimer = document.createElement("button");
       tombolTimer.type = "button";
       tombolTimer.className = "tb-mini";
-      tombolTimer.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-timer"/></svg>Timer ' + waktu[0];
+      tombolTimer.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-timer"/></svg>Timer ' + waktu[0];
       tombolTimer.addEventListener("click", () => mulaiTimer(tombolTimer, waktu[1]));
       baris.appendChild(tombolTimer);
     }
@@ -463,13 +463,13 @@ function halamanResep() {
 
     tombol.classList.add("jalan");
     const tulisSisa = (sisa) => {
-      tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-timer"/></svg>' + fmtDetik(sisa);
+      tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-timer"/></svg>' + fmtDetik(sisa);
     };
 
     timerAktif = hitungMundur(detik, tulisSisa, () => {
       timerAktif = null;
       tombol.classList.remove("jalan");
-      tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-check"/></svg>Waktunya habis';
+      tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-check"/></svg>Waktunya habis';
       if (navigator.vibrate) navigator.vibrate(400);
     });
   }
@@ -561,7 +561,7 @@ function halamanMealplan() {
     HARI.forEach((hari) => {
       const kotak = document.createElement("div");
       kotak.className = "hari";
-      kotak.innerHTML = '<h3><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-calendar"/></svg>' + hari + "</h3>";
+      kotak.innerHTML = '<h3><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-calendar"/></svg>' + hari + "</h3>";
 
       SLOT.forEach(([kode, label]) => {
         const id = rencana[hari] && rencana[hari][kode];
@@ -596,7 +596,7 @@ function halamanMealplan() {
         if (resep) {
           const hapus = document.createElement("button");
           hapus.type = "button";
-          hapus.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>';
+          hapus.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-x"/></svg>';
           hapus.setAttribute("aria-label", "Kosongkan " + hari + " " + label);
           hapus.addEventListener("click", () => {
             const baru = ambilRencana();
@@ -758,7 +758,7 @@ function halamanMealplan() {
       const li = barisBahan(t.teks, "manual|" + i, null);
       const hapus = document.createElement("button");
       hapus.type = "button";
-      hapus.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>';
+      hapus.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-x"/></svg>';
       hapus.setAttribute("aria-label", "Hapus " + t.teks);
       hapus.addEventListener("click", () => {
         const baru = ambilTambahan();
@@ -786,9 +786,7 @@ function halamanMealplan() {
     gambarBelanja();
   });
 
-  document.getElementById("tautanCetak").addEventListener("click", () => {
-    window.print();
-  });
+  document.getElementById("tautanCetak").addEventListener("click", () => window.print());
 
   gambarRencana();
   gambarBelanja();

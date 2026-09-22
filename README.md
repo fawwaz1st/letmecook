@@ -102,42 +102,89 @@ tapi dua hal ini tidak bisa dipakai:
 ## Susunan berkas
 
 ```
-index.html      Beranda: hero, resep hari ini, kategori, populer, video berbab
-katalog.html    Katalog 67 resep + pencarian dan filter
-resep.html      Detail resep: bahan, langkah, dan tombol mode masak
-mealplan.html   Rencana 7 hari + daftar belanja otomatis
-favorit.html    Resep yang disimpan
-tentang.html    Cara membaca takaran + ke mana data pergi
-404.html        Halaman tidak ditemukan
-resep-data.js   DATA saja: larik RESEP + tabel durasi & tanggal video
-store.js        ALAT BERSAMA: penyimpanan, kartu, dropdown, mode masak, timer
-halaman.js      LOGIKA HALAMAN: satu fungsi per halaman, dipilih lewat
-                <body data-halaman="...">
-style.css       Seluruh tampilan (18 bagian bernomor). Token di bagian 1
-icons.svg       Sprite 32 ikon garis 24px
-manifest.webmanifest  Info aplikasi (nama, ikon, warna)
-ikon-192.png    Ikon aplikasi 192px
-ikon-512.png    Ikon aplikasi 512px
-sitemap.xml     Daftar 72 URL untuk mesin pencari
-robots.txt      Aturan untuk mesin pencari
-PENJELASAN.MD   Panduan lengkap kode baris per baris, ditulis untuk pemula
-_qa/            Skrip pemeriksaan (tidak dipakai website)
+letmecook/
+│
+│  ── Halaman ──────────────────────────────────────────────
+├── index.html            Beranda: hero, resep hari ini, kategori, populer
+├── katalog.html          Katalog 67 resep + pencarian dan filter
+├── resep.html            Detail resep: bahan, langkah, tombol mode masak
+├── mealplan.html         Rencana 7 hari + daftar belanja otomatis
+├── favorit.html          Resep yang disimpan
+├── tentang.html          Cara membaca takaran + ke mana data pergi
+├── 404.html              Halaman tidak ditemukan
+│
+│  ── Logika ───────────────────────────────────────────────
+├── skrip/
+│   ├── resep-data.js     DATA saja: larik RESEP + tabel durasi & tanggal video
+│   ├── store.js          ALAT BERSAMA: penyimpanan, kartu, dropdown, mode masak
+│   └── halaman.js        LOGIKA HALAMAN: satu fungsi per halaman + router
+│
+│  ── Tampilan ─────────────────────────────────────────────
+├── aset/
+│   ├── style.css         Seluruh tampilan (18 bagian bernomor)
+│   ├── icons.svg         Sprite 32 ikon garis 24px
+│   ├── ikon-192.png      Ikon aplikasi 192px (manifest)
+│   └── ikon-512.png      Ikon aplikasi 512px (manifest)
+│
+│  ── Untuk mesin pencari ──────────────────────────────────
+├── robots.txt            Izin untuk robot pencari + menunjuk sitemap
+├── sitemap.xml           Daftar 72 URL situs (5 halaman + 67 resep)
+├── manifest.webmanifest  Info aplikasi (nama, ikon, warna)
+│
+│  ── Dokumentasi ──────────────────────────────────────────
+├── README.md             Berkas yang sedang kamu baca
+├── PENJELASAN.MD         Panduan lengkap kode, baris per baris
+│
+│  ── Alat bantu (tidak ikut ter-deploy) ───────────────────
+└── _qa/
+    ├── audit-*.js        Pemeriksa: video, foto, mojibake
+    ├── buat-*.js         Pembuat: sitemap, ikon
+    ├── cari-*.js         Pencari kode mati
+    ├── laporan/          Hasil audit (riwayat)
+    └── arsip/            Skrip sekali-pakai yang sudah selesai
 ```
 
+**Kenapa HTML tetap di folder utama?** Karena alamatnya sudah terindeks mesin
+pencari, dan GitHub Pages mencari `index.html` di root. Yang dipindah hanya
+berkas yang tidak muncul di alamat mana pun (JS, CSS, ikon).
+
+### `robots.txt` — izin untuk robot pencari
+
+```
+User-agent: *              # berlaku untuk semua robot
+Allow: /                   # semua halaman boleh dijelajahi
+Sitemap: .../sitemap.xml   # di mana daftar lengkap halamannya
+```
+
+Seperti papan pengumuman di pintu masuk: memberi tahu Googlebot dan robot
+lain halaman mana yang boleh dikunjungi. `robots.txt` **tidak mengamankan**
+apa pun — dia hanya permintaan baik-baik, bukan kunci.
+
+### `sitemap.xml` — daftar isi untuk robot pencari
+
+Daftar **72 URL** (5 halaman utama + 67 resep), lengkap dengan:
+
+- `<loc>` — alamat halamannya
+- `<lastmod>` — kapan terakhir berubah (diambil dari tanggal berkas asli,
+  bukan tanggal hari ini, supaya tidak dianggap tidak akurat oleh Google)
+- `<priority>` — seberapa penting (beranda 1.0, resep 0.7)
+
+Buat ulang setiap kali menambah resep: `node _qa/buat-sitemap.js`
+
 Data, alat, dan logika halaman dipisah supaya tiap berkas punya satu tugas.
-`resep-data.js` 2.598 baris isinya data (termasuk tabel durasi dan tanggal
-video); `store.js` 1.149 baris isinya alat bersama (32 fungsi);
-`halaman.js` 838 baris isinya apa yang dilakukan tiap halaman.
+`skrip/resep-data.js` 2.599 baris isinya data (termasuk tabel durasi dan
+tanggal video); `skrip/store.js` 1.150 baris isinya alat bersama (32 fungsi);
+`skrip/halaman.js` 839 baris isinya apa yang dilakukan tiap halaman.
 Ketiganya dimuat berurutan sebagai skrip biasa:
 
 ```html
-<script src="resep-data.js"></script>
-<script src="store.js"></script>
-<script src="halaman.js"></script>
+<script src="skrip/resep-data.js"></script>
+<script src="skrip/store.js"></script>
+<script src="skrip/halaman.js"></script>
 ```
 
 Skrip biasa dipakai, bukan `type="module"`, supaya situs tetap bisa dibuka
-langsung dari berkas tanpa server. Router kecil di ujung `halaman.js`
+langsung dari berkas tanpa server. Router kecil di ujung `skrip/halaman.js`
 memanggil fungsi yang cocok dengan `<body data-halaman="...">`.
 
 ## Keamanan
@@ -145,14 +192,23 @@ memanggil fungsi yang cocok dengan `<body data-halaman="...">`.
 Setiap halaman memasang **Content-Security-Policy** lewat meta tag: kode
 hanya boleh dimuat dari domain sendiri, ditambah YouTube, Google Fonts, dan
 Wikimedia. Karena CSP ketat memblokir skrip dan gaya yang ditulis langsung di
-HTML, seluruh skrip halaman berada di `halaman.js` dan seluruh gaya berada di
-`style.css`. Galat gambar ditangani satu pendengar di fase tangkap, bukan
+HTML, seluruh skrip halaman berada di `skrip/halaman.js` dan seluruh gaya berada di
+`aset/style.css`. Galat gambar ditangani satu pendengar di fase tangkap, bukan
 atribut `onerror` di tiap `<img>`.
 
 Catatan: GitHub Pages tidak bisa mengatur header HTTP, jadi beberapa direktif
 CSP (`frame-ancestors`, `sandbox`) tidak tersedia. Itu batasan host.
 
 ## Pemeriksaan (QA)
+
+Skrip di `_qa/` diberi nama menurut tugasnya:
+
+| Pola nama | Artinya | Contoh |
+|---|---|---|
+| `audit-*.js` | **Memeriksa** sesuatu, tidak mengubah apa pun | `audit-video.js` |
+| `buat-*.js` | **Membuat** berkas baru | `buat-sitemap.js` |
+| `cari-*.js` | **Mencari** yang tidak berguna | `cari-mati.js` |
+| `analisis-*.js` | **Mengukur** kualitas | `analisis-slop2.js` |
 
 ```bash
 node _qa/audit-mojibake.js   # cari karakter rusak (huruf aksen nyasar)
@@ -163,9 +219,13 @@ node _qa/buat-sitemap.js     # buat ulang sitemap.xml
 node _qa/cari-mati.js        # cari fungsi atau berkas yang tidak dipakai
 ```
 
+Hasil keluaran audit disimpan di `_qa/laporan/`, dan skrip yang sudah selesai
+tugasnya dipindah ke `_qa/arsip/` — supaya `_qa/` hanya berisi alat yang
+masih berguna.
+
 ## Menambah resep
 
-Cukup tambah satu objek ke larik `RESEP` di **`resep-data.js`**. Halaman lain
+Cukup tambah satu objek ke larik `RESEP` di **`skrip/resep-data.js`**. Halaman lain
 otomatis ikut karena semuanya membaca dari larik yang sama. Angka "67 resep"
 di seluruh halaman juga ikut menyesuaikan sendiri.
 

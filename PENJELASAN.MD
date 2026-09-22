@@ -7,7 +7,7 @@ bagaimana alurnya, kenapa ditulis begitu, di berkas mana, di baris berapa, dan
 di mana harus mengubah kalau mau menambah sesuatu.
 
 > **Cara membaca dokumen ini.** Setiap bagian menyebutkan nama berkas dan
-> nomor barisnya, misalnya `store.js:140`. Buka berkas itu di editor, tekan
+> nomor barisnya, misalnya `skrip/store.js:140`. Buka berkas itu di editor, tekan
 > `Ctrl+G`, ketik nomornya, dan kamu langsung berada di kode yang dibahas.
 > Jangan hafal — cukup tahu di mana harus mencari.
 
@@ -21,7 +21,7 @@ di mana harus mengubah kalau mau menambah sesuatu.
 4. [Alur Satu Halaman Dimuat](#4-alur-satu-halaman-dimuat)
 5. [store.js — Peralatan Bersama (32 fungsi)](#5-storejs--peralatan-bersama)
 6. [halaman.js — Logika Tiap Halaman](#6-halamansjs--logika-tiap-halaman)
-7. [resep-data.js — Data 67 Resep](#7-resep-datajs--data-67-resep)
+7. [skrip/resep-data.js — Data 67 Resep](#7-resep-datajs--data-67-resep)
 8. [Berkas HTML](#8-berkas-html)
 9. [style.css — 18 Bagian](#9-stylecss--18-bagian)
 10. [Fitur Utama dan Cara Kerjanya](#10-fitur-utama-dan-cara-kerjanya)
@@ -82,6 +82,8 @@ langsung mengubahnya tanpa perlu menginstal apa pun.
 
 ```
 letmecook/
+│
+│  ── Halaman (dibuka pengunjung) ─────────────────────────────
 ├── index.html            Beranda: sorotan hari ini, kategori, populer
 ├── katalog.html          Daftar semua resep + pencarian + filter
 ├── resep.html            Halaman satu resep (diisi oleh JavaScript)
@@ -90,22 +92,49 @@ letmecook/
 ├── tentang.html          Cara membaca takaran + penjelasan privasi
 ├── 404.html              Halaman kalau alamat tidak ditemukan
 │
-├── resep-data.js   (2.598 baris)  DATA: 67 resep + durasi & tanggal video
-├── store.js        (1.149 baris)  ALAT: 32 fungsi bersama
-├── halaman.js      (  838 baris)  LOGIKA: 5 fungsi halaman + router
+│  ── Logika (dipanggil halaman) ──────────────────────────────
+├── skrip/
+│   ├── skrip/resep-data.js     (2.599 baris)  DATA: 67 resep + tabel video
+│   ├── store.js          (1.150 baris)  ALAT: 32 fungsi bersama
+│   └── halaman.js        (  839 baris)  LOGIKA: 5 fungsi + router
 │
-├── style.css       (1.629 baris)  Seluruh tampilan (18 bagian bernomor)
-├── icons.svg         ( 35 baris)  32 ikon SVG (satu berkas, dipanggil per id)
-├── ikon-192.png                   Ikon aplikasi 192px (untuk manifest PWA)
-├── ikon-512.png                   Ikon aplikasi 512px
-├── manifest.webmanifest           Info aplikasi (nama, ikon, warna)
-├── sitemap.xml                    Daftar 72 URL untuk mesin pencari
-├── robots.txt                     Aturan untuk mesin pencari
+│  ── Tampilan (aset yang diunduh) ────────────────────────────
+├── aset/
+│   ├── style.css         (1.630 baris)  Seluruh tampilan (18 bagian)
+│   ├── aset/icons.svg                      32 ikon SVG, dipanggil per id
+│   ├── ikon-192.png                   Ikon aplikasi 192px (manifest)
+│   └── ikon-512.png                   Ikon aplikasi 512px (manifest)
 │
-├── _qa/                           Skrip pemeriksaan (TIDAK ikut ter-deploy)
-├── README.md                      Panduan singkat untuk pengembang
-└── PENJELASAN.MD                  Dokumen yang sedang kamu baca
+│  ── Untuk mesin pencari ─────────────────────────────────────
+├── robots.txt            Aturan untuk robot pencari (3 baris)
+├── sitemap.xml           Daftar 72 URL situs
+├── manifest.webmanifest  Info aplikasi (nama, ikon, warna)
+│
+│  ── Dokumentasi ─────────────────────────────────────────────
+├── README.md             Panduan singkat untuk pengembang
+├── PENJELASAN.MD         Dokumen yang sedang kamu baca
+│
+│  ── Alat bantu (tidak ikut ter-deploy) ──────────────────────
+└── _qa/
+    ├── audit-*.js        Pemeriksa: video, foto, mojibake
+    ├── buat-*.js         Pembuat: sitemap, ikon
+    ├── cari-*.js         Pencari: kode mati, ikon mati
+    ├── laporan/          Hasil audit (arsip, bukan alat)
+    └── arsip/            Skrip sekali-pakai yang sudah selesai
 ```
+
+### Kenapa HTML tetap di folder utama?
+
+HTML **sengaja tidak** dipindah ke subfolder, karena:
+
+1. Alamat `https://fawwaz1st.github.io/letmecook/katalog.html` sudah
+   terindeks mesin pencari. Kalau dipindah, semua tautan itu rusak.
+2. GitHub Pages mencari `index.html` di root. Kalau dipindah, alamat utama
+   situs ikut berubah.
+
+Yang dipindah adalah berkas yang **tidak** muncul di alamat mana pun:
+JavaScript, CSS, dan ikon. Pengunjung tidak pernah melihat alamatnya, jadi
+memindahkannya tidak merusak tautan.
 
 ### Kenapa dipisah begitu?
 
@@ -113,12 +142,13 @@ Tiga berkas JavaScript punya **tanggung jawab yang jelas berbeda**:
 
 | Berkas | Isinya | Perumpamaan |
 |---|---|---|
-| `resep-data.js` | Hanya data mentah | Buku resep |
-| `store.js` | Fungsi yang dipakai semua halaman | Peralatan dapur |
-| `halaman.js` | Apa yang dilakukan tiap halaman | Koki yang memakai peralatan |
+| `skrip/resep-data.js` | Hanya data mentah | Buku resep |
+| `skrip/store.js` | Fungsi yang dipakai semua halaman | Peralatan dapur |
+| `skrip/halaman.js` | Apa yang dilakukan tiap halaman | Koki yang memakai peralatan |
 
 Aturan emasnya: **kalau mau menambah resep, kamu hanya menyentuh
-`resep-data.js`.** Tidak perlu mengubah HTML, CSS, atau JavaScript lainnya.
+`skrip/resep-data.js`.** Tidak perlu mengubah HTML, CSS, atau JavaScript
+lainnya.
 
 ### Kenapa ada `_qa/`?
 
@@ -128,11 +158,31 @@ dipakai oleh website** (dan tidak ikut ter-deploy, karena tertulis di
 `.gitignore`); hanya alat bantu saat mengembangkan. Jalankan dengan
 `node _qa/nama-berkas.js`.
 
+Folder `_qa/` punya tiga bagian:
+
+| Bagian | Isinya |
+|---|---|
+| `_qa/*.js` | Skrip yang **masih berguna** dan dijalankan berulang |
+| `_qa/laporan/` | Hasil keluaran audit (teks laporan), hanya untuk riwayat |
+| `_qa/arsip/` | Skrip sekali-pakai yang tugasnya sudah selesai |
+
+### Aturan penamaan berkas
+
+| Pola | Artinya | Contoh |
+|---|---|---|
+| `audit-*.js` | **Memeriksa** sesuatu, tidak mengubah apa pun | `audit-video.js` memeriksa video masih hidup |
+| `buat-*.js` | **Membuat** berkas baru | `buat-sitemap.js` menghasilkan `sitemap.xml` |
+| `cari-*.js` | **Mencari** sesuatu yang tidak berguna | `cari-mati.js` mencari fungsi tak terpakai |
+| `analisis-*.js` | **Mengukur** gaya atau kualitas | `analisis-slop2.js` mengukur gaya tulisan resep |
+
+Jadi dari namanya saja kamu sudah tahu apakah skrip itu aman dijalankan
+(tidak mengubah berkas) atau menghasilkan berkas baru.
+
 ---
 
 ## 3. Alur Data Resep
 
-Semua resep berbentuk satu larik (array) besar di `resep-data.js`:
+Semua resep berbentuk satu larik (array) besar di `skrip/resep-data.js`:
 
 ```js
 var RESEP = [
@@ -188,7 +238,7 @@ jebakan yang mudah bikin bingung pemula.
 ### Bagaimana data mengalir sampai ke layar?
 
 ```
-resep-data.js          store.js                 halaman.js            Layar
+skrip/resep-data.js          store.js                 halaman.js            Layar
 ─────────────         ─────────                ───────────           ─────
 RESEP[]  ──────────►  cariResep(id)  ────────► halamanResep()  ────► innerHTML
                       kartuResepHTML()  ─────► halamanKatalog()
@@ -198,13 +248,13 @@ RESEP[]  ──────────►  cariResep(id)  ───────
 
 Contoh nyata saat membuka `resep.html?id=rendang`:
 
-1. `halaman.js:188` (`halamanResep`) membaca `id` dari alamat → `"rendang"`
-2. `store.js:46` (`cariResep`) mencari di larik `RESEP`
+1. `skrip/halaman.js:188` (`halamanResep`) membaca `id` dari alamat → `"rendang"`
+2. `skrip/store.js:46` (`cariResep`) mencari di larik `RESEP`
 3. Ketemu objek resep → seluruh HTML halaman dibangun dari objek itu
-4. `store.js:237` (`parseLangkah`) memecah tiap langkah jadi: teknik masak,
+4. `skrip/store.js:237` (`parseLangkah`) memecah tiap langkah jadi: teknik masak,
    besar api, tanda matang, dan teks sisa
-5. `store.js:1038` (`daftarBab`) menentukan bab video: satu bab per langkah
-6. Hasilnya dipasang ke `#area` dengan `innerHTML` (baris `halaman.js:262`)
+5. `skrip/store.js:1038` (`daftarBab`) menentukan bab video: satu bab per langkah
+6. Hasilnya dipasang ke `#area` dengan `innerHTML` (baris `skrip/halaman.js:262`)
 
 ---
 
@@ -213,12 +263,12 @@ Contoh nyata saat membuka `resep.html?id=rendang`:
 Setiap halaman HTML memuat tiga skrip di bagian bawah `<body>`:
 
 ```html
-<script src="resep-data.js"></script>  <!-- 1. data -->
+<script src="skrip/resep-data.js"></script>  <!-- 1. data -->
 <script src="store.js"></script>       <!-- 2. alat -->
 <script src="halaman.js"></script>     <!-- 3. logika halaman -->
 ```
 
-`halaman.js` diakhiri router kecil (baris `halaman.js:823`) yang membaca
+`skrip/halaman.js` diakhiri router kecil (baris `skrip/halaman.js:823`) yang membaca
 penanda di `<body>`:
 
 ```html
@@ -253,14 +303,14 @@ ketat**: tidak ada satu pun `<script>` yang ditulis langsung di dalam HTML.
 
 ```
 1. Browser membaca HTML     → kerangka kosong tampil sebentar
-2. resep-data.js dimuat     → larik RESEP tersedia
+2. skrip/resep-data.js dimuat     → larik RESEP tersedia
 3. store.js dimuat          → semua fungsi tersedia, pendengar galat gambar
-                              dipasang (store.js:203), gambar rusak yang
-                              telanjur terjadi diperiksa manual (store.js:209)
+                              dipasang (skrip/store.js:203), gambar rusak yang
+                              telanjur terjadi diperiksa manual (skrip/store.js:209)
 4. halaman.js dimuat        → router (baris 823) memanggil fungsi halaman
 5. Fungsi halaman:
    a. mengisi konten (kartu, langkah, bahan, dst.)
-   b. memanggil siapkanHalaman() — "sapuan akhir" bersama (store.js:1133):
+   b. memanggil siapkanHalaman() — "sapuan akhir" bersama (skrip/store.js:1133):
       - menandai elemen di bawah layar untuk animasi gulir
       - menyamakan semua angka resep (data-jumlah)
       - mengisi tahun di kaki halaman (data-tahun)
@@ -366,7 +416,7 @@ Dipecah otomatis oleh `parseLangkah` (baris 237) menjadi:
 
 Hasilnya dipakai untuk:
 - **badge berwarna** di atas langkah — warna per teknik diatur di CSS lewat
-  `[data-teknik="tumis"]` (`style.css:800`), bukan ditulis JS
+  `[data-teknik="tumis"]` (`aset/style.css:800`), bukan ditulis JS
 - **meter api** (3 batang kecil, menyala sesuai besar api)
 - **kotak "Matang kalau:"**
 
@@ -438,7 +488,7 @@ Bagian terpanjang dan paling rumit. Dipecah begini:
 
 2. **Bug: tombol navigasi terdorong keluar layar saat video dibuka.**
    **Solusinya:** bagian tengah dibungkus `.masak-tengah` yang bisa digulir
-   (`style.css:882`), sedangkan tombol navigasi di bawahnya tetap di tempat
+   (`aset/style.css:882`), sedangkan tombol navigasi di bawahnya tetap di tempat
    (`flex: none`).
 
 3. **Bug: video tidak bisa diputar saat halaman dibuka dari berkas
@@ -593,7 +643,7 @@ daftar disusun ulang dari rencana makan.
 
 ---
 
-## 7. resep-data.js — Data 67 Resep
+## 7. skrip/resep-data.js — Data 67 Resep
 
 2.598 baris. **Hanya data. Tidak ada fungsi, tidak ada logika.** Strukturnya
 dijelaskan di bagian 3.
@@ -636,7 +686,7 @@ Bagian akhir berkas berisi dua tabel:
   <header class="kepala">...</header>   <!-- kepala + pencarian + navigasi -->
   <main class="wrap" id="main">...</main>
   <footer>...</footer>                   <!-- kaki: merek, tautan, hak cipta -->
-  <script src="resep-data.js"></script>
+  <script src="skrip/resep-data.js"></script>
   <script src="store.js"></script>
   <script src="halaman.js"></script>
 </body>
@@ -660,6 +710,104 @@ Bagian akhir berkas berisi dua tabel:
 Dua kolom: merek + ringkasan di kiri, dua kolom tautan di kanan, lalu baris
 hak cipta. Tahun diisi otomatis dari `<span data-tahun>`. Ditulis sekali lalu
 disalin ke tujuh halaman — kalau mengubahnya, ubah ketujuhnya.
+
+### 8.4 `robots.txt` — surat izin untuk mesin pencari
+
+Isinya cuma tiga baris:
+
+```
+User-agent: *
+Allow: /
+
+Sitemap: https://fawwaz1st.github.io/letmecook/sitemap.xml
+```
+
+**Apa ini?** Berkas kecil yang diletakkan di alamat paling dasar situs
+(`/robots.txt`). Tugasnya seperti papan pengumuman di pintu masuk: memberi
+tahu robot mesin pencari (Googlebot, Bingbot, dsb.) apa yang boleh dan tidak
+boleh mereka jelajahi.
+
+**Bacanya baris per baris:**
+
+| Baris | Artinya |
+|---|---|
+| `User-agent: *` | Aturan ini berlaku untuk **semua** robot. Tanda `*` artinya "siapa pun". |
+| `Allow: /` | Semua halaman **boleh** dijelajahi. Kalau suatu saat ada halaman yang tidak ingin diindeks, tinggal tambah `Disallow: /halaman-rahasia.html`. |
+| `Sitemap: ...` | Alamat sitemap. Baris ini yang memberi tahu robot: "daftar lengkap halamanku ada di sini". |
+
+**Kenapa `Allow: /` bukan `Disallow:`?** Karena seluruh isi situs ini memang
+untuk umum. Kalau nanti ada halaman internal (misalnya halaman uji), baru
+`Disallow` dipakai untuk halaman itu saja.
+
+**Catatan penting untuk GitHub Pages:** berkas `robots.txt` hanya dibaca
+kalau ada di **alamat paling dasar** domain (`https://situskamu.com/robots.txt`).
+Situs ini dipasang di subfolder (`fawwaz1st.github.io/letmecook/`), jadi
+`robots.txt` kita berada di `fawwaz1st.github.io/letmecook/robots.txt` —
+Google tetap membacanya sebagai saran tambahan, tapi tidak dijamin. Karena
+itu sitemap **juga didaftarkan langsung** ke Google Search Console (kalau
+kamu punya aksesnya), supaya tidak bergantung pada `robots.txt` saja.
+
+**Yang TIDAK dilakukan robots.txt:** dia tidak mengamankan apa pun. Halaman
+yang tertulis `Disallow` masih bisa dibuka orang yang tahu alamatnya — dia
+hanya "minta baik-baik" ke robot supaya tidak mengunjungi halaman itu. Untuk
+benar-benar menutup halaman dari publik, itu urusan server, bukan robots.txt.
+
+### 8.5 `sitemap.xml` — daftar isi untuk mesin pencari
+
+**Apa ini?** Berkas XML berisi **daftar seluruh halaman** situs yang ingin
+dikenalkan ke mesin pencari. Kalau `robots.txt` itu papan pengumuman,
+`sitemap.xml` itu daftar menu lengkapnya.
+
+Situs ini punya **72 URL** di dalamnya: 5 halaman utama (beranda, katalog,
+rencana makan, tentang, favorit) + **67 halaman resep**.
+
+**Bentuk tiap barisnya:**
+
+```xml
+<url>
+  <loc>https://fawwaz1st.github.io/letmecook/resep.html?id=rendang</loc>
+  <lastmod>2026-09-21</lastmod>
+  <priority>0.7</priority>
+</url>
+```
+
+| Tag | Artinya |
+|---|---|
+| `<loc>` | Alamat halamannya. Ini yang wajib ada. |
+| `<lastmod>` | Kapan halaman ini terakhir berubah (format YYYY-MM-DD). Mesin pencari pakai ini untuk tahu kapan perlu mengunjungi ulang. |
+| `<priority>` | Seberapa penting halaman ini dibanding halaman lain (0,0 sampai 1,0). Beranda 1.0, katalog 0.9, halaman resep 0.7. Ini cuma **saran**, bukan perintah — Google bisa mengabaikannya. |
+
+**Kenapa halaman resep pakai format `resep.html?id=...`?** Karena situs ini
+tidak punya server, jadi tidak ada "halaman" terpisah per resep — semuanya
+satu berkas `resep.html` yang isinya diisi JavaScript sesuai `id` di alamat.
+Mesin pencari tetap bisa mengindeksnya karena isinya dihasilkan JavaScript
+(Google bisa menjalankan JavaScript saat mengindeks).
+
+**Kenapa `lastmod` tidak diisi tanggal hari ini?** Ini jebakan yang mudah
+terjadi. Kalau `lastmod` diisi tanggal hari ini setiap kali skrip dijalankan,
+mesin pencari melihat situs seolah berubah terus padahal isinya sama. Lama
+kelamaan `lastmod` diabaikan karena dianggap tidak akurat. Karena itu
+`_qa/buat-sitemap.js` mengambil tanggal dari **waktu berkas terakhir diubah**
+(`fs.statSync(...).mtime`) — jadi tanggalnya jujur.
+
+**Cara membuat ulang sitemap:**
+
+```bash
+node _qa/buat-sitemap.js
+```
+
+Jalankan setiap kali menambah resep baru, supaya resep ke-68 ikut terdaftar.
+
+### 8.6 Ringkasan: apa bedanya `robots.txt` dan `sitemap.xml`?
+
+| | `robots.txt` | `sitemap.xml` |
+|---|---|---|
+| Bentuk | Teks biasa | XML |
+| Isinya | Aturan: mana yang boleh dijelajahi | Daftar: halaman apa saja yang ada |
+| Tujuan | Menyaring robot dari halaman yang tidak perlu | Mengenalkan halaman ke robot |
+| Perumpamaan | Papan "Dilarang masuk" di pintu | Daftar menu di meja |
+| Wajib? | Tidak, tapi membantu | Tidak, tapi sangat membantu |
+| Di situs ini | 3 baris, mengizinkan semua + menunjuk sitemap | 72 URL, lengkap dengan tanggal ubah |
 
 ---
 
@@ -794,10 +942,10 @@ menyentuh data.
 
 **Pemuatan malas (lazy):** API YouTube (berkas besar) **tidak dimuat saat
 halaman dibuka**. Baru dimuat saat pengunjung menekan tombol Video
-(`muatApiYouTube`, `store.js:571`). Jadi pengunjung yang hanya membaca bahan
+(`muatApiYouTube`, `skrip/store.js:571`). Jadi pengunjung yang hanya membaca bahan
 tidak membayar biaya memuat pemutar video sama sekali.
 
-**Host nocookie** (`store.js:760`): pemutar dibuat dengan
+**Host nocookie** (`skrip/store.js:760`): pemutar dibuat dengan
 `host: "https://www.youtube-nocookie.com"` supaya YouTube tidak menyimpan
 cookie pelacak sebelum videonya benar-benar diputar.
 
@@ -836,11 +984,11 @@ langkahnya** — 8 resep dengan waktu dari bab tulisan tangan (lebih akurat),
 
 ### 10.3 Timer
 
-Ada dua timer, **logikanya satu** (`hitungMundur`, `store.js:124`):
+Ada dua timer, **logikanya satu** (`hitungMundur`, `skrip/store.js:124`):
 
 1. **Timer di halaman resep** — tombol kecil di samping langkah
-   (`halaman.js:450`)
-2. **Timer di mode masak** — tombol besar di tengah layar (`store.js:693`)
+   (`skrip/halaman.js:450`)
+2. **Timer di mode masak** — tombol besar di tengah layar (`skrip/store.js:693`)
 
 Aturan penting: **satu timer saja yang jalan**. Memulai timer baru otomatis
 menghentikan yang lama, supaya tidak ada dua hitungan bersamaan.
@@ -852,7 +1000,7 @@ Keduanya memanggil `toggleFav(id)` yang sama.
 
 Satu detail kecil yang penting: di halaman favorit, melepas simpan harus
 **langsung menghilangkan kartunya**. Ini dilakukan lewat opsi
-`setelahSimpan: gambar` (`halaman.js:817`) — setelah tombol diklik, halaman
+`setelahSimpan: gambar` (`skrip/halaman.js:817`) — setelah tombol diklik, halaman
 menggambar ulang daftarnya.
 
 ### 10.5 Pencarian
@@ -872,7 +1020,7 @@ ke makan malam. Ini membuat URL bisa dibagikan apa adanya.
 ### 10.6 Cetak
 
 Tombol Cetak memakai `window.print()` biasa, tapi CSS `@media print`
-(`style.css:1413`) dirapikan khusus supaya hasil cetaknya benar-benar berguna
+(`aset/style.css:1413`) dirapikan khusus supaya hasil cetaknya benar-benar berguna
 di dapur:
 
 - Kepala halaman, navigasi, tombol, video, dan kaki halaman disembunyikan
@@ -918,8 +1066,8 @@ dari proyek ini:
 
 | Yang dulu ada | Yang sekarang | Kenapa |
 |---|---|---|
-| 7 blok `<script>` di dalam HTML | Semua pindah ke `halaman.js` | CSP `'self'` memblokir skrip di dalam HTML |
-| `onerror="imgFallback(this)"` di tiap `<img>` | Satu pendengar galat di `store.js:203` | CSP memblokir atribut `on*` |
+| 7 blok `<script>` di dalam HTML | Semua pindah ke `skrip/halaman.js` | CSP `'self'` memblokir skrip di dalam HTML |
+| `onerror="imgFallback(this)"` di tiap `<img>` | Satu pendengar galat di `skrip/store.js:203` | CSP memblokir atribut `on*` |
 | `style="margin-top:..."` di HTML | Class `.jarak-atas` di CSS | CSP memblokir atribut `style` |
 | Warna badge ditulis `style="background:..."` | Pemilih CSS `[data-teknik="tumis"]` | Sama |
 
@@ -939,9 +1087,9 @@ document.addEventListener("error", (e) => {
 }, true);
 ```
 
-Dan satu jebakan halus: gambar yang **telanjur gagal** sebelum `store.js`
+Dan satu jebakan halus: gambar yang **telanjur gagal** sebelum `skrip/store.js`
 selesai dimuat tidak memicu kejadian apa pun lagi. Karena itu ada pemeriksaan
-manual setelahnya (`store.js:209`).
+manual setelahnya (`skrip/store.js:209`).
 
 ### 11.2 Pencegahan suntikan kode (XSS)
 
@@ -954,7 +1102,7 @@ esc("Rendang <pedas>")  // → "Rendang &lt;pedas&gt;"
 
 Cara paling aman adalah `textContent` (bukan `innerHTML`), dan itu dipakai
 di tempat-tempat penting — misalnya teks langkah dan tanda matang dibangun
-dengan `textContent` + `createTextNode` (`halaman.js:410`), bukan `innerHTML`.
+dengan `textContent` + `createTextNode` (`skrip/halaman.js:410`), bukan `innerHTML`.
 
 ### 11.3 Data localStorage yang rusak
 
@@ -962,11 +1110,11 @@ localStorage bisa diubah tangan atau korup. Kalau tidak diperiksa, satu data
 rusak bisa membuat halaman **gagal dimuat selamanya** (dan pengunjung tidak
 tahu cara memperbaikinya). Tiga lapis pertahanan:
 
-1. `baca()` (`store.js:18`) memeriksa bentuk data, dan menolak larik di
-   tempat objek (`store.js:29`)
-2. `ambilTambahan()` (`halaman.js:686`) menyaring entri yang bukan objek
+1. `baca()` (`skrip/store.js:18`) memeriksa bentuk data, dan menolak larik di
+   tempat objek (`skrip/store.js:29`)
+2. `ambilTambahan()` (`skrip/halaman.js:686`) menyaring entri yang bukan objek
    dengan teks
-3. `ambilRencana()` (`halaman.js:543`) memastikan hasilnya objek
+3. `ambilRencana()` (`skrip/halaman.js:543`) memastikan hasilnya objek
 
 ### 11.4 Privasi
 
@@ -988,10 +1136,10 @@ tanpa alat uji khusus.
 | Semua tombol ikon punya `aria-label` | Tombol hati, tombol hapus, tombol tutup |
 | Ikon hiasan diberi `aria-hidden="true"` | Semua `<svg class="ikon">` |
 | Kontras teks minimal 4.5:1 | `--aksen-teks` sengaja digelapkan jadi 4.95:1 |
-| Fokus keyboard terlihat jelas | `:focus-visible` dengan garis kontras (`style.css:1415`) |
+| Fokus keyboard terlihat jelas | `:focus-visible` dengan garis kontras (`aset/style.css:1415`) |
 | Angka porsi bisa diubah tanpa mouse | Tombol `+`/`−`, bukan slider |
-| Mode masak bisa ditutup dengan Esc | `papanTuntas` (`store.js:951`) |
-| "Kurangi gerak" dihormati | `prefers-reduced-motion` (`store.js:518`) |
+| Mode masak bisa ditutup dengan Esc | `papanTuntas` (`skrip/store.js:951`) |
+| "Kurangi gerak" dihormati | `prefers-reduced-motion` (`skrip/store.js:518`) |
 | Dialog pemilih resep punya `role="dialog"` | `mealplan.html:78` |
 | Tabel konversi pakai `<th scope="col">` | `tentang.html:52` |
 | Ukuran sasaran sentuh ≥ 44px | Semua tombol utama |
@@ -1008,19 +1156,19 @@ langkah yang bagus — tapi harus diuji di semua browser dulu.
 
 | Teknik | Di mana | Manfaat |
 |---|---|---|
-| Foto berukuran 500px | `resep-data.js` | Total ±2MB untuk 67 foto (dari ±10MB di 1280px) |
-| `loading="lazy"` | `store.js:298` | Foto di bawah layar tidak diunduh dulu |
+| Foto berukuran 500px | `skrip/resep-data.js` | Total ±2MB untuk 67 foto (dari ±10MB di 1280px) |
+| `loading="lazy"` | `skrip/store.js:298` | Foto di bawah layar tidak diunduh dulu |
 | `fetchpriority="high"` | `index.html:62` | Foto hero diunduh lebih dulu |
 | `width` + `height` di semua `<img>` | Semua | Tidak ada lompatan tata letak saat foto muncul (CLS) |
-| `content-visibility: auto` | `style.css:310` | 67 kartu tidak digambar sekaligus |
-| Tinggi minimum wadah JS | `style.css:461` | CLS turun dari 0,58 ke 0,03 |
-| Animasi hanya opacity | `style.css:1399` | Menggeser elemen ikut tercatat sebagai CLS |
-| API YouTube dimuat saat diklik | `store.js:571` | Pengunjung yang tidak menonton tidak membayar biayanya |
-| Daftar favorit dibaca sekali | `store.js:321` | Dari 67 pembacaan localStorage jadi 1 |
-| Teks pencarian digabung sekali | `store.js:441` | Tidak menggabung ulang nama 67 bahan tiap ketikan |
-| Ketikan ditunda 120ms | `store.js:487` | Mengetik cepat tidak membuat layar berkedip |
-| `MutationObserver` hanya node baru | `store.js:560` | Tidak memindai seluruh dokumen tiap perubahan |
-| `pagehide`, bukan `unload` | `halaman.js:521` | bfcache tetap bekerja — tombol "kembali" jadi instan |
+| `content-visibility: auto` | `aset/style.css:310` | 67 kartu tidak digambar sekaligus |
+| Tinggi minimum wadah JS | `aset/style.css:461` | CLS turun dari 0,58 ke 0,03 |
+| Animasi hanya opacity | `aset/style.css:1399` | Menggeser elemen ikut tercatat sebagai CLS |
+| API YouTube dimuat saat diklik | `skrip/store.js:571` | Pengunjung yang tidak menonton tidak membayar biayanya |
+| Daftar favorit dibaca sekali | `skrip/store.js:321` | Dari 67 pembacaan localStorage jadi 1 |
+| Teks pencarian digabung sekali | `skrip/store.js:441` | Tidak menggabung ulang nama 67 bahan tiap ketikan |
+| Ketikan ditunda 120ms | `skrip/store.js:487` | Mengetik cepat tidak membuat layar berkedip |
+| `MutationObserver` hanya node baru | `skrip/store.js:560` | Tidak memindai seluruh dokumen tiap perubahan |
+| `pagehide`, bukan `unload` | `skrip/halaman.js:521` | bfcache tetap bekerja — tombol "kembali" jadi instan |
 
 **Hasil pengukuran CLS (ambang "baik" = 0,1):**
 
@@ -1097,9 +1245,9 @@ kalau ada fitur sosial.
 
 **T: Kenapa ada tiga berkas JavaScript? Kenapa tidak satu saja?**
 
-J: Karena tanggung jawabnya berbeda. `resep-data.js` hanya data — kalau mau
-menambah resep, kamu tidak perlu menyentuh logika sama sekali. `store.js`
-berisi alat yang dipakai semua halaman. `halaman.js` berisi apa yang dilakukan
+J: Karena tanggung jawabnya berbeda. `skrip/resep-data.js` hanya data — kalau mau
+menambah resep, kamu tidak perlu menyentuh logika sama sekali. `skrip/store.js`
+berisi alat yang dipakai semua halaman. `skrip/halaman.js` berisi apa yang dilakukan
 tiap halaman. Kalau digabung jadi satu, berkasnya jadi 4.600 baris yang sulit
 dicari.
 
@@ -1133,7 +1281,7 @@ kalau pengunjung menghapus riwayat browser.
 
 **T: Bagaimana cara video tahu posisi menit tiap langkah?**
 
-J: `daftarBab` (`store.js:1038`) selalu menghasilkan satu bab per langkah.
+J: `daftarBab` (`skrip/store.js:1038`) selalu menghasilkan satu bab per langkah.
 Kalau resep punya data `bab` tulisan tangan, waktu diambil dari situ (paling
 akurat). Kalau tidak, durasi video dibagi rata sesuai jumlah langkah,
 disisakan 8 detik di akhir untuk penutup.
@@ -1160,7 +1308,7 @@ kontras teks lebih mudah dijaga — persis yang dibutuhkan untuk WCAG.
 
 **T: Kalau mau menambah resep ke-68, apa saja yang harus diubah?**
 
-J: Hanya `resep-data.js`:
+J: Hanya `skrip/resep-data.js`:
 1. Tambah satu objek di larik `RESEP` (ikuti bentuk resep yang sudah ada)
 2. Tambah satu baris di `DURASI_VIDEO` dengan durasi video barunya
 3. Tambah satu baris di `TANGGAL_VIDEO` dengan tanggal unggahnya
@@ -1171,7 +1319,7 @@ diambil dari `RESEP.length`. Tidak ada HTML atau CSS yang perlu disentuh.
 
 **T: Bagaimana kalau foto Wikimedia gagal dimuat?**
 
-J: Ada dua tahap cadangan (`imgFallback`, `store.js:186`): pertama diganti
+J: Ada dua tahap cadangan (`imgFallback`, `skrip/store.js:186`): pertama diganti
 gambar SVG hijau bawaan, kalau masih gagal jadi blok warna (`img-solid`).
 Jadi tidak akan pernah ada ikon gambar rusak di halaman.
 
@@ -1184,7 +1332,7 @@ Jadi tidak akan pernah ada ikon gambar rusak di halaman.
 1. Siapkan **ID video YouTube** (11 karakter). Semua resep wajib punya video.
 2. Siapkan **URL foto Wikimedia** dengan pola `/500px-` (ukuran resmi yang
    diizinkan Wikimedia: 120, 250, 500, 1280, 1920, 3840).
-3. Salin satu objek resep yang sudah ada di `resep-data.js` sebagai cetakan,
+3. Salin satu objek resep yang sudah ada di `skrip/resep-data.js` sebagai cetakan,
    lalu ganti isinya.
 4. Tambahkan durasi videonya (detik) ke `DURASI_VIDEO`.
 5. Tambahkan tanggal unggahnya (YYYY-MM-DD) ke `TANGGAL_VIDEO`.
@@ -1193,7 +1341,7 @@ Jadi tidak akan pernah ada ikon gambar rusak di halaman.
 
 ### Mengubah warna seluruh situs
 
-Cukup ubah `:root` di bagian 1 `style.css` (baris 10). Contoh, mau hijau
+Cukup ubah `:root` di bagian 1 `aset/style.css` (baris 10). Contoh, mau hijau
 lebih tua:
 
 ```css
@@ -1204,13 +1352,13 @@ Semua tombol, ikon, garis, dan tautan ikut berubah.
 
 ### Mengubah jarak (spacing) seluruh situs
 
-Semua jarak memakai token `--s1` sampai `--s8` (`style.css:12`). Mengubah
+Semua jarak memakai token `--s1` sampai `--s8` (`aset/style.css:12`). Mengubah
 satu token mengubah seluruh situs secara konsisten.
 
 ### Menambah ikon baru
 
-1. Buka `icons.svg`, tambahkan `<symbol id="i-nama-baru" viewBox="0 0 24 24">`
-2. Pakai di HTML: `<svg class="ikon"><use href="icons.svg#i-nama-baru"/></svg>`
+1. Buka `aset/icons.svg`, tambahkan `<symbol id="i-nama-baru" viewBox="0 0 24 24">`
+2. Pakai di HTML: `<svg class="ikon"><use href="aset/icons.svg#i-nama-baru"/></svg>`
 
 32 ikon yang sudah ada: `i-clock`, `i-timer`, `i-users`, `i-gauge`, `i-flame`,
 `i-flame-kindling`, `i-cooking-pot`, `i-chef-hat`, `i-soup`, `i-utensils`,
@@ -1223,8 +1371,8 @@ satu token mengubah seluruh situs secara konsisten.
 
 1. Salin kerangka halaman yang sudah ada (mis. `tentang.html`)
 2. Ganti `<body data-halaman="namabaru">`
-3. Tambah fungsi `halamanNamaBaru()` di `halaman.js`
-4. Daftarkan di router (`halaman.js:823`): `namabaru: halamanNamaBaru`
+3. Tambah fungsi `halamanNamaBaru()` di `skrip/halaman.js`
+4. Daftarkan di router (`skrip/halaman.js:823`): `namabaru: halamanNamaBaru`
 5. Jangan lupa: meta CSP, canonical, OG, dan `<script src="halaman.js">`
 6. Tambahkan juga kaki halaman (salin dari halaman lain)
 7. Tambahkan ke `_qa/buat-sitemap.js` lalu jalankan
@@ -1296,7 +1444,7 @@ Prinsip yang dipegang di seluruh proyek ini:
 
 2. **Jelaskan "kenapa", bukan hanya "apa".** Hampir setiap fungsi punya
    komentar yang menjelaskan alasan keputusannya, bukan hanya kegiatannya.
-   Contoh: komentar di `style.css:310` menjelaskan kenapa angka `215px` harus
+   Contoh: komentar di `aset/style.css:310` menjelaskan kenapa angka `215px` harus
    sama dengan tinggi kartu.
 
 3. **Tangani kegagalan dengan ramah.** Video gagal? Muncul tautan YouTube.

@@ -278,7 +278,7 @@ function badgeTeknikHTML(urai) {
   }
 
   return '<span class="badge" data-teknik="' + esc(urai.teknik) + '">' +
-    '<svg class="ikon" aria-hidden="true"><use href="icons.svg#' + (IKON_TEKNIK[urai.teknik] || "i-cooking-pot") + '"/></svg>' +
+    '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#' + (IKON_TEKNIK[urai.teknik] || "i-cooking-pot") + '"/></svg>' +
     urai.teknik + (urai.api ? " · api " + urai.api : "") + "</span>" + meter;
 }
 
@@ -297,7 +297,7 @@ function kartuResepHTML(r, opsi, daftarSimpan) {
     ? ""
     : '<button class="kartu-simpan" type="button" data-simpan aria-label="Simpan ' + esc(r.nama) + '"'
       + (disimpan ? ' aria-pressed="true"' : "") + ">"
-      + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-heart"/></svg></button>';
+      + '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-heart"/></svg></button>';
 
   return '<article class="kartu">'
     + '<a class="kartu-tautan" href="resep.html?id=' + esc(r.id) + '">'
@@ -308,7 +308,7 @@ function kartuResepHTML(r, opsi, daftarSimpan) {
     + '<span class="kartu-teks">'
     + '<span class="kartu-nama">' + esc(r.nama) + "</span>"
     + '<span class="kartu-meta">' + fmtWaktu(r.waktuTotal) + " · " + esc(r.daerah)
-    + '<span class="kartu-bintang"><svg class="ikon" aria-hidden="true"><use href="icons.svg#i-star"/></svg>'
+    + '<span class="kartu-bintang"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-star"/></svg>'
     + r.rating + "</span></span>"
     + "</span></a>"
     + simpan
@@ -351,7 +351,7 @@ function pasangDropdown(select) {
   tombol.setAttribute("aria-haspopup", "listbox");
   tombol.setAttribute("aria-expanded", "false");
   tombol.innerHTML = '<span class="dd-teks"></span>'
-    + '<svg class="ikon dd-panah" aria-hidden="true"><use href="icons.svg#i-chevron-down"/></svg>';
+    + '<svg class="ikon dd-panah" aria-hidden="true"><use href="aset/icons.svg#i-chevron-down"/></svg>';
 
   const daftar = document.createElement("ul");
   daftar.className = "dd-daftar";
@@ -604,9 +604,9 @@ function siapkanMasak() {
     + '<div class="masak-baris">'
     + '<span class="masak-hitung"></span>'
     + '<button class="masak-tombol" type="button" data-video>'
-    + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-play"/></svg><span>Video</span></button>'
+    + '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-play"/></svg><span>Video</span></button>'
     + '<button class="masak-tombol" type="button" data-tutup>'
-    + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-x"/></svg>Tutup</button>'
+    + '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-x"/></svg>Tutup</button>'
     + "</div></div>"
     // Bagian tengah yang bisa digulir. Tombol navigasi di bawahnya
     // selalu terlihat, walau panel video sedang terbuka.
@@ -619,9 +619,9 @@ function siapkanMasak() {
     + "</div></div>"
     + '<div class="masak-nav">'
     + '<button class="masak-mundur" type="button">'
-    + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-left"/></svg>Sebelumnya</button>'
+    + '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-arrow-left"/></svg>Sebelumnya</button>'
     + '<button class="masak-maju" type="button"><span>Lanjut</span>'
-    + '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-arrow-right"/></svg></button>'
+    + '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-arrow-right"/></svg></button>'
     + "</div>"
     // Petunjuk papan tuntas, hanya tampil di layar lebar.
     + '<p class="masak-papan">Panah kiri dan kanan pindah langkah · Esc menutup · Spasi menghidupkan timer</p>';
@@ -1076,7 +1076,7 @@ function pasangKeAtas() {
   tombol.type = "button";
   tombol.className = "ke-atas";
   tombol.setAttribute("aria-label", "Kembali ke atas");
-  tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="icons.svg#i-panah-atas"/></svg>';
+  tombol.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-panah-atas"/></svg>';
   document.body.appendChild(tombol);
 
   // Tombol muncul setelah digulir, tapi disembunyikan lagi saat kaki
