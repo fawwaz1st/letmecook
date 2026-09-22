@@ -779,7 +779,7 @@ Bagian terpanjang di halaman.js. Urutannya:
 | 528 | Resep pendamping: kategori berbeda supaya bervariasi |
 | 535 | Panggil `siapkanHalaman()` |
 
-### 6.5 `halamanMealplan` — Rencana Makan (baris 539–800)
+### 6.5 `halamanMealplan` — Rencana Makan (baris 557–822)
 
 | Baris | Yang dilakukan |
 |---|---|
@@ -1564,7 +1564,7 @@ kalau pengunjung menghapus riwayat browser.
 
 **T: Bagaimana cara video tahu posisi menit tiap langkah?**
 
-J: `daftarBab` (`skrip/store.js:1038`) selalu menghasilkan satu bab per langkah.
+J: `daftarBab` (`skrip/store.js:1152`) selalu menghasilkan satu bab per langkah.
 Kalau resep punya data `bab` tulisan tangan, waktu diambil dari situ (paling
 akurat). Kalau tidak, durasi video dibagi rata sesuai jumlah langkah,
 disisakan 8 detik di akhir untuk penutup.
