@@ -771,6 +771,11 @@ function bukaModeMasak(resep) {
             // Mulai dari bagian langkah yang sedang dibuka, bukan dari
             // detik nol. Kalau tidak, membuka video di langkah 4 tetap
             // memutar bagian awal.
+            //
+            // Tapi kalau panelnya sudah ditutup sebelum pemutar siap
+            // (pengunjung menutup video saat masih memuat), video TIDAK
+            // boleh diputar — kalau tidak, suaranya berbunyi diam-diam.
+            if (panelVideo.hidden) return;
             e.target.playVideo();
             const bab = masakState.bab[masakState.indeks];
             if (bab) lompatKe(bab[0]);
@@ -826,7 +831,11 @@ function bukaModeMasak(resep) {
     if (!p || !p.seekTo || masakState.mintaDetik === null) return;
 
     p.seekTo(masakState.mintaDetik, true);
-    p.playVideo();
+
+    // Hanya putar kalau panel video memang sedang terbuka. Kalau tertutup,
+    // cukup pindahkan posisinya — kalau diputar, suaranya berbunyi
+    // padahal videonya tidak terlihat.
+    if (!panelVideo.hidden) p.playVideo();
 
     clearTimeout(masakState.jedaCari);
     masakState.jedaCari = setTimeout(() => {
@@ -872,6 +881,15 @@ function bukaModeMasak(resep) {
     el.classList.toggle("ada-video", !terbuka);
     // Rincian langkah disembunyikan saat dua kolom, supaya teks lega.
     gambarRinci(masakState.indeks);
+
+    // PENTING: menyembunyikan panel TIDAK menghentikan video. Tanpa
+    // perintah di bawah, suaranya tetap berbunyi walau videonya tidak
+    // terlihat. Jadi dijeda saat ditutup, dan dilanjutkan saat dibuka.
+    if (masakState.pemutar && masakState.pemutar.pauseVideo) {
+      if (terbuka) masakState.pemutar.pauseVideo();
+      else masakState.pemutar.playVideo();
+    }
+
     if (!terbuka && !masakState.pemutar && !panelVideo.dataset.dibuat) {
       panelVideo.dataset.dibuat = "1";
       bangunPemutar();
@@ -1022,14 +1040,21 @@ function bukaModeMasak(resep) {
   // ---- Buka dan tutup ----
   function tutup() {
     el.classList.remove("buka");
+    // Bersihkan penanda tata letak dua kolom, supaya sesi berikutnya
+    // mulai dari tata letak satu kolom lagi.
+    el.classList.remove("ada-video");
     document.body.classList.remove("masak-jalan");
     hentikanTimer();
     lepasLayar();
     clearTimeout(masakState.jedaCari);
     masakState.mintaDetik = null;
     // Pemutar dibuang supaya sesi berikutnya membangun ulang dari bersih.
+    // destroy() sekaligus menghentikan video yang sedang berjalan.
     if (masakState.pemutar && masakState.pemutar.destroy) {
-      try { masakState.pemutar.destroy(); } catch { /* sudah hilang */ }
+      try {
+        if (masakState.pemutar.pauseVideo) masakState.pemutar.pauseVideo();
+        masakState.pemutar.destroy();
+      } catch { /* sudah hilang */ }
     }
     masakState.pemutar = null;
     delete panelVideo.dataset.dibuat;

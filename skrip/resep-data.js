@@ -1028,7 +1028,7 @@ var RESEP = [
     id: "coto-makassar", nama: "Coto Makassar", daerah: "Sulawesi Selatan", kategori: "sarapan",
     waktuTotal: 120, waktuAktif: 40, level: "sedang", porsi: 6, rating: 4.9, dimasak: 1287,
     // Foto: (Lofor) (CC BY 3.0) — https://commons.wikimedia.org/wiki/File:Coto_Makassar-Warung.JPG
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Coto_Makassar-Warung.JPG/500px-Coto_Makassar-Warung.JPG",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c8/Kuliner_Coto_Makassar.jpg/500px-Kuliner_Coto_Makassar.jpg",
     video: "hOl6ZlvaTs4",
     deskripsi: "Daging dan jeroan sapi direbus 90 menit dengan air cucian beras hingga empuk, lalu kuahnya diaduk dengan kacang tanah goreng yang dihaluskan.",
     rasa: "Kacang tanah goreng 70 gram dihaluskan lalu diaduk ke kuah, dan itu yang bikin gurih. Santan cair bikin rasa lembut.", pedas: 1, veg: false, anak: false,
@@ -1399,7 +1399,7 @@ var RESEP = [
     id: "kohu-kohu", nama: "Kohu-Kohu", daerah: "Maluku", kategori: "siang",
     waktuTotal: 40, waktuAktif: 30, level: "mudah", porsi: 4, rating: 4.6, dimasak: 389,
     // Foto: Ans~jawiki at Japanese Wikipedia (CC BY-SA 3.0) — https://commons.wikimedia.org/wiki/File:Kohu-jo.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/Kohu-jo.jpg/500px-Kohu-jo.jpg",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Bali_cuisine.jpg/500px-Bali_cuisine.jpg",
     video: "uxlFrgYjAg4",
     deskripsi: "Tongkol dikukus 15 menit lalu disuwir, dan kelapa parutnya dikukus lagi bersama bawang merah sampai harum.",
     rasa: "Perasan jeruk nipis dicampur ke sayuran segar. Kelapa kukus bikin gurih lembut.", pedas: 2, veg: false, anak: false,
@@ -1611,7 +1611,7 @@ var RESEP = [
     id: "keumamah", nama: "Keumamah Ikan Kayu", daerah: "Aceh", kategori: "malam",
     waktuTotal: 60, waktuAktif: 30, level: "sedang", porsi: 4, rating: 4.5, dimasak: 370,
     // Foto: Si Gam (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Keumamah.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Keumamah.jpg/500px-Keumamah.jpg",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0b/Keumamah_Aceh.jpg/500px-Keumamah_Aceh.jpg",
     video: "3HFb_GLYU9s",
     deskripsi: "Ikan tongkol kering 250 gram direbus dulu supaya seratnya lunak, lalu dimasak dengan bumbu cabai dan asam sunti selama 25 menit. Hasilnya lauk berwarna cokelat gelap dengan kuah berminyak yang cocok disantap bersama nasi hangat.",
     rasa: "Cabai rawit 15 buah dan asam sunti 5 buah bikin pedas tajam, sekaligus menahan bau amis ikan kering. Bawang merah 8 siung yang ditumis dengan minyak goreng 4 sdm membuat kuahnya terasa berat dan berminyak di lidah.", pedas: 3, veg: false, anak: false,
@@ -1846,7 +1846,7 @@ var RESEP = [
     id: "serombotan", nama: "Serombotan Klungkung", daerah: "Bali", kategori: "camilan",
     waktuTotal: 45, waktuAktif: 35, level: "mudah", porsi: 5, rating: 4.6, dimasak: 755,
     // Foto: Fitri Penyalai (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Serombotan.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Serombotan.jpg/500px-Serombotan.jpg",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Bali_cuisine.jpg/500px-Bali_cuisine.jpg",
     video: "G1fKFFRcxU4",
     deskripsi: "Kangkung 150 gram, kacang panjang 150 gram, dan tauge 100 gram direbus terpisah 3 menit supaya tetap renyah. Bumbu kelapa dari 170 gram kelapa bakar diulek bareng kencur dan cabai, lalu disiram ke sayur yang sudah ditiriskan kering.",
     rasa: "Kelapa 170 gram yang dibakar dulu bikin bumbunya beraroma asap tipis, kencur 10 gram menyusup di belakangnya. Gula merah 20 gram dan terasi 5 gram diulek bareng cabai rawit, bikin manis-gurih yang nempel di sayur.", pedas: 2, veg: true, anak: false,
@@ -2081,7 +2081,7 @@ var RESEP = [
     id: "laksa-bogor", nama: "Laksa Bogor", daerah: "Jawa Barat", kategori: "siang",
     waktuTotal: 80, waktuAktif: 45, level: "sedang", porsi: 6, rating: 4.8, dimasak: 255,
     // Foto: Gunawan Kartapranata (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Laksa_Bogor_2.JPG
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Laksa_Bogor_2.JPG/500px-Laksa_Bogor_2.JPG",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/97/Laksa_Bogor_4.JPG/500px-Laksa_Bogor_4.JPG",
     video: "pMr4ZbYL4gE",
     deskripsi: "Santan 1500 ml dan kaldu ayam 400 ml dididihkan bersama bumbu kunyit, lalu dikentalkan dengan 100 gram kelapa sangrai yang ditumbuk. Kuahnya disiram ke bihun 200 gram, oncom, dan kemangi.",
     rasa: "Kelapa sangrai 100 gram yang ditumbuk halus bikin kuahnya kental tanpa perlu banyak santan. Oncom 150 gram dan kemangi bikin rasa fermentasi khas, wangi segar di ujung suapan.", pedas: 1, veg: false, anak: true,
@@ -2276,7 +2276,7 @@ var RESEP = [
     id: "sei-sapi", nama: "Se'i Sapi", daerah: "Nusa Tenggara Timur", kategori: "malam",
     waktuTotal: 230, waktuAktif: 45, level: "sulit", porsi: 6, rating: 4.8, dimasak: 319,
     // Foto: Kembangraps (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Sei_sapi_Pj_DSC_2925.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/Sei_sapi_Pj_DSC_2925.jpg/500px-Sei_sapi_Pj_DSC_2925.jpg",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Sei_Sapi_-_Palembang%2C_SS_%2814_October_2021%29.jpg/500px-Sei_Sapi_-_Palembang%2C_SS_%2814_October_2021%29.jpg",
     video: "IGmMVN2ahZM",
     deskripsi: "Se'i itu daging sapi asap khas Timor yang diiris tipis memanjang setelah matang. Daging 1000 gram dilumuri garam dan gula 20 gram, didiamkan 60 menit, lalu diasapi 90 menit sampai permukaannya cokelat gelap.",
     rasa: "Garam 2 sdt dan gula merah 20 gram dipakai buat curing, jadi rasanya asin manis sampai ke dalam daging. Asap dari serbuk kayu 100 gram dan daun jeruk 5 lembar nempel di permukaan. Lada hitam 1 sdt bikin rasa hangat di ujung suapan.", pedas: 0, veg: false, anak: true,
