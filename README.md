@@ -74,10 +74,6 @@ seluruh 67 resep punya bab yang bisa diklik dan selalu nyambung.
 tersusun sendiri dari resep yang kamu isi, digabung kalau bahan dan satuannya
 sama. Bisa juga menambah bahan sendiri, dan itu tersimpan.
 
-**Cetak.** Tombol cetak menghasilkan lembaran dapur yang rapi: kepala, tombol,
-dan video disembunyikan; bahan dan langkah disusun dua kolom supaya muat satu
-halaman; warna diubah jadi hitam putih supaya hemat tinta.
-
 ## Cara memasang
 
 **1. Lewat server lokal.** Ini cara paling gampang kalau mau videonya jalan:
@@ -276,7 +272,7 @@ Aturan kecil yang perlu diikuti:
   dibuat sendiri, bukan bawaan browser.
 - Video memakai YouTube IFrame API di host `youtube-nocookie.com`, dimuat
   hanya saat tombol video ditekan.
-- Ada `@media (prefers-reduced-motion: reduce)` dan gaya khusus `@media print`.
+- Ada `@media (prefers-reduced-motion: reduce)` untuk menghormati pengaturan gerak.
 - `content-visibility: auto` pada kartu: 67 kartu katalog tidak digambar
   sekaligus.
 - Data terstruktur JSON-LD: Recipe + VideoObject di halaman resep, ItemList

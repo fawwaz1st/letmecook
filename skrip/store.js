@@ -1,4 +1,4 @@
-// LetMeCook — 44 resep seluruh Indonesia + localStorage.
+// LetMeCook — 67 resep seluruh Indonesia + localStorage.
 // Foto dari Wikimedia Commons (lihat komentar "Foto:" di tiap resep) dan video dari YouTube.
 // Kunci: letmecook:fav (id[]), letmecook:meal (7 hari), letmecook:gcheck, letmecook:prog (progress masak).
 

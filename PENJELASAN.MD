@@ -95,14 +95,14 @@ letmecook/
 │
 │  ── Logika (dipanggil halaman) ──────────────────────────────
 ├── skrip/
-│   ├── skrip/resep-data.js     (2.599 baris)  DATA: 67 resep + tabel video
-│   ├── store.js        (1.239 baris)  ALAT: 32 fungsi bersama
-│   └── halaman.js      ( 865 baris)  LOGIKA: 5 fungsi + router
+│   ├── resep-data.js     (2.595 baris)  DATA: 67 resep + tabel video
+│   ├── store.js          (1.111 baris)  ALAT: 32 fungsi bersama
+│   └── halaman.js        (  741 baris)  LOGIKA: 5 fungsi + router
 │
 │  ── Tampilan (aset yang diunduh) ────────────────────────────
 ├── aset/
-│   ├── style.css       (1.825 baris)  Seluruh tampilan (18 bagian)
-│   ├── aset/icons.svg                      32 ikon SVG, dipanggil per id
+│   ├── style.css       (1.659 baris)  Seluruh tampilan (18 bagian)
+│   ├── icons.svg                       31 ikon SVG, dipanggil per id
 │   ├── ikon-192.png                   Ikon aplikasi 192px (manifest)
 │   └── ikon-512.png                   Ikon aplikasi 512px (manifest)
 │
@@ -276,7 +276,7 @@ Contoh nyata saat membuka `resep.html?id=rendang`:
 4. `skrip/store.js:237` (`parseLangkah`) memecah tiap langkah jadi: teknik masak,
    besar api, tanda matang, dan teks sisa
 5. `skrip/store.js:1152` (`daftarBab`) menentukan bab video: satu bab per langkah
-6. Hasilnya dipasang ke `#area` dengan `innerHTML` (baris `skrip/halaman.js:262`)
+6. Hasilnya dipasang ke `#area` dengan `innerHTML` (baris `skrip/halaman.js:226`)
 
 ---
 
@@ -290,7 +290,7 @@ Setiap halaman HTML memuat tiga skrip di bagian bawah `<body>`:
 <script src="halaman.js"></script>     <!-- 3. logika halaman -->
 ```
 
-`skrip/halaman.js` diakhiri router kecil (baris `skrip/halaman.js:837`) yang membaca
+`skrip/halaman.js` diakhiri router kecil (baris `skrip/halaman.js:842`) yang membaca
 penanda di `<body>`:
 
 ```html
@@ -327,9 +327,9 @@ ketat**: tidak ada satu pun `<script>` yang ditulis langsung di dalam HTML.
 1. Browser membaca HTML     → kerangka kosong tampil sebentar
 2. skrip/resep-data.js dimuat     → larik RESEP tersedia
 3. store.js dimuat          → semua fungsi tersedia, pendengar galat gambar
-                              dipasang (skrip/store.js:203), gambar rusak yang
+                              dipasang (skrip/store.js:202), gambar rusak yang
                               telanjur terjadi diperiksa manual (skrip/store.js:209)
-4. halaman.js dimuat        → router (baris 823) memanggil fungsi halaman
+4. halaman.js dimuat        → router (baris 842) memanggil fungsi halaman
 5. Fungsi halaman:
    a. mengisi konten (kartu, langkah, bahan, dst.)
    b. memanggil siapkanHalaman() — "sapuan akhir" bersama (skrip/store.js:1247):
@@ -500,6 +500,59 @@ Hasilnya dipakai untuk:
   `[data-teknik="tumis"]` (`aset/style.css:852`), bukan ditulis JS
 - **meter api** (3 batang kecil, menyala sesuai besar api)
 - **kotak "Matang kalau:"**
+
+#### Penjelasan per baris: `parseLangkah()` — dari kalimat jadi data
+
+Fungsi ini mengubah **satu kalimat langkah** menjadi **objek data** yang bisa
+dipakai untuk badge, meter api, dan kotak tanda matang. Contoh masukannya:
+
+> "Tumis bumbu dengan api sedang selama 8 menit hingga harum. Tanda matang:
+> minyak keluar dan bau wangi."
+
+```js
+function parseLangkah(teks) {                 // (237) terima satu kalimat langkah
+  const kena = (teks.match(RE_TEKNIK) || [])[1];
+                                              // (238) cari kata kerja masak pertama.
+                                              // Kalau tidak ada, kena = undefined
+  const teknik = kena ? PADANAN_TEKNIK[kena.toLowerCase()] || kena.toLowerCase() : null;
+                                              // (239) samakan katanya: "menumis" jadi
+                                              // "tumis", "uleg" jadi "haluskan"
+  const api = ((teks.match(RE_API) || [])[1] || "").toLowerCase().replace(/\s+/g, " ") || null;
+                                              // (240) ambil besar api: "api sedang"
+                                              // jadi "sedang". Kalau tidak ada, null
+
+  let matang = ((teks.match(RE_MATANG) || [])[1] || "").trim() || null;
+                                              // (242) ambil teks setelah "Tanda matang:"
+  let sisa = teks;                            // (243) sisa = teks utuh dulu
+
+  if (matang) {                               // (245) kalau ada tanda matang...
+    sisa = teks.replace(RE_MATANG, "").trim();
+                                              // (246) ...buang dari teks, supaya tidak
+                                              // tampil dua kali
+  } else {                                    // (247) kalau tidak ada...
+    const hasil = teks.match(RE_HASIL);       // (248) ...cari pola "hingga X" atau "agar X"
+    if (hasil) matang = hasil[2].trim();      // (249) ...jadikan tanda matang cadangan
+  }
+
+  return { teknik, api, matang, sisa };       // (252) kembalikan empat bagian
+}
+```
+
+Hasilnya untuk contoh di atas:
+
+```js
+{
+  teknik: "tumis",     // badge kuning "tumis"
+  api: "sedang",       // meter api menyala 2 dari 3
+  matang: "minyak keluar dan bau wangi",  // kotak "Matang kalau: ..."
+  sisa: "Tumis bumbu dengan api sedang selama 8 menit hingga harum."
+}
+```
+
+**Kenapa ada cadangan `RE_HASIL`?** Karena tidak semua langkah menulis
+"Tanda matang:" secara eksplisit. Kalau langkah menulis "masak hingga kuah
+menyusut", bagian "kuah menyusut" tetap bisa dipakai sebagai tanda matang —
+lebih baik ada tanda yang kurang sempurna daripada tidak ada sama sekali.
 
 ### 5.6 Kartu resep (baris 293–339)
 
@@ -873,13 +926,13 @@ Bagian akhir berkas berisi dua tabel:
 
 | Berkas | Baris | `data-halaman` | Isi utama |
 |---|---|---|---|
-| `index.html` | 147 | `index` | Hero, `#hariIni`, `#katGrup`, `#popGrup`, `#babGrup`, panel "Jam berapa, masak apa" |
-| `katalog.html` | 143 | `katalog` | Form pencarian, chip kategori `#chipKategori`, tiga filter (`fLevel`, `fWaktu`, `fDiet`), `#grup`, `#kosong` |
-| `resep.html` | 92 | `resep` | Cuma kerangka kosong + `#area` (diisi JavaScript) + `#sanding` |
-| `mealplan.html` | 127 | `mealplan` | `#mealGrup` (21 slot), `#belanja`, form manual, dialog `#pilih` |
-| `favorit.html` | 96 | `favorit` | `#grup` + `#kosong` |
-| `tentang.html` | 136 | `tentang` | Tabel konversi, penjelasan video, penjelasan privasi |
-| `404.html` | 77 | `404` | Pesan "Alamat ini tidak ada" + tombol ke katalog |
+| `index.html` | 127 | `index` | Hero, `#hariIni`, `#katGrup`, `#popGrup`, `#babGrup` |
+| `katalog.html` | 134 | `katalog` | Form pencarian, chip kategori `#chipKategori`, tiga filter (`fLevel`, `fWaktu`, `fDiet`), `#grup`, `#kosong` |
+| `resep.html` | 85 | `resep` | Cuma kerangka kosong + `#area` (diisi JavaScript) + `#sanding` |
+| `mealplan.html` | 117 | `mealplan` | `#mealGrup` (21 slot), `#belanja`, form manual, dialog `#pilih` |
+| `favorit.html` | 88 | `favorit` | `#grup` + `#kosong` |
+| `tentang.html` | 125 | `tentang` | Tabel konversi, penjelasan video, penjelasan privasi |
+| `404.html` | 72 | `404` | Pesan "Alamat ini tidak ada" + tombol ke katalog |
 
 ### 8.3 Kaki halaman (baris ~60 di tiap berkas)
 
@@ -1125,7 +1178,7 @@ halaman dibuka**. Baru dimuat saat pengunjung menekan tombol Video
 (`muatApiYouTube`, `skrip/store.js:571`). Jadi pengunjung yang hanya membaca bahan
 tidak membayar biaya memuat pemutar video sama sekali.
 
-**Host nocookie** (`skrip/store.js:760`): pemutar dibuat dengan
+**Host nocookie** (`skrip/store.js:765`): pemutar dibuat dengan
 `host: "https://www.youtube-nocookie.com"` supaya YouTube tidak menyimpan
 cookie pelacak sebelum videonya benar-benar diputar.
 
@@ -1167,8 +1220,8 @@ langkahnya** — 8 resep dengan waktu dari bab tulisan tangan (lebih akurat),
 Ada dua timer, **logikanya satu** (`hitungMundur`, `skrip/store.js:124`):
 
 1. **Timer di halaman resep** — tombol kecil di samping langkah
-   (`skrip/halaman.js:450`)
-2. **Timer di mode masak** — tombol besar di tengah layar (`skrip/store.js:693`)
+   (`skrip/halaman.js:460`)
+2. **Timer di mode masak** — tombol besar di tengah layar (`skrip/store.js:702`)
 
 Aturan penting: **satu timer saja yang jalan**. Memulai timer baru otomatis
 menghentikan yang lama, supaya tidak ada dua hitungan bersamaan.
@@ -1274,7 +1327,7 @@ Keduanya memanggil `toggleFav(id)` yang sama.
 
 Satu detail kecil yang penting: di halaman favorit, melepas simpan harus
 **langsung menghilangkan kartunya**. Ini dilakukan lewat opsi
-`setelahSimpan: gambar` (`skrip/halaman.js:829`) — setelah tombol diklik, halaman
+`setelahSimpan: gambar` (`skrip/halaman.js:858`) — setelah tombol diklik, halaman
 menggambar ulang daftarnya.
 
 ### 10.7 Pencarian
@@ -1350,7 +1403,7 @@ dari proyek ini:
 | Yang dulu ada | Yang sekarang | Kenapa |
 |---|---|---|
 | 7 blok `<script>` di dalam HTML | Semua pindah ke `skrip/halaman.js` | CSP `'self'` memblokir skrip di dalam HTML |
-| `onerror="imgFallback(this)"` di tiap `<img>` | Satu pendengar galat di `skrip/store.js:203` | CSP memblokir atribut `on*` |
+| `onerror="imgFallback(this)"` di tiap `<img>` | Satu pendengar galat di `skrip/store.js:202` | CSP memblokir atribut `on*` |
 | `style="margin-top:..."` di HTML | Class `.jarak-atas` di CSS | CSP memblokir atribut `style` |
 | Warna badge ditulis `style="background:..."` | Pemilih CSS `[data-teknik="tumis"]` | Sama |
 
@@ -1385,7 +1438,7 @@ esc("Rendang <pedas>")  // → "Rendang &lt;pedas&gt;"
 
 Cara paling aman adalah `textContent` (bukan `innerHTML`), dan itu dipakai
 di tempat-tempat penting — misalnya teks langkah dan tanda matang dibangun
-dengan `textContent` + `createTextNode` (`skrip/halaman.js:410`), bukan `innerHTML`.
+dengan `textContent` + `createTextNode` (`skrip/halaman.js:430`), bukan `innerHTML`.
 
 ### 11.3 Data localStorage yang rusak
 
@@ -1394,10 +1447,10 @@ rusak bisa membuat halaman **gagal dimuat selamanya** (dan pengunjung tidak
 tahu cara memperbaikinya). Tiga lapis pertahanan:
 
 1. `baca()` (`skrip/store.js:18`) memeriksa bentuk data, dan menolak larik di
-   tempat objek (`skrip/store.js:29`)
-2. `ambilTambahan()` (`skrip/halaman.js:686`) menyaring entri yang bukan objek
+   tempat objek (`skrip/store.js:28`)
+2. `ambilTambahan()` (`skrip/halaman.js:724`) menyaring entri yang bukan objek
    dengan teks
-3. `ambilRencana()` (`skrip/halaman.js:561`) memastikan hasilnya objek
+3. `ambilRencana()` (`skrip/halaman.js:568`) memastikan hasilnya objek
 
 ### 11.4 Privasi
 
@@ -1421,7 +1474,7 @@ tanpa alat uji khusus.
 | Kontras teks minimal 4.5:1 | `--aksen-teks` sengaja digelapkan jadi 4.95:1 |
 | Fokus keyboard terlihat jelas | `:focus-visible` dengan garis kontras (`aset/style.css:1621`) |
 | Angka porsi bisa diubah tanpa mouse | Tombol `+`/`−`, bukan slider |
-| Mode masak bisa ditutup dengan Esc | `papanTuntas` (`skrip/store.js:951`) |
+| Mode masak bisa ditutup dengan Esc | `papanTuntas` (`skrip/store.js:1067`) |
 | "Kurangi gerak" dihormati | `prefers-reduced-motion` (`skrip/store.js:518`) |
 | Dialog pemilih resep punya `role="dialog"` | `mealplan.html:78` |
 | Tabel konversi pakai `<th scope="col">` | `tentang.html:52` |
@@ -1440,7 +1493,7 @@ langkah yang bagus — tapi harus diuji di semua browser dulu.
 | Teknik | Di mana | Manfaat |
 |---|---|---|
 | Foto berukuran 500px | `skrip/resep-data.js` | Total ±2MB untuk 67 foto (dari ±10MB di 1280px) |
-| `loading="lazy"` | `skrip/store.js:298` | Foto di bawah layar tidak diunduh dulu |
+| `loading="lazy"` | `skrip/store.js:288` | Foto di bawah layar tidak diunduh dulu |
 | `fetchpriority="high"` | `index.html:62` | Foto hero diunduh lebih dulu |
 | `width` + `height` di semua `<img>` | Semua | Tidak ada lompatan tata letak saat foto muncul (CLS) |
 | `content-visibility: auto` | `aset/style.css:319` | 67 kartu tidak digambar sekaligus |
@@ -1448,10 +1501,10 @@ langkah yang bagus — tapi harus diuji di semua browser dulu.
 | Animasi hanya opacity | `aset/style.css:482` | Menggeser elemen ikut tercatat sebagai CLS |
 | API YouTube dimuat saat diklik | `skrip/store.js:571` | Pengunjung yang tidak menonton tidak membayar biayanya |
 | Daftar favorit dibaca sekali | `skrip/store.js:321` | Dari 67 pembacaan localStorage jadi 1 |
-| Teks pencarian digabung sekali | `skrip/store.js:441` | Tidak menggabung ulang nama 67 bahan tiap ketikan |
-| Ketikan ditunda 120ms | `skrip/store.js:487` | Mengetik cepat tidak membuat layar berkedip |
-| `MutationObserver` hanya node baru | `skrip/store.js:560` | Tidak memindai seluruh dokumen tiap perubahan |
-| `pagehide`, bukan `unload` | `skrip/halaman.js:521` | bfcache tetap bekerja — tombol "kembali" jadi instan |
+| Teks pencarian digabung sekali | `skrip/store.js:444` | Tidak menggabung ulang nama 67 bahan tiap ketikan |
+| Ketikan ditunda 120ms | `skrip/store.js:482` | Mengetik cepat tidak membuat layar berkedip |
+| `MutationObserver` hanya node baru | `skrip/store.js:550` | Tidak memindai seluruh dokumen tiap perubahan |
+| `pagehide`, bukan `unload` | `skrip/halaman.js:540` | bfcache tetap bekerja — tombol "kembali" jadi instan |
 
 **Hasil pengukuran CLS (ambang "baik" = 0,1):**
 

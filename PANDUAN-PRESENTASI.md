@@ -230,10 +230,6 @@ untuk presentasi kelas, wawancara, atau demo ke teman.
    > "Bahan yang saya tulis sendiri juga tersimpan, jadi tidak hilang kalau
    > halaman dimuat ulang."
 
-6. **Klik "Cetak"** — tunjukkan pratinjau cetak (atau sebutkan saja).
-   > "Daftar belanjanya bisa dicetak. Tombol-tombolnya otomatis
-   > disembunyikan di kertas, karena di kertas tidak ada gunanya."
-
 ---
 
 ## Bagian 7 — Tentang Teknis (1,5 menit)
