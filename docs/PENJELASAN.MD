@@ -96,12 +96,12 @@ letmecook/
 │  ── Logika (dipanggil halaman) ──────────────────────────────
 ├── skrip/
 │   ├── resep-data.js     (2.598 baris)  DATA: 67 resep + tabel video
-│   ├── store.js          (1.263 baris)  ALAT: 32 fungsi bersama
-│   └── halaman.js        (  859 baris)  LOGIKA: 5 fungsi + router
+│   ├── store.js          (1.446 baris)  ALAT: 32 fungsi bersama
+│   └── halaman.js        (  885 baris)  LOGIKA: 5 fungsi + router
 │
 │  ── Tampilan (aset yang diunduh) ────────────────────────────
 ├── aset/
-│   ├── style.css       (1.781 baris)  Seluruh tampilan (18 bagian)
+│   ├── style.css       (1.764 baris)  Seluruh tampilan (18 bagian)
 │   ├── icons.svg                       31 ikon SVG, dipanggil per id
 │   ├── ikon-192.png                   Ikon aplikasi 192px (manifest)
 │   └── ikon-512.png                   Ikon aplikasi 512px (manifest)
@@ -351,7 +351,7 @@ tidak perlu ditulis ulang di tujuh tempat.
 
 ## 5. store.js — Peralatan Bersama
 
-1.263 baris, 32 fungsi. Dibagi jadi beberapa bagian dengan komentar pembatas
+1.446 baris, 32 fungsi. Dibagi jadi beberapa bagian dengan komentar pembatas
 `// ====...====`. Berikut peta lengkapnya:
 
 ### 5.1 Penyimpanan (baris 1–75)
@@ -774,7 +774,7 @@ halaman ikut berubah sendiri.
 
 ## 6. halaman.js — Logika Tiap Halaman
 
-859 baris, 5 fungsi halaman + 1 router. Satu fungsi per halaman.
+885 baris, 5 fungsi halaman + 1 router. Satu fungsi per halaman.
 
 ### 6.1 Router (baris 842–859)
 
@@ -1043,7 +1043,7 @@ Jalankan setiap kali menambah resep baru, supaya resep ke-68 ikut terdaftar.
 
 ## 9. style.css — 18 Bagian
 
-1.781 baris, dibagi 18 bagian bernomor. Tekan `Ctrl+F` lalu ketik `12)` untuk
+1.764 baris, dibagi 18 bagian bernomor. Tekan `Ctrl+F` lalu ketik `12)` untuk
 langsung lompat ke bagian dropdown, misalnya.
 
 | No | Baris | Bagian | Isinya |

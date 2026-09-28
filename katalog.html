@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Katalog Resep — LetMeCook</title>
   <meta name="description" content="Cari resep masakan Indonesia, saring menurut level, waktu, dan pantangan.">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://i.ytimg.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://i.ytimg.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'">
   <link rel="canonical" href="https://fawwaz1st.github.io/letmecook/katalog.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="LetMeCook">
@@ -23,7 +23,6 @@
   <meta name="color-scheme" content="light">
   <meta name="robots" content="max-image-preview:large">
   <meta name="theme-color" content="#0d5c34" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0a3f24" media="(prefers-color-scheme: dark)">
 </head>
 <body data-halaman="katalog">
 
@@ -90,7 +89,7 @@
       </form>
 
       <div class="baris-info">
-        <span id="jumlahTeks">Memuat resep…</span>
+        <span id="jumlahTeks" role="status">Memuat resep…</span>
         <button type="button" id="tombolReset" hidden>Hapus filter</button>
       </div>
 

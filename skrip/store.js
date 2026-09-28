@@ -123,14 +123,16 @@ function fmtDetik(detik) {
 // akhir. Mengembalikan id interval supaya pemanggil bisa menghentikannya.
 function hitungMundur(detik, saatTik, saatHabis) {
   let sisa = detik;
-  saatTik(sisa);
+  // Galat di pemanggil tidak boleh membuat interval jalan diam-diam
+  // tanpa UI yang berubah. Kalau ada galat, hitungan tetap lanjut.
+  try { saatTik(sisa); } catch { /* abaikan galat tampilan */ }
   const id = setInterval(() => {
     sisa--;
     if (sisa <= 0) {
       clearInterval(id);
-      saatHabis();
+      try { saatHabis(); } catch { /* abaikan */ }
     } else {
-      saatTik(sisa);
+      try { saatTik(sisa); } catch { /* abaikan */ }
     }
   }, 1000);
   return id;
@@ -146,13 +148,19 @@ function esc(teks) {
     .replace(/'/g, "&#39;");
 }
 
-// Cari penyebutan waktu di teks langkah, misal "30 menit" atau "1 jam".
-// Mengembalikan [teks asli, detik] atau null kalau tidak ada.
+// Cari penyebutan waktu di teks langkah, misal "30 menit", "1 jam",
+// atau rentang "2-3 menit". Mengembalikan [teks asli, detik] atau null.
 // Dipakai halaman resep dan mode masak supaya aturannya sama.
 function waktuDiTeks(teks) {
-  const kena = teks.match(/(\d+)\s*(jam|menit|detik)/);
+  // Rentang diambil angka terbesar, supaya timer tidak berhenti
+  // kecepatan saat instruksinya "masak 2-3 menit".
+  const kena = teks.match(/(\d+)(?:\s*[-–—]\s*(\d+))?\s*(jam|menit|detik)/);
   if (!kena) return null;
-  return [kena[0], Number(kena[1]) * { jam: 3600, menit: 60, detik: 1 }[kena[2]]];
+  const angka = Number(kena[2] || kena[1]);
+  // "Detik" di bawah 15 hampir selalu bagian dari tanda matang
+  // ("jejak 2 detik"), bukan durasi memasak. Jangan munculkan timer.
+  if (kena[3] === "detik" && angka < 15) return null;
+  return [kena[0], angka * { jam: 3600, menit: 60, detik: 1 }[kena[3]]];
 }
 
 // ID video YouTube selalu 11 karakter.
@@ -191,7 +199,9 @@ function imgFallback(el) {
     return;
   }
   el.dataset.stage = 2;
-  el.style.display = "none";
+  // visibility, bukan display:none — supaya ruangnya tetap dipesan dan
+  // tata letak tidak meloncat saat gambar kedua gagal juga.
+  el.style.visibility = "hidden";
   if (el.parentElement) el.parentElement.classList.add("img-solid");
 }
 
@@ -215,7 +225,7 @@ document.querySelectorAll("img").forEach((img) => {
 // ============================================================
 const RE_TEKNIK = /(menumis|tumis|merebus|rebus|mengukus|kukus|membakar|bakar|menggoreng|goreng|memanggang|panggang|didihkan|didih|sangrai|ungkep|blender|haluskan|tumbuk|uleg|campur|aduk|masak|sajikan|tata|siram|tuang|masukkan|angkat|tiriskan|diamkan|simpan)/i;
 const RE_API = /api\s+(terkecil|sangat kecil|kecil|sedang|besar|paling besar)/i;
-const RE_MATANG = /tanda\s*matang\s*:\s*([^.]+)\.?/i;
+const RE_MATANG = /tanda\s*matang\s*:?\s*([^.]+)\.?/i;
 const RE_HASIL = /(hingga|sampai|agar|supaya)\s+([^.]+)\.?/i;
 
 const PADANAN_TEKNIK = {
@@ -302,7 +312,12 @@ function kartuResepHTML(r, opsi, daftarSimpan) {
   return '<article class="kartu">'
     + '<a class="kartu-tautan" href="resep.html?id=' + esc(r.id) + '">'
     + '<span class="kartu-foto">'
-    + '<img src="' + esc(r.foto) + '" alt="" loading="lazy" width="600" height="400">'
+    // srcset: HP mengunduh 250px (±15KB), desktop 500px. Tanpa ini,
+    // 67 foto 500px diunduh penuh walau tampil hanya selebar 150px.
+    + '<img src="' + esc(r.foto) + '"'
+    + srcsetFoto(r.foto, ["250px", "500px"])
+    + ' sizes="(min-width: 760px) 240px, (min-width: 560px) 180px, 45vw"'
+    + ' alt="" loading="lazy" width="600" height="400">'
     + '<span class="kartu-level">' + esc(r.level) + "</span>"
     + "</span>"
     + '<span class="kartu-teks">'
@@ -315,22 +330,39 @@ function kartuResepHTML(r, opsi, daftarSimpan) {
     + "</article>";
 }
 
+// Susun atribut srcset dari URL foto Wikimedia. Foto aslinya selalu
+// berakhiran "/500px-Nama.jpg" atau "/250px-Nama.jpg"; ukuran lain
+// dibuat dengan mengganti angka di depan "px-". Wikimedia hanya
+// mengizinkan ukuran tetap (120, 250, 500, 1280, 1920, 3840).
+function srcsetFoto(url, ukuran) {
+  const dasar = url.replace(/\/\d+px-/, "/");
+  if (dasar === url) return ""; // pola tidak dikenal, biarkan apa adanya
+  return " srcset=\"" + ukuran.map((u) => esc(dasar.replace(/\/([^/]+)$/, "/" + u + "-$1")) + " " + u.replace("px", "w")).join(", ") + "\"";
+}
+
 // Pasang kartu ke wadah, sekaligus hidupkan tombol simpan.
+// Satu pendengar di wadah (delegasi), bukan satu per tombol — di
+// katalog itu 67 tombol, dan pendengar sebanyak itu membebani memori
+// serta memperlambat penggambaran ulang.
 function isiKartu(wadah, daftar, opsi) {
   opsi = opsi || {};
   const daftarSimpan = new Set(ambilFav());
 
   wadah.innerHTML = daftar.map((r) => kartuResepHTML(r, opsi, daftarSimpan)).join("");
 
-  wadah.querySelectorAll("[data-simpan]").forEach((tombol) => {
-    tombol.addEventListener("click", (e) => {
+  if (!wadah.dataset.delegasi) {
+    wadah.dataset.delegasi = "1";
+    wadah.addEventListener("click", (e) => {
+      const tombol = e.target.closest("[data-simpan]");
+      if (!tombol || !wadah.contains(tombol)) return;
       e.preventDefault();
-      const id = tombol.closest(".kartu").querySelector("a").getAttribute("href").split("id=")[1];
+      const kartu = tombol.closest(".kartu");
+      const id = kartu.querySelector("a").getAttribute("href").split("id=")[1];
       toggleFav(id);
       tombol.setAttribute("aria-pressed", String(sudahFav(id)));
       if (opsi.setelahSimpan) opsi.setelahSimpan(id);
     });
-  });
+  }
 }
 
 // ============================================================
@@ -398,15 +430,24 @@ function pasangDropdown(select) {
   });
 
   // Papan tuntas: panah atas/bawah memilih, Esc menutup.
+  // Pilihan TIDAK ditutup saat panah — supaya bisa menelusuri opsi satu
+  // per satu seperti listbox sungguhan. Ditutup saat Enter atau klik.
   tombol.addEventListener("keydown", (e) => {
     const opsi = [...select.options];
+    // Tanpa opsi, tidak ada yang bisa dipilih — jangan sampai
+    // opsi[-1] dipanggil dan melempar galat.
+    if (!opsi.length) return;
     const pos = opsi.findIndex((o) => o.value === select.value);
-    if (e.key === "ArrowDown") {
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
       e.preventDefault();
-      pilih(opsi[Math.min(pos + 1, opsi.length - 1)].value);
-    } else if (e.key === "ArrowUp") {
+      const arah = e.key === "ArrowDown" ? 1 : -1;
+      const baru = opsi[Math.min(Math.max(pos + arah, 0), opsi.length - 1)];
+      select.value = baru.value;
+      gambar();
+      buka();
+    } else if (e.key === "Enter") {
       e.preventDefault();
-      pilih(opsi[Math.max(pos - 1, 0)].value);
+      pilih(select.value);
     } else if (e.key === "Escape") {
       tutup();
     }
@@ -434,10 +475,24 @@ function pasangSaranPencarian(input) {
 
   const kotak = document.createElement("div");
   kotak.className = "saran";
+  kotak.id = "saranCari";
+  kotak.setAttribute("role", "listbox");
+  kotak.setAttribute("aria-label", "Saran resep");
   kotak.hidden = true;
   input.insertAdjacentElement("afterend", kotak);
+  input.setAttribute("aria-expanded", "false");
+  input.setAttribute("aria-controls", "saranCari");
+  input.setAttribute("aria-autocomplete", "list");
 
   let sorot = -1;
+
+  // Buka/tutup kotak saran sambil menjaga atribut ARIA tetap sinkron,
+  // supaya pembaca layar tahu ada daftar saran yang sedang tampil.
+  function tampilkan(tampil) {
+    kotak.hidden = !tampil;
+    input.setAttribute("aria-expanded", String(tampil));
+    if (!tampil) input.removeAttribute("aria-activedescendant");
+  }
 
   // Teks pencarian tiap resep digabung SEKALI di sini, bukan tiap ketikan.
   // Tanpa ini, setiap huruf yang diketik menggabung ulang nama 67 bahan.
@@ -463,21 +518,27 @@ function pasangSaranPencarian(input) {
     const daftar = cocokkan(input.value);
     sorot = -1;
     if (!daftar.length) {
-      kotak.hidden = true;
+      tampilkan(false);
       return;
     }
-    kotak.innerHTML = daftar.map((r) =>
-      '<a class="saran-item" href="resep.html?id=' + esc(r.id) + '">'
-      + '<img src="' + esc(r.foto) + '" alt="" loading="lazy" width="44" height="44">'
+    kotak.innerHTML = daftar.map((r, i) =>
+      '<a class="saran-item" role="option" aria-selected="false" id="saran-' + i + '" href="resep.html?id=' + esc(r.id) + '">'
+      + '<img src="' + esc(r.foto) + '"'
+      + srcsetFoto(r.foto, ["120px", "250px"])
+      + ' sizes="44px" alt="" loading="lazy" width="44" height="44">'
       + "<span><strong>" + esc(r.nama) + "</strong>"
       + "<small>" + esc(r.daerah) + " · " + fmtWaktu(r.waktuTotal) + "</small></span></a>"
     ).join("");
-    kotak.hidden = false;
+    tampilkan(true);
   }
 
   // Tunda sedikit supaya tidak menggambar ulang tiap huruf.
   let jeda = null;
-  function gambarTertunda() {
+  function gambarTertunda(e) {
+    // Saat pengguna masih menyusun huruf (mis. papan tombol CJK),
+    // jangan gambar saran dulu — teksnya belum final dan kotaknya
+    // berkedip tiap huruf.
+    if (e && e.isComposing) return;
     clearTimeout(jeda);
     jeda = setTimeout(gambar, 120);
   }
@@ -486,7 +547,13 @@ function pasangSaranPencarian(input) {
     const item = [...kotak.querySelectorAll(".saran-item")];
     if (!item.length) return;
     sorot = (sorot + arah + item.length) % item.length;
-    item.forEach((a, i) => a.classList.toggle("disorot", i === sorot));
+    item.forEach((a, i) => {
+      const aktif = i === sorot;
+      a.classList.toggle("disorot", aktif);
+      a.setAttribute("aria-selected", String(aktif));
+    });
+    // Pembaca layar mengumumkan opsi yang sedang disorot lewat input.
+    input.setAttribute("aria-activedescendant", item[sorot].id);
   }
 
   input.addEventListener("input", gambarTertunda);
@@ -500,12 +567,12 @@ function pasangSaranPencarian(input) {
       e.preventDefault();
       kotak.querySelectorAll(".saran-item")[sorot].click();
     } else if (e.key === "Escape") {
-      kotak.hidden = true;
+      tampilkan(false);
     }
   });
 
   document.addEventListener("click", (e) => {
-    if (!kotak.contains(e.target) && e.target !== input) kotak.hidden = true;
+    if (!kotak.contains(e.target) && e.target !== input) tampilkan(false);
   });
 }
 
@@ -515,8 +582,14 @@ function pasangSaranPencarian(input) {
 // Kalau pengunjung minta "kurangi gerak", animasinya dilewati.
 // ============================================================
 function pasangAnimasi() {
-  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-  if (!("IntersectionObserver" in window)) return;
+  // Browser lama tanpa IntersectionObserver, atau pengunjung yang minta
+  // "kurangi gerak": tampilkan semua tanpa animasi. Kalau tidak, elemen
+  // ber-class .muncul tetap transparan selamanya.
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches
+    || !("IntersectionObserver" in window)) {
+    document.querySelectorAll(".muncul").forEach((el) => el.classList.add("tampil"));
+    return;
+  }
 
   const pengamat = new IntersectionObserver((masuk) => {
     masuk.forEach((m) => {
@@ -615,7 +688,8 @@ function siapkanMasak() {
     + '<div class="masak-isi">'
     + '<p class="masak-teks"></p>'
     + '<div class="masak-tanda"></div>'
-    + '<button class="masak-timer" type="button" hidden></button>'
+    // aria-live: pembaca layar mengumumkan sisa waktu tiap kali berubah.
+    + '<button class="masak-timer" type="button" hidden aria-live="polite"></button>'
     // Rincian tambahan, hanya tampil saat panel video TERTUTUP.
     // Saat video terbuka, layarnya jadi dua kolom dan ruangnya sempit,
     // jadi rincian ini disembunyikan supaya teks langkah tetap lega.
@@ -654,6 +728,7 @@ function lepasPendengarMasak() {
   p.video();
   p.timer();
   p.geser();
+  if (p.fokusLepas) p.fokusLepas();
   document.removeEventListener("keydown", p.papan);
   document.removeEventListener("visibilitychange", p.layar);
 }
@@ -678,6 +753,7 @@ function bukaModeMasak(resep) {
     mintaDetik: null,   // target waktu video yang sedang diminta
     jedaCari: null,     // pengatur percobaan ulang seek
     sisaCoba: 0,        // batas percobaan ulang, supaya tidak tanpa henti
+    fokusAsal: null,    // elemen yang difokuskan lagi saat mode masak ditutup
   };
 
   const $ = (sel) => el.querySelector(sel);
@@ -744,6 +820,10 @@ function bukaModeMasak(resep) {
 
     panelVideo.innerHTML = '<div class="masak-pemutar"><p class="masak-catatan">Memuat pemutar…</p></div>';
     const wadah = panelVideo.querySelector(".masak-pemutar");
+    // Penanda dipasang SETELAH pemutar benar-benar jadi. Kalau dipasang
+    // di awal dan pemuatan gagal, klik berikutnya tidak pernah mencoba
+    // lagi (lihat tampilkanTautanVideo yang menghapus penanda ini).
+    panelVideo.dataset.dibuat = "1";
 
     try {
       await muatApiYouTube();
@@ -752,8 +832,13 @@ function bukaModeMasak(resep) {
       return;
     }
 
-    // Sesi bisa sudah ditutup saat API selesai dimuat.
+    // Sesi bisa sudah ditutup atau diganti resep lain saat API selesai
+    // dimuat. Tanpa pemeriksaan ini, callback lama bisa menulis ke
+    // pemutar yang sudah dimusnahkan.
     if (masakState.resep !== resep) return;
+    // Mode masak sudah ditutup sepenuhnya — jangan bangun pemutar di
+    // wadah yang sudah dilepas dari halaman.
+    if (!el.classList.contains("buka")) return;
 
     wadah.innerHTML = "";
     const target = document.createElement("div");
@@ -772,9 +857,16 @@ function bukaModeMasak(resep) {
             // detik nol. Kalau tidak, membuka video di langkah 4 tetap
             // memutar bagian awal.
             //
-            // Tapi kalau panelnya sudah ditutup sebelum pemutar siap
-            // (pengunjung menutup video saat masih memuat), video TIDAK
-            // boleh diputar — kalau tidak, suaranya berbunyi diam-diam.
+            // Dua penjaga: panelnya sudah ditutup sebelum pemutar siap
+            // (video TIDAK boleh diputar — kalau tidak, suaranya berbunyi
+            // diam-diam), dan sesi sudah berganti resep (pemutar lama
+            // sudah dimusnahkan).
+            if (masakState.resep !== resep) return;
+            // Beri judul iframe supaya pembaca layar tahu isinya.
+            try {
+              const fr = e.target.getIframe && e.target.getIframe();
+              if (fr) fr.title = "Video: " + resep.nama;
+            } catch { /* bukan masalah kalau gagal */ }
             if (panelVideo.hidden) return;
             e.target.playVideo();
             const bab = masakState.bab[masakState.indeks];
@@ -823,10 +915,15 @@ function bukaModeMasak(resep) {
     if (!masakState.pemutar || !masakState.pemutar.seekTo) return;
     masakState.mintaDetik = detik;
     masakState.sisaCoba = 8;
-    terapkanMinta();
+    terapkanMinta(true);
   }
 
-  function terapkanMinta() {
+  // putar = true hanya saat permintaan baru (bukan percobaan ulang).
+  // Saat mencoba ulang, jangan panggil playVideo(): seek saat pemutar
+  // sedang buffering bisa memicu buffering lagi, dan playVideo membuat
+  // lingkaran itu berulang. Cukup seekTo, biarkan pemutar melanjutkan
+  // sendiri kalau memang sudah diputar.
+  function terapkanMinta(putar) {
     const p = masakState.pemutar;
     if (!p || !p.seekTo || masakState.mintaDetik === null) return;
 
@@ -835,7 +932,7 @@ function bukaModeMasak(resep) {
     // Hanya putar kalau panel video memang sedang terbuka. Kalau tertutup,
     // cukup pindahkan posisinya — kalau diputar, suaranya berbunyi
     // padahal videonya tidak terlihat.
-    if (!panelVideo.hidden) p.playVideo();
+    if (putar && !panelVideo.hidden) p.playVideo();
 
     clearTimeout(masakState.jedaCari);
     masakState.jedaCari = setTimeout(() => {
@@ -862,6 +959,11 @@ function bukaModeMasak(resep) {
   }
 
   function tampilkanTautanVideo(pesan) {
+    // Hapus penanda supaya klik "Video" berikutnya mencoba lagi dari
+    // awal. Tanpa ini, kegagalan sekali (API gagal dimuat, berkas dibuka
+    // lewat file://) membuat pesan error menempel sampai mode masak
+    // ditutup dan dibuka ulang.
+    delete panelVideo.dataset.dibuat;
     panelVideo.innerHTML = '<p class="masak-catatan">' + esc(pesan) + "</p>"
       + '<a class="masak-keluar" href="https://www.youtube.com/watch?v=' + esc(resep.video)
       + '" target="_blank" rel="noopener">Buka di YouTube</a>';
@@ -891,7 +993,6 @@ function bukaModeMasak(resep) {
     }
 
     if (!terbuka && !masakState.pemutar && !panelVideo.dataset.dibuat) {
-      panelVideo.dataset.dibuat = "1";
       bangunPemutar();
     }
   }
@@ -966,9 +1067,10 @@ function bukaModeMasak(resep) {
       const inti = b.nama.toLowerCase().split("(")[0].trim();
       if (!inti) return false;
       // Cocok kalau nama bahan muncul di langkah, atau kata pertama bahan
-      // (mis. "bawang") muncul di langkah.
+      // (mis. "bawang") muncul di langkah. Ambang 3 huruf supaya bahan
+      // pendek seperti "air" dan "ubi" tetap ikut terdeteksi.
       const kataDasar = inti.split(" ")[0];
-      return kalimat.includes(inti) || (kataDasar.length >= 4 && kalimat.includes(kataDasar));
+      return kalimat.includes(inti) || (kataDasar.length >= 3 && kalimat.includes(kataDasar));
     });
 
     const ul = kotakBahan.querySelector("ul");
@@ -987,14 +1089,22 @@ function bukaModeMasak(resep) {
     // --- Posisi langkah ---
     // Menampilkan semua langkah dengan yang sedang aktif ditandai,
     // supaya orang tahu sudah sampai mana dan apa yang masih tersisa.
+    //
+    // Daftarnya dibangun SEKALI, lalu tiap pindah langkah hanya kelas
+    // yang diganti. Kalau dibangun ulang tiap langkah, menggambar 8
+    // baris teks setiap kali menekan Lanjut itu pemborosan yang terasa
+    // di HP kelas bawah.
     const ol = kotakUrut.querySelector("ol");
-    ol.innerHTML = "";
-    langkah.forEach((u, n) => {
-      const li = document.createElement("li");
-      li.textContent = u.sisa.length > 60 ? u.sisa.slice(0, 58).trim() + "…" : u.sisa;
-      if (n === i) li.className = "kini";
-      else if (n < i) li.className = "lewat";
-      ol.appendChild(li);
+    if (ol.children.length !== langkah.length) {
+      ol.innerHTML = "";
+      langkah.forEach((u) => {
+        const li = document.createElement("li");
+        li.textContent = u.sisa.length > 60 ? u.sisa.slice(0, 58).trim() + "…" : u.sisa;
+        ol.appendChild(li);
+      });
+    }
+    [...ol.children].forEach((li, n) => {
+      li.className = n === i ? "kini" : n < i ? "lewat" : "";
     });
     kotakUrut.hidden = false;
   }
@@ -1003,9 +1113,16 @@ function bukaModeMasak(resep) {
   function sorotBabAktif(indeksLangkah) {
     const kotak = panelVideo.querySelector(".masak-bab");
     if (!kotak) return;
-    kotak.querySelectorAll("button").forEach((b) => b.classList.remove("aktif"));
+    kotak.querySelectorAll("button").forEach((b) => {
+      b.classList.remove("aktif");
+      b.removeAttribute("aria-current");
+    });
     const tombol = kotak.querySelector('button[data-langkah="' + indeksLangkah + '"]');
-    if (tombol) tombol.classList.add("aktif");
+    if (tombol) {
+      tombol.classList.add("aktif");
+      // Pembaca layar ikut tahu bab mana yang sedang berjalan.
+      tombol.setAttribute("aria-current", "true");
+    }
   }
 
   // ---- Pindah langkah ----
@@ -1048,6 +1165,12 @@ function bukaModeMasak(resep) {
     lepasLayar();
     clearTimeout(masakState.jedaCari);
     masakState.mintaDetik = null;
+    // Kembalikan fokus ke tombol yang membuka mode masak, supaya
+    // pengguna papan tuntas tidak kehilangan posisinya.
+    if (masakState.fokusAsal && masakState.fokusAsal.focus) {
+      try { masakState.fokusAsal.focus(); } catch { /* elemen sudah hilang */ }
+      masakState.fokusAsal = null;
+    }
     // Pemutar dibuang supaya sesi berikutnya membangun ulang dari bersih.
     // destroy() sekaligus menghentikan video yang sedang berjalan.
     if (masakState.pemutar && masakState.pemutar.destroy) {
@@ -1066,10 +1189,13 @@ function bukaModeMasak(resep) {
 
   function papanTuntas(e) {
     if (!el.classList.contains("buka")) return;
+    // Jangan rebut tombol Spasi kalau fokus sedang di elemen interaktif —
+    // Spasi di situ artinya menekan tombol itu, bukan menyalakan timer.
+    const diTombol = e.target && e.target.closest && e.target.closest("button, a, input, select, textarea");
     if (e.key === "ArrowRight") maju();
     else if (e.key === "ArrowLeft") mundur();
     else if (e.key === "Escape") tutup();
-    else if (e.key === " " && !tombolTimer.hidden) {
+    else if (e.key === " " && !diTombol && !tombolTimer.hidden) {
       e.preventDefault();
       jalankanTimer(Number(tombolTimer.dataset.detik));
     }
@@ -1079,28 +1205,56 @@ function bukaModeMasak(resep) {
     if (document.visibilityState === "visible" && el.classList.contains("buka")) jagaLayar();
   }
 
+  // ---- Fokus: kunci di dalam dialog, dan kembalikan saat ditutup ----
+  //
+  // Tanpa ini, pengguna papan tuntas bisa Tab ke halaman di belakang
+  // dialog, dan setelah ditutup fokusnya hilang entah ke mana.
+  const SELEKTOR_FOKUS = 'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+
+  function tahanFokus(e) {
+    if (e.key !== "Tab") return;
+    const bisa = [...el.querySelectorAll(SELEKTOR_FOKUS)].filter((t) => !t.disabled && t.offsetParent !== null);
+    if (!bisa.length) return;
+    const pertama = bisa[0];
+    const terakhir = bisa[bisa.length - 1];
+    if (e.shiftKey && document.activeElement === pertama) {
+      e.preventDefault();
+      terakhir.focus();
+    } else if (!e.shiftKey && document.activeElement === terakhir) {
+      e.preventDefault();
+      pertama.focus();
+    }
+  }
+
   // ---- Geser di layar sentuh ----
   // Tangan sering berminyak saat masak, jadi pindah langkah cukup
   // dengan menggeser, bukan menekan tombol kecil.
   let sentuhX = null;
   let sentuhY = null;
+  let sentuhDariVideo = false;
 
   function sentuhMulai(e) {
     sentuhX = e.touches[0].clientX;
     sentuhY = e.touches[0].clientY;
+    // Target disimpan dari titik AWAL sentuh. Di touchend, e.target
+    // adalah elemen di titik akhir — geseran yang mulai di video tapi
+    // berakhir di teks akan salah dianggap geseran langkah.
+    sentuhDariVideo = Boolean(e.target.closest && e.target.closest(".masak-video"));
   }
 
   function sentuhSelesai(e) {
     if (sentuhX === null) return;
     const dx = e.changedTouches[0].clientX - sentuhX;
     const dy = e.changedTouches[0].clientY - sentuhY;
+    const dariVideo = sentuhDariVideo;
     sentuhX = sentuhY = null;
+    sentuhDariVideo = false;
 
     // Geser mendatar minimal 60px dan lebih mendatar daripada menurun,
     // supaya menggulir layar tidak ikut pindah langkah.
     if (Math.abs(dx) < 60 || Math.abs(dx) < Math.abs(dy)) return;
     // Jangan bajak geseran yang dimulai dari pemutar video atau daftar bab.
-    if (e.target.closest(".masak-video")) return;
+    if (dariVideo) return;
 
     if (dx < 0) maju();
     else mundur();
@@ -1121,8 +1275,10 @@ function bukaModeMasak(resep) {
     tengah.removeEventListener("touchstart", sentuhMulai);
     tengah.removeEventListener("touchend", sentuhSelesai);
   };
+  p.fokusLepas = () => document.removeEventListener("keydown", tahanFokus, true);
   p.papan = papanTuntas;
   p.layar = saatLayarKembali;
+  p.fokus = tahanFokus;
 
   function jalankanTimerKlik() {
     jalankanTimer(Number(tombolTimer.dataset.detik));
@@ -1136,10 +1292,18 @@ function bukaModeMasak(resep) {
 
   document.addEventListener("keydown", papanTuntas);
   document.addEventListener("visibilitychange", saatLayarKembali);
+  // Tahan Tab di dalam dialog selama mode masak terbuka.
+  document.addEventListener("keydown", tahanFokus, true);
 
   gambar();
   el.classList.add("buka");
   document.body.classList.add("masak-jalan");
+  // Pindahkan fokus ke dialog supaya papan tuntas langsung bekerja,
+  // dan simpan asalnya untuk dikembalikan saat ditutup.
+  // Tombol Mundur sedang disabled di langkah 1 (elemen disabled tidak
+  // bisa menerima fokus), jadi pakai tombol Lanjut.
+  masakState.fokusAsal = document.activeElement;
+  tombolMaju.focus();
   jagaLayar();
 }
 
@@ -1166,11 +1330,21 @@ function daftarBab(resep, langkahTerurai) {
   // langkah ke-i. Dulu bab manual dipakai apa adanya, padahal jumlahnya
   // beda dengan jumlah langkah — akibatnya video melompat ke bagian yang
   // tidak nyambung dengan langkah yang sedang dibuka.
+  //
+  // Pemetaan langkah ke bab memakai Math.floor(i * bab / langkah):
+  // tiap langkah dapat bab yang BERBEDA, dan bab yang tersisa tetap
+  // ada di daftar tombol. Dulu memakai Math.round(posisi * (n-1)),
+  // yang bisa meloncatkan indeks (5 langkah, 7 bab: bab 1 dan 4
+  // tidak pernah dipakai).
   return langkah.map((urai, i) => {
-    const posisi = jumlah === 1 ? 0 : i / (jumlah - 1);
-    const detik = manual
-      ? manual[Math.round(posisi * (manual.length - 1))][0]
-      : Math.round(posisi * bisaDipakai);
+    let detik;
+    if (manual) {
+      const idx = Math.min(Math.floor(i * manual.length / jumlah), manual.length - 1);
+      detik = manual[idx][0];
+    } else {
+      const posisi = jumlah === 1 ? 0 : i / (jumlah - 1);
+      detik = Math.round(posisi * bisaDipakai);
+    }
 
     // Label dari awal kalimat langkah, dipendekkan supaya muat di tombol.
     let label = urai.sisa.split(/[.,]/)[0].trim();
@@ -1195,11 +1369,20 @@ function pasangKeAtas() {
 
   // Tombol muncul setelah digulir, tapi disembunyikan lagi saat kaki
   // halaman masuk layar supaya tidak menutupi teksnya di layar sempit.
+  // Pembaruan ditunda ke frame berikutnya: membaca posisi kaki halaman
+  // memaksa browser menghitung ulang tata letak, dan kejadian gulir
+  // bisa datang puluhan kali per detik.
   const kaki = document.querySelector("footer");
+  let menunggu = false;
   const atur = () => {
-    const lewat = window.scrollY > 600;
-    const kakiTerlihat = kaki && kaki.getBoundingClientRect().top < window.innerHeight - 40;
-    tombol.classList.toggle("tampil", lewat && !kakiTerlihat);
+    if (menunggu) return;
+    menunggu = true;
+    requestAnimationFrame(() => {
+      menunggu = false;
+      const lewat = window.scrollY > 600;
+      const kakiTerlihat = kaki && kaki.getBoundingClientRect().top < window.innerHeight - 40;
+      tombol.classList.toggle("tampil", lewat && !kakiTerlihat);
+    });
   };
   window.addEventListener("scroll", atur, { passive: true });
   tombol.addEventListener("click", () => window.scrollTo({ top: 0, behavior: "smooth" }));

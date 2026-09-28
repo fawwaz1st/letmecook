@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rencana Makan 7 Hari — LetMeCook</title>
   <meta name="description" content="Susun 21 slot makan untuk seminggu. Daftar belanjanya tersusun sendiri dari resep yang kamu pilih.">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://i.ytimg.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://www.youtube.com https://fonts.googleapis.com https://fonts.gstatic.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://i.ytimg.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'">
   <link rel="canonical" href="https://fawwaz1st.github.io/letmecook/mealplan.html">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="LetMeCook">
@@ -23,7 +23,6 @@
   <meta name="color-scheme" content="light">
   <meta name="robots" content="max-image-preview:large">
   <meta name="theme-color" content="#0d5c34" media="(prefers-color-scheme: light)">
-  <meta name="theme-color" content="#0a3f24" media="(prefers-color-scheme: dark)">
 </head>
 <body data-halaman="mealplan">
 
@@ -45,7 +44,7 @@
       <div class="panel-kepala">
         <h1 id="judulRencana"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-calendar"/></svg>Rencana 7 hari</h1>
       </div>
-      <div class="baris-info"><span id="isiTeks">0 dari 21 slot terisi</span></div>
+      <div class="baris-info"><span id="isiTeks" role="status">0 dari 21 slot terisi</span></div>
       <div class="meal-grup" id="mealGrup"></div>
     </section>
 
@@ -53,7 +52,7 @@
       <div class="panel-kepala">
         <h2 id="judulBelanja"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-basket"/></svg>Daftar belanja</h2>
       </div>
-      <div class="baris-info"><span id="belanjaTeks">Belum ada bahan</span></div>
+      <div class="baris-info"><span id="belanjaTeks" role="status">Belum ada bahan</span></div>
       <ul class="belanja" id="belanja"></ul>
 
       <form class="isian" id="formManual">

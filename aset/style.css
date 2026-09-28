@@ -187,7 +187,7 @@ p:last-child { margin-bottom: 0; }
   background: none;
   border-radius: var(--r-kecil) 0 0 var(--r-kecil);
 }
-.cari input:focus { outline: 2px solid var(--aksen); outline-offset: -2px; }
+.cari input:focus { outline: 2px solid var(--merek); outline-offset: -2px; }
 .cari button {
   border: none;
   background: var(--merek-tua);
@@ -216,7 +216,8 @@ p:last-child { margin-bottom: 0; }
   display: inline-flex;
   align-items: center;
   gap: var(--s1);
-  min-height: 40px;
+  /* 44px: ukuran sasaran sentuh minimum yang nyaman untuk jari. */
+  min-height: 44px;
   transition: background var(--dur) var(--gerak);
 }
 .nav a:hover { background: rgb(255 255 255 / 0.16); }
@@ -224,7 +225,7 @@ p:last-child { margin-bottom: 0; }
 .badge-hitung {
   background: #fff;
   color: var(--merek-tua);
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   min-width: 18px;
   height: 18px;
@@ -349,9 +350,11 @@ p:last-child { margin-bottom: 0; }
   position: absolute;
   top: var(--s2);
   left: var(--s2);
-  background: rgb(21 29 24 / 0.78);
+  /* 0.88, bukan 0.78: label putih harus tetap terbaca walau fotonya
+     terang. 0.78 terlalu tipis di atas foto berwarna muda. */
+  background: rgb(21 29 24 / 0.88);
   color: #fff;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   padding: 2px var(--s2);
   border-radius: var(--pil);
@@ -456,25 +459,6 @@ p:last-child { margin-bottom: 0; }
 }
 .panel-kepala a:hover { text-decoration: underline; }
 
-/* Tombol aksi di kepala panel. Tampil seperti tautan, tapi tetap
-   tombol supaya benar saat diakses papan tuntas. */
-.tautan-kepala {
-  margin-left: auto;
-  background: none;
-  border: 0;
-  padding: var(--s1);
-  font: inherit;
-  font-size: 0.88rem;
-  font-weight: 700;
-  color: var(--merek);
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  gap: var(--s1);
-  border-radius: 6px;
-}
-.tautan-kepala:hover { text-decoration: underline; }
-
 .isi { padding: var(--s4); }
 .isi-grup { padding: var(--s4); }
 
@@ -508,7 +492,7 @@ p:last-child { margin-bottom: 0; }
   font-size: 0.8rem;
   font-weight: 700;
   cursor: pointer;
-  min-height: 32px;
+  min-height: 44px;
 }
 .baris-info button:hover { background: var(--merek-muda); }
 
@@ -667,7 +651,7 @@ p:last-child { margin-bottom: 0; }
   color: oklch(0.40 0.09 75);
 }
 .tag.hijau { background: var(--merek-muda); color: var(--merek-tua); }
-.tag.merah { background: oklch(0.96 0.03 27); color: var(--bahaya); }
+.tag.merah { background: oklch(0.96 0.03 27); color: oklch(0.42 0.17 27); }
 .tag-baris { display: flex; gap: var(--s2); flex-wrap: wrap; }
 
 /* Info cepat dalam kotak. */
@@ -685,7 +669,7 @@ p:last-child { margin-bottom: 0; }
 }
 .info-cepat dt {
   color: var(--redup);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: uppercase;
   letter-spacing: 0.05em;
@@ -825,7 +809,8 @@ p:last-child { margin-bottom: 0; }
   font-size: 0.82rem;
   font-weight: 700;
   cursor: pointer;
-  min-height: 34px;
+  /* 44px: ukuran nyaman ditekan jari, terutama saat memasak. */
+  min-height: 44px;
   transition: border-color var(--dur) var(--gerak), color var(--dur) var(--gerak), background var(--dur) var(--gerak);
 }
 .tb-mini:hover { border-color: var(--merek); color: var(--merek); }
@@ -874,7 +859,9 @@ p:last-child { margin-bottom: 0; }
 }
 .api { display: inline-flex; gap: 3px; align-items: center; }
 .api i { width: 15px; height: 7px; border-radius: var(--pil); background: var(--garis); }
-.api i.on { background: var(--aksen); }
+/* Segmen menyala pakai versi gelap --aksen supaya terlihat di atas
+   latar terang (kontras 3:1 untuk elemen non-teks). */
+.api i.on { background: var(--aksen-teks); }
 
 /* Kotak tanda matang. */
 .tanda {
@@ -1001,11 +988,6 @@ p:last-child { margin-bottom: 0; }
    bukan melar memenuhi wadah dan menutupi tombol di bawahnya. */
 .masak-teks {
   flex: none;
-  font-size: clamp(1.2rem, 3.4vw, 1.7rem);
-  line-height: 1.4;
-  margin: 0;
-}
-.masak-teks {
   font-size: clamp(1.2rem, 3.4vw, 1.7rem);
   line-height: 1.4;
   margin: 0;
@@ -1220,7 +1202,7 @@ p:last-child { margin-bottom: 0; }
   background: rgb(255 255 255 / 0.08);
   color: #fff;
   cursor: pointer;
-  min-height: 34px;
+  min-height: 44px;
 }
 .masak-bab button:hover { background: rgb(255 255 255 / 0.18); }
 .masak-bab .menit { color: var(--aksen); font-variant-numeric: tabular-nums; margin-right: var(--s1); }
@@ -1301,13 +1283,13 @@ p:last-child { margin-bottom: 0; }
 /* Label kategori waktu makan di ujung kanan. */
 .pilih-tag {
   flex: none;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
   font-weight: 700;
   text-transform: capitalize;
   padding: 2px var(--s2);
   border-radius: var(--pil);
-  background: rgb(255 255 255 / 0.14);
-  color: rgb(255 255 255 / 0.85);
+  background: rgb(255 255 255 / 0.18);
+  color: rgb(255 255 255 / 0.95);
 }
 
 /* ---------- 10) RENCANA MAKAN ----------------------------- */
@@ -1338,7 +1320,7 @@ p:last-child { margin-bottom: 0; }
   width: 44px;
   flex: none;
   color: var(--redup);
-  font-size: 0.74rem;
+  font-size: 0.75rem;
   text-transform: uppercase;
 }
 .slot .isi-slot { flex: 1; min-width: 0; }
@@ -1354,7 +1336,7 @@ p:last-child { margin-bottom: 0; }
   font-size: 0.76rem;
   font-weight: 600;
   cursor: pointer;
-  min-height: 30px;
+  min-height: 44px;
   color: var(--redup);
   transition: border-color var(--dur) var(--gerak), color var(--dur) var(--gerak);
 }
@@ -1390,8 +1372,7 @@ p:last-child { margin-bottom: 0; }
   display: block;
   margin-bottom: var(--s1);
 }
-.isian input,
-.isian select {
+.isian input {
   font: inherit;
   font-size: 0.92rem;
   padding: var(--s2) var(--s3);
@@ -1402,8 +1383,7 @@ p:last-child { margin-bottom: 0; }
   color: var(--tinta);
   min-height: 42px;
 }
-.isian input:focus,
-.isian select:focus { outline: 2px solid var(--merek); outline-offset: -1px; }
+.isian input:focus { outline: 2px solid var(--merek); outline-offset: -1px; }
 
 .dua { display: grid; grid-template-columns: 1fr 1fr; gap: var(--s3); }
 
@@ -1671,7 +1651,7 @@ footer .wrap {
   gap: var(--s6) var(--s8);
 }
 .kaki-nav h3 {
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 700;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1744,7 +1724,7 @@ footer a:hover { text-decoration: underline; }
   /* Teks navigasi disembunyikan, ikon dan angka tetap terlihat. */
   .nav a { padding: var(--s2); font-size: 0; gap: 0; }
   .nav .ikon { width: 1.35em; height: 1.35em; }
-  .nav .badge-hitung { font-size: 0.66rem; margin-left: var(--s1); }
+  .nav .badge-hitung { font-size: 0.72rem; margin-left: var(--s1); }
 
   /* Tombol cari jadi ikon saja supaya kotak ketik tetap lega. */
   .cari button { padding: 0 var(--s3); font-size: 0; }
@@ -1758,8 +1738,11 @@ footer a:hover { text-decoration: underline; }
   .grup { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: var(--s3); }
   .kartu-teks { padding: var(--s2) var(--s3) var(--s3); }
   .kartu-nama { font-size: 0.92rem; }
-  .kartu-meta { font-size: 0.72rem; gap: var(--s1); }
-  .kartu-simpan { width: 28px; height: 28px; }
+  .kartu-meta { font-size: 0.75rem; gap: var(--s1); }
+  /* Tombol simpan tetap 44px walau kartunya kecil — jempol tidak
+     mengecil di layar kecil. */
+  .kartu-simpan { width: 44px; height: 44px; }
+  .kartu-simpan::before { inset: 0; }
 
   .isi, .isi-grup, .saring { padding: var(--s3); }
   .panel-kepala { padding: var(--s3); }
