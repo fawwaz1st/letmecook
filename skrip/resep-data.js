@@ -264,8 +264,8 @@ var RESEP = [
   {
     id: "ayam-betutu", nama: "Ayam Betutu", daerah: "Bali", kategori: "malam",
     waktuTotal: 180, waktuAktif: 50, level: "sulit", porsi: 4, rating: 4.9, dimasak: 987,
-    // Foto: m4sh.3d (CC BY-SA 2.0) — https://commons.wikimedia.org/wiki/File:Ayam_Betutu.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Ayam_Betutu.jpg/500px-Ayam_Betutu.jpg",
+    // Foto: Gunawan Kartapranata (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Ayam_Betutu_Bali.jpg
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Ayam_Betutu_Bali.jpg/500px-Ayam_Betutu_Bali.jpg",
     video: "8L2FdhuVbQM",
     bab: [[0, "Intro"], [71, "Persiapan bahan"], [160, "Membuat bumbu halus"], [289, "Tumis bumbu dan ungkep ayam"], [403, "Membuat kacang panjang bejek"], [450, "Membuat sambal matah"], [493, "Membuat sambal terasi"], [563, "Membuat kuah"], [587, "Hidangan siap dan serving"]],
     deskripsi: "Ayam utuh 800 gram dilumuri base genep 150 gram sampai rata, lalu dikukus 90 menit hingga empuk. Setelah itu kulitnya dipanggang 20 menit hingga kecokelatan.",
@@ -363,8 +363,8 @@ var RESEP = [
   {
     id: "martabak-manis", nama: "Martabak Manis", daerah: "Jawa Barat", kategori: "camilan",
     waktuTotal: 90, waktuAktif: 30, level: "sedang", porsi: 8, rating: 4.8, dimasak: 2109,
-    // Foto: Malikpb (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Martabak_manis_coklat_keju_khas_indonesia.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Martabak_manis_coklat_keju_khas_indonesia.jpg/500px-Martabak_manis_coklat_keju_khas_indonesia.jpg",
+    // Foto: frank wouters (CC BY 2.0) — https://commons.wikimedia.org/wiki/File:Martabak_manis_complit.jpg
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Martabak_manis_complit.jpg/500px-Martabak_manis_complit.jpg",
     video: "RErQc10w2kw",
     bab: [[0, "Intro"], [88, "Persiapan bahan"], [203, "Membuat adonan martabak"], [293, "Membuat martabak"], [439, "Beri topping"], [554, "Hidangan siap dan serving"]],
     deskripsi: "Terigu 250 gram diaduk dengan 300 ml air sampai licin, lalu didiamkan 60 menit. Adonannya dituang ke teflon panas dan dimasak tertutup sampai harum.",
@@ -397,8 +397,8 @@ var RESEP = [
   {
     id: "es-cendol", nama: "Es Cendol", daerah: "Jawa Barat", kategori: "camilan",
     waktuTotal: 45, waktuAktif: 30, level: "mudah", porsi: 5, rating: 4.9, dimasak: 1876,
-    // Foto: Supardisahabu (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Es_Dawet.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Es_Dawet.jpg/500px-Es_Dawet.jpg",
+    // Foto: Gunawan Kartapranata (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Jakarta_street-side_Es_Cendol_2.jpg
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Jakarta_street-side_Es_Cendol_2.jpg/500px-Jakarta_street-side_Es_Cendol_2.jpg",
     video: "O7zVoBwMvQc",
     deskripsi: "Tepung beras 100 gram dimasak dengan 500 ml air pandan sampai kental. Santan 500 ml direbus dengan garam sampai harum, lalu disiram ke cendol bersama gula merah cair.",
     rasa: "Gula merah cair 200 gram dituang di dasar gelas. Santan matang yang direbus dengan garam bikin gurih, es serut mendinginkan semuanya.", pedas: 0, veg: true, anak: true,
@@ -542,8 +542,8 @@ var RESEP = [
   {
     id: "ayam-pop", nama: "Ayam Pop", daerah: "Sumatera Barat", kategori: "siang",
     waktuTotal: 90, waktuAktif: 30, level: "sedang", porsi: 4, rating: 4.8, dimasak: 1023,
-    // Foto: Midori (CC BY-SA 3.0) — https://commons.wikimedia.org/wiki/File:Ayam_pop.JPG
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6e/Ayam_pop.JPG/500px-Ayam_pop.JPG",
+    // Foto: S Kartika (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Ayam_Pop_2.jpg
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Ayam_Pop_2.jpg/500px-Ayam_Pop_2.jpg",
     video: "tWi78v_Kl3s",
     deskripsi: "Ayam kampung muda 800 gram diungkep dalam 1000 ml air kelapa hingga empuk dan kuahnya menyusut. Ayamnya didiamkan 20 menit sampai kesat, lalu digoreng sebentar hingga kecokelatan.",
     rasa: "Air kelapa 1000 ml dipakai mengungkep ayam, dan itu yang bikin gurihnya beda. Sambal tomat ditumis sampai merah pekat, pedasnya tidak tajam.", pedas: 0, veg: false, anak: true,
@@ -1063,8 +1063,8 @@ var RESEP = [
   {
     id: "konro-bakar", nama: "Konro Bakar", daerah: "Sulawesi Selatan", kategori: "malam",
     waktuTotal: 180, waktuAktif: 45, level: "sulit", porsi: 4, rating: 4.9, dimasak: 654,
-    // Foto: Veriyanta Kusuma (CC BY-SA 3.0) — https://commons.wikimedia.org/wiki/File:Sop_Konro.JPG
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/Sop_Konro.JPG/500px-Sop_Konro.JPG",
+    // Foto: Gunawan Kartapranata (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Konro_Bakar_3.jpg
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Konro_Bakar_3.jpg/500px-Konro_Bakar_3.jpg",
     video: "rnaZA3TQ7Eo",
     deskripsi: "Iga sapi direbus 90 menit hingga empuk, lalu dioles kecap dan dibakar di atas arang hingga kecokelatan.",
     rasa: "Kecap dioles sebelum dibakar, jadi manisnya karamel di permukaan. Keluak bikin pahit dalam di serat dagingnya.", pedas: 1, veg: false, anak: false,

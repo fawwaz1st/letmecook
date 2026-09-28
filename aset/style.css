@@ -1295,7 +1295,7 @@ p:last-child { margin-bottom: 0; }
 /* ---------- 10) RENCANA MAKAN ----------------------------- */
 .meal-grup { display: grid; gap: var(--s3); padding: var(--s4); }
 /* Tinggi minimum dipesan supaya saat JavaScript mengisi 7 kartu hari,
-   isi di bawahnya tidak meloncat turun. 7 kartu x ±80px + celah. */
+   isi di bawahnya tidak meloncat turun. 7 kartu x ±90px + celah. */
 .meal-grup:empty { min-height: 640px; }
 .hari { border: 1px solid var(--garis); border-radius: var(--r-kecil); overflow: hidden; }
 .hari h3 {
@@ -1314,19 +1314,46 @@ p:last-child { margin-bottom: 0; }
   padding: var(--s2) var(--s3);
   border-top: 1px solid var(--garis);
   font-size: 0.86rem;
+  min-height: 56px;
 }
 .slot .waktu {
   font-weight: 700;
   width: 44px;
   flex: none;
   color: var(--redup);
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
+  letter-spacing: 0.03em;
 }
-.slot .isi-slot { flex: 1; min-width: 0; }
-.slot .isi-slot a { font-weight: 600; text-decoration: none; }
+.slot .isi-slot {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: var(--s2);
+}
+.slot .isi-slot a {
+  font-weight: 600;
+  text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
 .slot .isi-slot a:hover { text-decoration: underline; }
-.slot .kosong-teks { color: var(--redup); }
+.slot .kosong-teks { color: var(--redup); font-style: italic; }
+
+/* Foto mini di slot terisi: masakan dikenali dari tampilannya. */
+.slot-foto {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--r-kecil);
+  object-fit: cover;
+  flex: none;
+  background: var(--bg);
+}
+.slot.terisi .waktu { color: var(--merek); }
+
+/* Tombol slot: Isi/Ganti. Tetap 44px supaya nyaman ditekan jari. */
 .slot button {
   border: 1px solid var(--garis);
   background: var(--kartu);
@@ -1337,10 +1364,15 @@ p:last-child { margin-bottom: 0; }
   font-weight: 600;
   cursor: pointer;
   min-height: 44px;
+  min-width: 48px;
   color: var(--redup);
-  transition: border-color var(--dur) var(--gerak), color var(--dur) var(--gerak);
+  transition: border-color var(--dur) var(--gerak), color var(--dur) var(--gerak), background var(--dur) var(--gerak);
 }
 .slot button:hover { border-color: var(--merek); color: var(--merek); }
+.slot.terisi button:hover { background: var(--merek-muda); }
+.slot .slot-hapus { min-width: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
+.slot .slot-hapus:hover { border-color: var(--bahaya); color: var(--bahaya); background: #fff; }
+.slot .slot-hapus .ikon { width: 1em; height: 1em; }
 
 .belanja { padding: 0 var(--s4) var(--s4); margin: 0; }
 .belanja li {
@@ -1716,12 +1748,14 @@ footer a:hover { text-decoration: underline; }
 }
 
 /* HP: rapatkan dan kecilkan. */
-@media (max-width: 560px) {
+@media (max-width: 640px) {
   .wrap { padding: var(--s4) var(--s3); }
   .wrap > * + * { margin-top: var(--s5); }
   .kepala-in { padding: var(--s2) var(--s3); gap: var(--s2); }
 
-  /* Teks navigasi disembunyikan, ikon dan angka tetap terlihat. */
+  /* Teks navigasi disembunyikan, ikon dan angka tetap terlihat.
+     Breakpoint 640px (bukan 560px): antara 561–639px, teks penuh
+     membuat kotak cari sesak. Ikon saja selalu cukup. */
   .nav a { padding: var(--s2); font-size: 0; gap: 0; }
   .nav .ikon { width: 1.35em; height: 1.35em; }
   .nav .badge-hitung { font-size: 0.72rem; margin-left: var(--s1); }
@@ -1729,6 +1763,9 @@ footer a:hover { text-decoration: underline; }
   /* Tombol cari jadi ikon saja supaya kotak ketik tetap lega. */
   .cari button { padding: 0 var(--s3); font-size: 0; }
   .cari button .ikon { width: 1.3em; height: 1.3em; }
+  /* Kotak ketik tidak boleh menyusut di bawah 120px, walau merek
+     dan navigasi sedang lebar-lebarnya. */
+  .cari input { min-width: 120px; }
 
   .sorot img { width: 100%; }
   /* Foto hero dipendekkan di HP supaya teksnya cepat terlihat. */
@@ -1757,8 +1794,9 @@ footer a:hover { text-decoration: underline; }
   .kaki-bawah { flex-direction: column; align-items: flex-start; }
 }
 
-/* Layar sangat sempit. */
-@media (max-width: 380px) {
+/* Layar sangat sempit: merek jadi ikon saja supaya kotak cari lega. */
+@media (max-width: 400px) {
   .grup { grid-template-columns: 1fr 1fr; }
-  .merek { font-size: 1.05rem; }
+  .merek { font-size: 0; gap: 0; }
+  .merek .ikon { width: 28px; height: 28px; }
 }

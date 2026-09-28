@@ -211,7 +211,7 @@ function halamanResep() {
   const kanonik = document.querySelector('link[rel="canonical"]');
   if (kanonik) kanonik.setAttribute("href", "https://fawwaz1st.github.io/letmecook/resep.html?id=" + encodeURIComponent(r.id));
 
-  let faktorPorsi = 1;
+  let porsiKini = r.porsi;
   let timerAktif = null;
 
   // Label kecil di atas judul.
@@ -317,6 +317,8 @@ function halamanResep() {
   });
 
   // ---- Bahan dan penyesuaian porsi ----
+  // Porsi berubah berurutan: 1, 2, 3, 4, ... dari nilai asli resep.
+  // Tombol + menambah satu porsi, tombol − mengurangi satu porsi.
   const bahanList = document.getElementById("bahanList");
   const semuaProg = baca(KEY.prog, {});
   // Normalisasi: data dari localStorage bisa saja rusak atau setengah,
@@ -344,7 +346,7 @@ function halamanResep() {
       });
 
       const sp = document.createElement("span");
-      sp.textContent = teksBahan(b, faktorPorsi);
+      sp.textContent = teksBahan(b, porsiKini / r.porsi);
 
       li.append(cb, sp);
       bahanList.appendChild(li);
@@ -358,22 +360,26 @@ function halamanResep() {
   }
 
   function gambarPorsi() {
-    const baru = Math.max(1, Math.round(r.porsi * faktorPorsi));
-    document.getElementById("pVal").textContent = baru + " porsi";
-    document.getElementById("porsiTeks").textContent = baru + " porsi";
+    document.getElementById("pVal").textContent = porsiKini + " porsi";
+    document.getElementById("porsiTeks").textContent = porsiKini + " porsi";
+    document.getElementById("pMin").disabled = porsiKini <= 1;
+    document.getElementById("pPlus").disabled = porsiKini >= 12;
     gambarBahan();
   }
 
   document.getElementById("pMin").addEventListener("click", () => {
-    if (r.porsi * faktorPorsi > 1) {
-      faktorPorsi = Math.max(0.5, faktorPorsi - 0.5);
+    if (porsiKini > 1) {
+      porsiKini--;
       gambarPorsi();
     }
   });
   document.getElementById("pPlus").addEventListener("click", () => {
-    faktorPorsi = Math.min(4, faktorPorsi + 0.5);
-    gambarPorsi();
+    if (porsiKini < 12) {
+      porsiKini++;
+      gambarPorsi();
+    }
   });
+  gambarPorsi();
 
   // ---- Daftar langkah ----
   const langkahList = document.getElementById("langkahList");
@@ -567,6 +573,19 @@ function halamanMealplan() {
     return isi && typeof isi === "object" ? isi : {};
   }
 
+  // Jalankan fn(resep, hari, kode) untuk tiap slot yang sudah terisi.
+  // Dipakai gambarRencana dan susunBelanja — dulu keduanya menyalin
+  // loop hari x slot yang sama, jadi perbaikan harus ditulis dua kali.
+  function tiapSlot(rencana, fn) {
+    HARI.forEach((hari) => {
+      SLOT.forEach(([kode]) => {
+        const id = rencana[hari] && rencana[hari][kode];
+        const resep = id ? cariResep(id) : null;
+        if (resep) fn(resep, hari, kode);
+      });
+    });
+  }
+
   function simpanRencana(rencana) {
     tulis(KEY.meal, rencana);
     gambarRencana();
@@ -591,26 +610,41 @@ function halamanMealplan() {
         if (resep) terisi++;
 
         const baris = document.createElement("div");
-        baris.className = "slot";
+        baris.className = "slot" + (resep ? " terisi" : "");
 
         const waktu = document.createElement("span");
         waktu.className = "waktu";
         waktu.textContent = label;
 
         const isi = document.createElement("span");
-        isi.className = "isi-slot" + (resep ? "" : " kosong-teks");
+        isi.className = "isi-slot";
         if (resep) {
+          // Foto mini: orang mengenali masakan dari tampilannya. Membuat
+          // slot terisi langsung terbaca tanpa harus membaca nama.
+          const img = document.createElement("img");
+          img.className = "slot-foto";
+          img.src = resep.foto;
+          img.alt = "";
+          img.loading = "lazy";
+          img.width = 32;
+          img.height = 32;
+          const ss = srcsetNilai(resep.foto, ["120px", "250px"]);
+          if (ss) img.setAttribute("srcset", ss);
+          img.setAttribute("sizes", "32px");
+
           const tautan = document.createElement("a");
           tautan.href = "resep.html?id=" + encodeURIComponent(resep.id);
           tautan.textContent = resep.nama;
-          isi.appendChild(tautan);
+          isi.append(img, tautan);
         } else {
-          isi.textContent = "belum diisi";
+          isi.classList.add("kosong-teks");
+          isi.textContent = "Belum diisi";
         }
 
         const tombol = document.createElement("button");
         tombol.type = "button";
         tombol.textContent = resep ? "Ganti" : "Isi";
+        tombol.setAttribute("aria-label", (resep ? "Ganti " : "Isi ") + hari + " " + label);
         tombol.addEventListener("click", () => bukaPemilih(hari, kode, label));
 
         baris.append(waktu, isi, tombol);
@@ -618,6 +652,7 @@ function halamanMealplan() {
         if (resep) {
           const hapus = document.createElement("button");
           hapus.type = "button";
+          hapus.className = "slot-hapus";
           hapus.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-x"/></svg>';
           hapus.setAttribute("aria-label", "Kosongkan " + hari + " " + label);
           hapus.addEventListener("click", () => {
@@ -710,8 +745,28 @@ function halamanMealplan() {
     }
   }
 
+  // Tahan Tab di dalam dialog pemilih selama terbuka, supaya fokus
+  // tidak kabur ke halaman di belakang (dialog ini aria-modal="true").
+  function tahanFokusPemilih(e) {
+    if (e.key !== "Tab" || !pilih.classList.contains("buka")) return;
+    const bisaFokus = pilih.querySelectorAll(
+      'button, input, [href], [tabindex]:not([tabindex="-1"])'
+    );
+    if (!bisaFokus.length) return;
+    const pertama = bisaFokus[0];
+    const terakhir = bisaFokus[bisaFokus.length - 1];
+    if (e.shiftKey && document.activeElement === pertama) {
+      e.preventDefault();
+      terakhir.focus();
+    } else if (!e.shiftKey && document.activeElement === terakhir) {
+      e.preventDefault();
+      pertama.focus();
+    }
+  }
+
   document.getElementById("pilihTutup").addEventListener("click", tutupPemilih);
   cariPilih.addEventListener("input", gambarPilihanTertunda);
+  document.addEventListener("keydown", tahanFokusPemilih, true);
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape" && pilih.classList.contains("buka")) tutupPemilih();
   });
@@ -722,20 +777,14 @@ function halamanMealplan() {
     const rencana = ambilRencana();
     const gabung = {};
 
-    HARI.forEach((hari) => {
-      SLOT.forEach(([kode]) => {
-        const id = rencana[hari] && rencana[hari][kode];
-        const resep = id ? cariResep(id) : null;
-        if (!resep) return;
-
-        resep.bahan.forEach((b) => {
-          // Spasi ganda di nama tidak boleh memecah kunci: "bawang  merah"
-          // dan "bawang merah" harus tetap dianggap bahan yang sama.
-          const kunci = b.nama.toLowerCase().replace(/\s+/g, " ").trim() + "|" + b.satuan.toLowerCase().trim();
-          if (!gabung[kunci]) gabung[kunci] = { nama: b.nama, satuan: b.satuan, jumlah: 0, dari: [] };
-          gabung[kunci].jumlah += b.jumlah;
-          if (!gabung[kunci].dari.includes(resep.nama)) gabung[kunci].dari.push(resep.nama);
-        });
+    tiapSlot(rencana, (resep) => {
+      resep.bahan.forEach((b) => {
+        // Spasi ganda di nama tidak boleh memecah kunci: "bawang  merah"
+        // dan "bawang merah" harus tetap dianggap bahan yang sama.
+        const kunci = b.nama.toLowerCase().replace(/\s+/g, " ").trim() + "|" + b.satuan.toLowerCase().trim();
+        if (!gabung[kunci]) gabung[kunci] = { nama: b.nama, satuan: b.satuan, jumlah: 0, dari: [] };
+        gabung[kunci].jumlah += b.jumlah;
+        if (!gabung[kunci].dari.includes(resep.nama)) gabung[kunci].dari.push(resep.nama);
       });
     });
 

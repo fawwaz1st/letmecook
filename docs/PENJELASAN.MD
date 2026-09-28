@@ -7,7 +7,7 @@ bagaimana alurnya, kenapa ditulis begitu, di berkas mana, di baris berapa, dan
 di mana harus mengubah kalau mau menambah sesuatu.
 
 > **Cara membaca dokumen ini.** Setiap bagian menyebutkan nama berkas dan
-> nomor barisnya, misalnya `skrip/store.js:140`. Buka berkas itu di editor, tekan
+> nomor barisnya, misalnya `skrip/store.js:142`. Buka berkas itu di editor, tekan
 > `Ctrl+G`, ketik nomornya, dan kamu langsung berada di kode yang dibahas.
 > Jangan hafal — cukup tahu di mana harus mencari.
 
@@ -274,10 +274,10 @@ Contoh nyata saat membuka `resep.html?id=rendang`:
 1. `skrip/halaman.js:188` (`halamanResep`) membaca `id` dari alamat → `"rendang"`
 2. `skrip/store.js:46` (`cariResep`) mencari di larik `RESEP`
 3. Ketemu objek resep → seluruh HTML halaman dibangun dari objek itu
-4. `skrip/store.js:237` (`parseLangkah`) memecah tiap langkah jadi: teknik masak,
+4. `skrip/store.js:264` (`parseLangkah`) memecah tiap langkah jadi: teknik masak,
    besar api, tanda matang, dan teks sisa
-5. `skrip/store.js:1152` (`daftarBab`) menentukan bab video: satu bab per langkah
-6. Hasilnya dipasang ke `#area` dengan `innerHTML` (baris `skrip/halaman.js:226`)
+5. `skrip/store.js:1357` (`daftarBab`) menentukan bab video: satu bab per langkah
+6. Hasilnya dipasang ke `#area` dengan `innerHTML` (baris `skrip/halaman.js:236`)
 
 ---
 
@@ -291,7 +291,7 @@ Setiap halaman HTML memuat tiga skrip di bagian bawah `<body>`:
 <script src="halaman.js"></script>     <!-- 3. logika halaman -->
 ```
 
-`skrip/halaman.js` diakhiri router kecil (baris `skrip/halaman.js:842`) yang membaca
+`skrip/halaman.js` diakhiri router kecil (baris `skrip/halaman.js:917`) yang membaca
 penanda di `<body>`:
 
 ```html
@@ -328,12 +328,12 @@ ketat**: tidak ada satu pun `<script>` yang ditulis langsung di dalam HTML.
 1. Browser membaca HTML     → kerangka kosong tampil sebentar
 2. skrip/resep-data.js dimuat     → larik RESEP tersedia
 3. store.js dimuat          → semua fungsi tersedia, pendengar galat gambar
-                              dipasang (skrip/store.js:202), gambar rusak yang
-                              telanjur terjadi diperiksa manual (skrip/store.js:209)
+                              dipasang (skrip/store.js:212), gambar rusak yang
+                              telanjur terjadi diperiksa manual (skrip/store.js:219)
 4. halaman.js dimuat        → router (baris 842) memanggil fungsi halaman
 5. Fungsi halaman:
    a. mengisi konten (kartu, langkah, bahan, dst.)
-   b. memanggil siapkanHalaman() — "sapuan akhir" bersama (skrip/store.js:1247):
+   b. memanggil siapkanHalaman() — "sapuan akhir" bersama (skrip/store.js:1471):
       - menandai elemen di bawah layar untuk animasi gulir
       - menyamakan semua angka resep (data-jumlah)
       - mengisi tahun di kaki halaman (data-tahun)
@@ -820,18 +820,18 @@ Bagian terpanjang di halaman.js. Urutannya:
 | 227 | Bangun label kecil (level, kategori, vegetarian, aman anak, pedas) |
 | 236 | Bangun seluruh HTML halaman (kepala resep, bahan, langkah, gizi, alat) |
 | 306 | Tombol Simpan dan Salin tautan |
-| 329 | `gambarBahan`: gambar daftar bahan + centangnya |
-| 358 | `simpanProg`: simpan kemajuan ke localStorage |
-| 364 | `gambarPorsi`: ubah jumlah porsi, semua bahan ikut menyesuaikan |
-| 371 | Tombol − dan + porsi |
-| 381 | Bangun daftar langkah: nomor, badge teknik, tanda matang, timer |
-| 445 | `gambarProg`: tulis "3 dari 8 langkah" |
-| 450 | `mulaiTimer`: jalankan timer satu langkah |
-| 475 | Tombol "Mode masak" |
-| 478 | Bangun JSON-LD `Recipe` + `VideoObject` |
-| 521 | Hentikan timer kalau halaman ditinggalkan (`pagehide`, bukan `unload`) |
-| 528 | Resep pendamping: kategori berbeda supaya bervariasi |
-| 535 | Panggil `siapkanHalaman()` |
+| 332 | `gambarBahan`: gambar daftar bahan + centangnya |
+| 356 | `simpanProg`: simpan kemajuan ke localStorage |
+| 362 | `gambarPorsi`: ubah jumlah porsi berurutan (1, 2, 3, ...), semua bahan ikut menyesuaikan |
+| 370 | Tombol − dan + porsi, otomatis nonaktif di batas 1 dan 12 |
+| 384 | Bangun daftar langkah: nomor, badge teknik, tanda matang, timer |
+| 479 | `gambarProg`: tulis "3 dari 8 langkah" |
+| 484 | `mulaiTimer`: jalankan timer satu langkah |
+| 508 | Tombol "Mode masak" |
+| 522 | Bangun JSON-LD `Recipe` + `VideoObject` |
+| 550 | Hentikan timer kalau halaman ditinggalkan (`pagehide`, bukan `unload`) |
+| 554 | Resep pendamping: kategori berbeda supaya bervariasi |
+| 559 | Panggil `siapkanHalaman()` |
 
 ### 6.5 `halamanMealplan` — Rencana Makan (baris 557–822)
 
@@ -875,7 +875,7 @@ daftar disusun ulang dari rencana makan.
 
 ## 7. skrip/resep-data.js — Data 67 Resep
 
-2.598 baris. **Hanya data. Tidak ada fungsi, tidak ada logika.** Strukturnya
+2.596 baris. **Hanya data. Tidak ada fungsi, tidak ada logika.** Strukturnya
 dijelaskan di bagian 3.
 
 Bagian akhir berkas berisi dua tabel:
@@ -927,13 +927,13 @@ Bagian akhir berkas berisi dua tabel:
 
 | Berkas | Baris | `data-halaman` | Isi utama |
 |---|---|---|---|
-| `index.html` | 137 | `index` | Hero, `#hariIni`, `#katGrup`, `#popGrup`, `#babGrup` |
-| `katalog.html` | 143 | `katalog` | Form pencarian, chip kategori `#chipKategori`, tiga filter (`fLevel`, `fWaktu`, `fDiet`), `#grup`, `#kosong` |
-| `resep.html` | 92 | `resep` | Cuma kerangka kosong + `#area` (diisi JavaScript) + `#sanding` |
-| `mealplan.html` | 126 | `mealplan` | `#mealGrup` (21 slot), `#belanja`, form manual, dialog `#pilih` |
-| `favorit.html` | 96 | `favorit` | `#grup` + `#kosong` |
-| `tentang.html` | 136 | `tentang` | Tabel konversi, penjelasan video, penjelasan privasi |
-| `404.html` | 77 | `404` | Pesan "Alamat ini tidak ada" + tombol ke katalog |
+| `index.html` | 135 | `index` | Hero, `#hariIni`, `#katGrup`, `#popGrup`, `#babGrup` |
+| `katalog.html` | 142 | `katalog` | Form pencarian, chip kategori `#chipKategori`, tiga filter (`fLevel`, `fWaktu`, `fDiet`), `#grup`, `#kosong` |
+| `resep.html` | 93 | `resep` | Cuma kerangka kosong + `#area` (diisi JavaScript) + `#sanding` |
+| `mealplan.html` | 125 | `mealplan` | `#mealGrup` (21 slot), `#belanja`, form manual, dialog `#pilih` |
+| `favorit.html` | 95 | `favorit` | `#grup` + `#kosong` |
+| `tentang.html` | 135 | `tentang` | Tabel konversi, penjelasan video, penjelasan privasi |
+| `404.html` | 78 | `404` | Pesan "Alamat ini tidak ada" + tombol ke katalog |
 
 ### 8.3 Kaki halaman (baris ~60 di tiap berkas)
 
@@ -1176,10 +1176,10 @@ menyentuh data.
 
 **Pemuatan malas (lazy):** API YouTube (berkas besar) **tidak dimuat saat
 halaman dibuka**. Baru dimuat saat pengunjung menekan tombol Video
-(`muatApiYouTube`, `skrip/store.js:571`). Jadi pengunjung yang hanya membaca bahan
+(`muatApiYouTube`, `skrip/store.js:675`). Jadi pengunjung yang hanya membaca bahan
 tidak membayar biaya memuat pemutar video sama sekali.
 
-**Host nocookie** (`skrip/store.js:765`): pemutar dibuat dengan
+**Host nocookie** (`skrip/store.js:893`): pemutar dibuat dengan
 `host: "https://www.youtube-nocookie.com"` supaya YouTube tidak menyimpan
 cookie pelacak sebelum videonya benar-benar diputar.
 
@@ -1221,8 +1221,8 @@ langkahnya** — 8 resep dengan waktu dari bab tulisan tangan (lebih akurat),
 Ada dua timer, **logikanya satu** (`hitungMundur`, `skrip/store.js:124`):
 
 1. **Timer di halaman resep** — tombol kecil di samping langkah
-   (`skrip/halaman.js:460`)
-2. **Timer di mode masak** — tombol besar di tengah layar (`skrip/store.js:702`)
+   (`skrip/halaman.js:484`)
+2. **Timer di mode masak** — tombol besar di tengah layar (`skrip/store.js:819`)
 
 Aturan penting: **satu timer saja yang jalan**. Memulai timer baru otomatis
 menghentikan yang lama, supaya tidak ada dua hitungan bersamaan.
@@ -1233,7 +1233,7 @@ Saat video tertutup, ruang layar jadi lega — jadi tiap langkah diperkaya
 dengan dua rincian tambahan. Ini yang membuat mode masak tetap berguna
 walau videonya tidak diputar sama sekali.
 
-**Daftar bahan di langkah ini** (`gambarRinci` di `skrip/store.js:946`):
+**Daftar bahan di langkah ini** (`gambarRinci` di `skrip/store.js:1042`):
 
 Sistem mencocokkan **teks langkah** dengan **daftar bahan**. Contoh, kalau
 langkah menulis "Blender cabai dan bawang merah", maka yang muncul hanya
@@ -1328,7 +1328,7 @@ Keduanya memanggil `toggleFav(id)` yang sama.
 
 Satu detail kecil yang penting: di halaman favorit, melepas simpan harus
 **langsung menghilangkan kartunya**. Ini dilakukan lewat opsi
-`setelahSimpan: gambar` (`skrip/halaman.js:834`) — setelah tombol diklik, halaman
+`setelahSimpan: gambar` (`skrip/halaman.js:909`) — setelah tombol diklik, halaman
 menggambar ulang daftarnya.
 
 ### 10.7 Pencarian
@@ -1404,7 +1404,7 @@ dari proyek ini:
 | Yang dulu ada | Yang sekarang | Kenapa |
 |---|---|---|
 | 7 blok `<script>` di dalam HTML | Semua pindah ke `skrip/halaman.js` | CSP `'self'` memblokir skrip di dalam HTML |
-| `onerror="imgFallback(this)"` di tiap `<img>` | Satu pendengar galat di `skrip/store.js:202` | CSP memblokir atribut `on*` |
+| `onerror="imgFallback(this)"` di tiap `<img>` | Satu pendengar galat di `skrip/store.js:212` | CSP memblokir atribut `on*` |
 | `style="margin-top:..."` di HTML | Class `.jarak-atas` di CSS | CSP memblokir atribut `style` |
 | Warna badge ditulis `style="background:..."` | Pemilih CSS `[data-teknik="tumis"]` | Sama |
 
@@ -1426,7 +1426,7 @@ document.addEventListener("error", (e) => {
 
 Dan satu jebakan halus: gambar yang **telanjur gagal** sebelum `skrip/store.js`
 selesai dimuat tidak memicu kejadian apa pun lagi. Karena itu ada pemeriksaan
-manual setelahnya (`skrip/store.js:209`).
+manual setelahnya (`skrip/store.js:219`).
 
 ### 11.2 Pencegahan suntikan kode (XSS)
 
@@ -1439,7 +1439,7 @@ esc("Rendang <pedas>")  // → "Rendang &lt;pedas&gt;"
 
 Cara paling aman adalah `textContent` (bukan `innerHTML`), dan itu dipakai
 di tempat-tempat penting — misalnya teks langkah dan tanda matang dibangun
-dengan `textContent` + `createTextNode` (`skrip/halaman.js:430`), bukan `innerHTML`.
+dengan `textContent` + `createTextNode` (`skrip/halaman.js:445`), bukan `innerHTML`.
 
 ### 11.3 Data localStorage yang rusak
 
@@ -1449,9 +1449,9 @@ tahu cara memperbaikinya). Tiga lapis pertahanan:
 
 1. `baca()` (`skrip/store.js:18`) memeriksa bentuk data, dan menolak larik di
    tempat objek (`skrip/store.js:28`)
-2. `ambilTambahan()` (`skrip/halaman.js:724`) menyaring entri yang bukan objek
+2. `ambilTambahan()` (`skrip/halaman.js:801`) menyaring entri yang bukan objek
    dengan teks
-3. `ambilRencana()` (`skrip/halaman.js:568`) memastikan hasilnya objek
+3. `ambilRencana()` (`skrip/halaman.js:582`) memastikan hasilnya objek
 
 ### 11.4 Privasi
 
@@ -1475,8 +1475,8 @@ tanpa alat uji khusus.
 | Kontras teks minimal 4.5:1 | `--aksen-teks` sengaja digelapkan jadi 4.95:1 |
 | Fokus keyboard terlihat jelas | `:focus-visible` dengan garis kontras (`aset/style.css:1621`) |
 | Angka porsi bisa diubah tanpa mouse | Tombol `+`/`−`, bukan slider |
-| Mode masak bisa ditutup dengan Esc | `papanTuntas` (`skrip/store.js:1067`) |
-| "Kurangi gerak" dihormati | `prefers-reduced-motion` (`skrip/store.js:518`) |
+| Mode masak bisa ditutup dengan Esc | `papanTuntas` (`skrip/store.js:1163`) |
+| "Kurangi gerak" dihormati | `prefers-reduced-motion` (`skrip/store.js:615`) |
 | Dialog pemilih resep punya `role="dialog"` | `mealplan.html:78` |
 | Tabel konversi pakai `<th scope="col">` | `tentang.html:63` |
 | Ukuran sasaran sentuh ≥ 44px | Semua tombol utama |
@@ -1494,18 +1494,18 @@ langkah yang bagus — tapi harus diuji di semua browser dulu.
 | Teknik | Di mana | Manfaat |
 |---|---|---|
 | Foto berukuran 500px | `skrip/resep-data.js` | Total ±2MB untuk 67 foto (dari ±10MB di 1280px) |
-| `loading="lazy"` | `skrip/store.js:305` | Foto di bawah layar tidak diunduh dulu |
+| `loading="lazy"` | `skrip/store.js:345` | Foto di bawah layar tidak diunduh dulu |
 | `fetchpriority="high"` | `index.html:60` | Foto hero diunduh lebih dulu |
 | `width` + `height` di semua `<img>` | Semua | Tidak ada lompatan tata letak saat foto muncul (CLS) |
 | `content-visibility: auto` | `aset/style.css:319` | 67 kartu tidak digambar sekaligus |
 | Tinggi minimum wadah JS | `aset/style.css:486` | CLS turun dari 0,58 ke 0,03 |
 | Animasi hanya opacity | `aset/style.css:1598` | Menggeser elemen ikut tercatat sebagai CLS |
-| API YouTube dimuat saat diklik | `skrip/store.js:571` | Pengunjung yang tidak menonton tidak membayar biayanya |
-| Daftar favorit dibaca sekali | `skrip/store.js:321` | Dari 67 pembacaan localStorage jadi 1 |
-| Teks pencarian digabung sekali | `skrip/store.js:444` | Tidak menggabung ulang nama 67 bahan tiap ketikan |
-| Ketikan ditunda 120ms | `skrip/store.js:482` | Mengetik cepat tidak membuat layar berkedip |
-| `MutationObserver` hanya node baru | `skrip/store.js:550` | Tidak memindai seluruh dokumen tiap perubahan |
-| `pagehide`, bukan `unload` | `skrip/halaman.js:540` | bfcache tetap bekerja — tombol "kembali" jadi instan |
+| API YouTube dimuat saat diklik | `skrip/store.js:675` | Pengunjung yang tidak menonton tidak membayar biayanya |
+| Daftar favorit dibaca sekali | `skrip/store.js:380` | Dari 67 pembacaan localStorage jadi 1 |
+| Teks pencarian digabung sekali | `skrip/store.js:530` | Tidak menggabung ulang nama 67 bahan tiap ketikan |
+| Ketikan ditunda 120ms | `skrip/store.js:574` | Mengetik cepat tidak membuat layar berkedip |
+| `MutationObserver` hanya node baru | `skrip/store.js:654` | Tidak memindai seluruh dokumen tiap perubahan |
+| `pagehide`, bukan `unload` | `skrip/halaman.js:550` | bfcache tetap bekerja — tombol "kembali" jadi instan |
 
 **Hasil pengukuran CLS (ambang "baik" = 0,1):**
 
@@ -1583,7 +1583,7 @@ satu token mengubah seluruh situs secara konsisten.
 1. Salin kerangka halaman yang sudah ada (mis. `tentang.html`)
 2. Ganti `<body data-halaman="namabaru">`
 3. Tambah fungsi `halamanNamaBaru()` di `skrip/halaman.js`
-4. Daftarkan di router (`skrip/halaman.js:842`): `namabaru: halamanNamaBaru`
+4. Daftarkan di router (`skrip/halaman.js:917`): `namabaru: halamanNamaBaru`
 5. Jangan lupa: meta CSP, canonical, OG, dan `<script src="halaman.js">`
 6. Tambahkan juga kaki halaman (salin dari halaman lain)
 7. Tambahkan ke `_qa/buat-sitemap.js` lalu jalankan

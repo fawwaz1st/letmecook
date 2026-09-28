@@ -355,14 +355,20 @@ function kartuResepHTML(r, opsi, daftarSimpan) {
     + "</article>";
 }
 
-// Susun atribut srcset dari URL foto Wikimedia. Foto aslinya selalu
-// berakhiran "/500px-Nama.jpg" atau "/250px-Nama.jpg"; ukuran lain
-// dibuat dengan mengganti angka di depan "px-". Wikimedia hanya
-// mengizinkan ukuran tetap (120, 250, 500, 1280, 1920, 3840).
-function srcsetFoto(url, ukuran) {
+// Susun NILAI srcset dari URL foto Wikimedia (tanpa atributnya), untuk
+// dipasang lewat setAttribute. Foto aslinya selalu berakhiran
+// "/500px-Nama.jpg"; ukuran lain dibuat dengan mengganti angkanya.
+// Wikimedia hanya mengizinkan ukuran tetap (120, 250, 500, 1280, ...).
+function srcsetNilai(url, ukuran) {
   const dasar = url.replace(/\/\d+px-/, "/");
   if (dasar === url) return ""; // pola tidak dikenal, biarkan apa adanya
-  return " srcset=\"" + ukuran.map((u) => esc(dasar.replace(/\/([^/]+)$/, "/" + u + "-$1")) + " " + u.replace("px", "w")).join(", ") + "\"";
+  return ukuran.map((u) => dasar.replace(/\/([^/]+)$/, "/" + u + "-$1") + " " + u.replace("px", "w")).join(", ");
+}
+
+// Versi atribut siap tempel di string HTML.
+function srcsetFoto(url, ukuran) {
+  const nilai = srcsetNilai(url, ukuran);
+  return nilai ? ' srcset="' + esc(nilai) + '"' : "";
 }
 
 // Pasang kartu ke wadah, sekaligus hidupkan tombol simpan.
@@ -685,6 +691,16 @@ function muatApiYouTube() {
   s.onerror = () => reject(new Error("gagal memuat API YouTube"));
   document.head.appendChild(s);
   return apiYouTube;
+}
+
+// Mulai unduh API YouTube diam-diam saat browser tidak sibuk. Saat
+// pengunjung menekan tombol Video, API-nya sudah siap — tidak perlu
+// menunggu unduhan 30KB dari YouTube dulu. Kegagalan diabaikan: tombol
+// Video tetap mencoba memuat sendiri saat diklik.
+if ("requestIdleCallback" in window) {
+  requestIdleCallback(() => { muatApiYouTube().catch(() => {}); }, { timeout: 3000 });
+} else {
+  setTimeout(() => { muatApiYouTube().catch(() => {}); }, 2000);
 }
 
 // Bangun kerangka mode masak satu kali.

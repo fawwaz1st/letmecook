@@ -174,8 +174,8 @@ Buat ulang setiap kali menambah resep: `node _qa/buat-sitemap.js`
 
 Data, alat, dan logika halaman dipisah supaya tiap berkas punya satu tugas.
 `skrip/resep-data.js` 2.598 baris isinya data (termasuk tabel durasi dan
-tanggal video); `skrip/store.js` 1.446 baris isinya alat bersama (32 fungsi);
-`skrip/halaman.js` 885 baris isinya apa yang dilakukan tiap halaman.
+tanggal video); `skrip/store.js` 1.487 baris isinya alat bersama (32 fungsi);
+`skrip/halaman.js` 934 baris isinya apa yang dilakukan tiap halaman.
 Ketiganya dimuat berurutan sebagai skrip biasa:
 
 ```html
