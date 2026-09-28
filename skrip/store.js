@@ -226,7 +226,7 @@ document.querySelectorAll("img").forEach((img) => {
 const RE_TEKNIK = /(menumis|tumis|merebus|rebus|mengukus|kukus|membakar|bakar|menggoreng|goreng|memanggang|panggang|didihkan|didih|sangrai|ungkep|blender|haluskan|tumbuk|uleg|campur|aduk|masak|sajikan|tata|siram|tuang|masukkan|angkat|tiriskan|diamkan|simpan)/i;
 const RE_API = /api\s+(terkecil|sangat kecil|kecil|sedang|besar|paling besar)/i;
 const RE_MATANG = /tanda\s*matang\s*:?\s*([^.]+)\.?/i;
-const RE_HASIL = /(hingga|sampai|agar|supaya)\s+([^.]+)\.?/i;
+const RE_HASIL = /(hingga|sampai|agar|supaya|saat)\s+([^.]+)\.?/i;
 
 const PADANAN_TEKNIK = {
   menumis: "tumis", tumis: "tumis",
@@ -244,20 +244,45 @@ const PADANAN_TEKNIK = {
   diamkan: "tunggu", simpan: "simpan",
 };
 
+// Klausa yang BUKAN tanda matang: larangan ("agar tidak gosong"),
+// aksi lanjutan ("angkat dan tiriskan"), atau tautologi ("sampai matang").
+const BUKAN_MATANG = /^(tidak|jangan|biar|agar|supaya|matang|setengah|rata$|merata$|harum$|halus$|lunas$|kesat$|meresap$|pulen$)/i;
+// Kata kerja aksi yang menandakan klausa berikutnya bukan lagi tanda.
+const KATA_AKSI = /\s*,\s*(lalu\s+)?(angkat|tiriskan|sajikan|matikan|kecilkan|sisihkan|masukkan|tambahkan|aduk|dinginkan|biarkan|siram|tuang)\b.*$/i;
+
+function bersihkanMatang(teks) {
+  if (!teks) return null;
+  // Buang klausa aksi lanjutan: "kenyal, angkat dan tiriskan" → "kenyal".
+  let t = teks.replace(KATA_AKSI, "").trim();
+  // Buang kata sambung di ujung.
+  t = t.replace(/[,;]\s*(dan|lalu|sampai|hingga)\s*$/i, "").trim();
+  if (t.length < 5) return null;
+  if (BUKAN_MATANG.test(t)) return null;
+  return t;
+}
+
 function parseLangkah(teks) {
   const kena = (teks.match(RE_TEKNIK) || [])[1];
   const teknik = kena ? PADANAN_TEKNIK[kena.toLowerCase()] || kena.toLowerCase() : null;
   const api = ((teks.match(RE_API) || [])[1] || "").toLowerCase().replace(/\s+/g, " ") || null;
 
-  let matang = ((teks.match(RE_MATANG) || [])[1] || "").trim() || null;
+  let matang = bersihkanMatang(((teks.match(RE_MATANG) || [])[1] || "").trim());
   let sisa = teks;
 
   if (matang) {
     sisa = teks.replace(RE_MATANG, "").trim();
   } else {
+    // Kalau klausa "Tanda matang:" ada tapi isinya ditolak (mis.
+    // "tidak gosong"), tetap buang dari sisa supaya tidak tampil dobel
+    // di badan langkah, tapi jangan pasang chip.
+    if (RE_MATANG.test(teks)) sisa = teks.replace(RE_MATANG, "").trim();
     const hasil = teks.match(RE_HASIL);
-    if (hasil) matang = hasil[2].trim();
+    if (hasil) matang = bersihkanMatang(hasil[2].trim());
   }
+
+  // Langkah tidak boleh kosong: kalau seluruh teks cuma klausa matang,
+  // pakai teks aslinya supaya mode masak tidak menampilkan layar kosong.
+  if (!sisa) sisa = teks;
 
   return { teknik, api, matang, sisa };
 }
