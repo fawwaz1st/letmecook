@@ -264,8 +264,8 @@ var RESEP = [
   {
     id: "ayam-betutu", nama: "Ayam Betutu", daerah: "Bali", kategori: "malam",
     waktuTotal: 180, waktuAktif: 50, level: "sulit", porsi: 4, rating: 4.9, dimasak: 987,
-    // Foto: Gunawan Kartapranata (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Ayam_Betutu_Bali.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Ayam_Betutu_Bali.jpg/500px-Ayam_Betutu_Bali.jpg",
+    // Foto: m4sh.3d (CC BY-SA 2.0) — https://commons.wikimedia.org/wiki/File:Ayam_Betutu.jpg
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Ayam_Betutu.jpg/500px-Ayam_Betutu.jpg",
     video: "8L2FdhuVbQM",
     bab: [[0, "Intro"], [71, "Persiapan bahan"], [160, "Membuat bumbu halus"], [289, "Tumis bumbu dan ungkep ayam"], [403, "Membuat kacang panjang bejek"], [450, "Membuat sambal matah"], [493, "Membuat sambal terasi"], [563, "Membuat kuah"], [587, "Hidangan siap dan serving"]],
     deskripsi: "Ayam utuh 800 gram dilumuri base genep 150 gram sampai rata, lalu dikukus 90 menit hingga empuk. Setelah itu kulitnya dipanggang 20 menit hingga kecokelatan.",
@@ -397,8 +397,8 @@ var RESEP = [
   {
     id: "es-cendol", nama: "Es Cendol", daerah: "Jawa Barat", kategori: "camilan",
     waktuTotal: 45, waktuAktif: 30, level: "mudah", porsi: 5, rating: 4.9, dimasak: 1876,
-    // Foto: Gunawan Kartapranata (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Jakarta_street-side_Es_Cendol_2.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/Jakarta_street-side_Es_Cendol_2.jpg/500px-Jakarta_street-side_Es_Cendol_2.jpg",
+    // Foto: Fitri Penyalai (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Es_Cendol.jpg
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0e/Es_Cendol.jpg/500px-Es_Cendol.jpg",
     video: "O7zVoBwMvQc",
     deskripsi: "Tepung beras 100 gram dimasak dengan 500 ml air pandan sampai kental. Santan 500 ml direbus dengan garam sampai harum, lalu disiram ke cendol bersama gula merah cair.",
     rasa: "Gula merah cair 200 gram dituang di dasar gelas. Santan matang yang direbus dengan garam bikin gurih, es serut mendinginkan semuanya.", pedas: 0, veg: true, anak: true,
@@ -542,8 +542,8 @@ var RESEP = [
   {
     id: "ayam-pop", nama: "Ayam Pop", daerah: "Sumatera Barat", kategori: "siang",
     waktuTotal: 90, waktuAktif: 30, level: "sedang", porsi: 4, rating: 4.8, dimasak: 1023,
-    // Foto: S Kartika (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Ayam_Pop_2.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8d/Ayam_Pop_2.jpg/500px-Ayam_Pop_2.jpg",
+    // Foto: S Kartika (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Ayam_Pop_3.jpg
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Ayam_Pop_3.jpg/500px-Ayam_Pop_3.jpg",
     video: "tWi78v_Kl3s",
     deskripsi: "Ayam kampung muda 800 gram diungkep dalam 1000 ml air kelapa hingga empuk dan kuahnya menyusut. Ayamnya didiamkan 20 menit sampai kesat, lalu digoreng sebentar hingga kecokelatan.",
     rasa: "Air kelapa 1000 ml dipakai mengungkep ayam, dan itu yang bikin gurihnya beda. Sambal tomat ditumis sampai merah pekat, pedasnya tidak tajam.", pedas: 0, veg: false, anak: true,
@@ -989,8 +989,8 @@ var RESEP = [
   {
     id: "pisang-gapit", nama: "Pisang Gapit", daerah: "Kalimantan Timur", kategori: "camilan",
     waktuTotal: 30, waktuAktif: 20, level: "mudah", porsi: 4, rating: 4.7, dimasak: 812,
-    // Foto: Ezagren (bicara / talk) (Attribution) — https://commons.wikimedia.org/wiki/File:Pisang_Gapit_processing.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Pisang_Gapit_processing.jpg/500px-Pisang_Gapit_processing.jpg",
+    // Foto: Ezagren (Attribution) — https://commons.wikimedia.org/wiki/File:Pisang_gapit.jpg
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Pisang_gapit.jpg/500px-Pisang_gapit.jpg",
     video: "G23L1eglhTE",
     deskripsi: "Pisang kepok dijepit lalu dibakar dengan margarin hingga kecokelatan, dan kinca dari 150 gram gula merah disiram selagi panas.",
     rasa: "Gula merah direbus bersama santan sampai mengental, dan margarin menempel di pisang saat dibakar.", pedas: 0, veg: true, anak: true,
@@ -1063,8 +1063,8 @@ var RESEP = [
   {
     id: "konro-bakar", nama: "Konro Bakar", daerah: "Sulawesi Selatan", kategori: "malam",
     waktuTotal: 180, waktuAktif: 45, level: "sulit", porsi: 4, rating: 4.9, dimasak: 654,
-    // Foto: Gunawan Kartapranata (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Konro_Bakar_3.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Konro_Bakar_3.jpg/500px-Konro_Bakar_3.jpg",
+    // Foto: Gunawan Kartapranata (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Konro_Bakar_6.jpg
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/fc/Konro_Bakar_6.jpg/500px-Konro_Bakar_6.jpg",
     video: "rnaZA3TQ7Eo",
     deskripsi: "Iga sapi direbus 90 menit hingga empuk, lalu dioles kecap dan dibakar di atas arang hingga kecokelatan.",
     rasa: "Kecap dioles sebelum dibakar, jadi manisnya karamel di permukaan. Keluak bikin pahit dalam di serat dagingnya.", pedas: 1, veg: false, anak: false,
@@ -1537,8 +1537,8 @@ var RESEP = [
   {
     id: "lapis-legit", nama: "Kue Lapis Legit", daerah: "Jakarta", kategori: "camilan",
     waktuTotal: 150, waktuAktif: 120, level: "sulit", porsi: 16, rating: 4.9, dimasak: 876,
-    // Foto: Pudding4brains (Public domain) — https://commons.wikimedia.org/wiki/File:Spekkoek_en_Kue_lapis.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/Spekkoek_en_Kue_lapis.jpg/500px-Spekkoek_en_Kue_lapis.jpg",
+    // Foto: Ariefz (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Lapis_Legit_Pontianak.jpg
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/25/Lapis_Legit_Pontianak.jpg/500px-Lapis_Legit_Pontianak.jpg",
     video: "RtrUh6whaXg",
     deskripsi: "Kuning telur dan gula dikocok sampai pucat, lalu mentega dan tepung diaduk masuk. Adonan dituang 1,5 sendok sayur tiap lapis lalu dipanggang hingga kecokelatan, diulang sampai 18 lapis.",
     rasa: "30 kuning telur dan gula halus dikocok lama. Bumbu spekuk bikin aroma hangat di setiap lapis.", pedas: 0, veg: true, anak: true,
@@ -1572,8 +1572,8 @@ var RESEP = [
   {
     id: "bika-ambon", nama: "Bika Ambon", daerah: "Sumatera Utara", kategori: "camilan",
     waktuTotal: 180, waktuAktif: 60, level: "sedang", porsi: 12, rating: 4.8, dimasak: 1045,
-    // Foto: Taman Renyah (CC BY 3.0) — https://commons.wikimedia.org/wiki/File:Bika_Ambon.JPG
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Bika_Ambon.JPG/500px-Bika_Ambon.JPG",
+    // Foto: Taman Renyah (CC BY-SA 3.0) — https://commons.wikimedia.org/wiki/File:Bika_Ambon_Cuts.JPG
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Bika_Ambon_Cuts.JPG/500px-Bika_Ambon_Cuts.JPG",
     video: "emD8U2jH7AE",
     deskripsi: "Tepung, telur, dan santan diaduk sampai licin, lalu adonannya didiamkan 2 jam sebelum dipanggang 45 menit hingga kecokelatan.",
     rasa: "Gula pasir dan air kelapa dipakai mengaktifkan ragi. Santan direbus dengan pandan, bikin gurih di serat kenyalnya.", pedas: 0, veg: true, anak: true,
@@ -1844,7 +1844,7 @@ var RESEP = [
     id: "serombotan", nama: "Serombotan Klungkung", daerah: "Bali", kategori: "camilan",
     waktuTotal: 45, waktuAktif: 35, level: "mudah", porsi: 5, rating: 4.6, dimasak: 755,
     // Foto: Fitri Penyalai (CC BY-SA 4.0) — https://commons.wikimedia.org/wiki/File:Serombotan.jpg
-    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Bali_cuisine.jpg/500px-Bali_cuisine.jpg",
+    foto: "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Serombotan.jpg/500px-Serombotan.jpg",
     video: "G1fKFFRcxU4",
     deskripsi: "Kangkung 150 gram, kacang panjang 150 gram, dan tauge 100 gram direbus terpisah 3 menit supaya tetap renyah. Bumbu kelapa dari 170 gram kelapa bakar diulek bareng kencur dan cabai, lalu disiram ke sayur yang sudah ditiriskan kering.",
     rasa: "Kelapa 170 gram yang dibakar dulu bikin bumbunya beraroma asap tipis, kencur 10 gram menyusup di belakangnya. Gula merah 20 gram dan terasi 5 gram diulek bareng cabai rawit, bikin manis-gurih yang nempel di sayur.", pedas: 2, veg: true, anak: false,

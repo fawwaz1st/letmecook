@@ -1751,21 +1751,25 @@ footer a:hover { text-decoration: underline; }
 @media (max-width: 640px) {
   .wrap { padding: var(--s4) var(--s3); }
   .wrap > * + * { margin-top: var(--s5); }
-  .kepala-in { padding: var(--s2) var(--s3); gap: var(--s2); }
+
+  /* Kepala jadi DUA BARIS di HP: baris 1 merek + ikon navigasi,
+     baris 2 kotak pencarian selebar layar. Satu baris tidak cukup —
+     tiga elemen berdesakan sampai saling menimpa. */
+  .kepala-in { padding: var(--s2) var(--s3); gap: var(--s2); flex-wrap: wrap; }
+  .cari { order: 3; flex-basis: 100%; }
 
   /* Teks navigasi disembunyikan, ikon dan angka tetap terlihat.
-     Breakpoint 640px (bukan 560px): antara 561–639px, teks penuh
-     membuat kotak cari sesak. Ikon saja selalu cukup. */
+     PENTING: ukuran ikon ditulis dalam px, bukan em. Sebelumnya memakai
+     1.35em — tapi font-size induk di-set 0 supaya teksnya hilang, dan
+     em ikut jadi 0, jadi ikonnya ikut hilang juga. */
+  .nav { margin-left: auto; }
   .nav a { padding: var(--s2); font-size: 0; gap: 0; }
-  .nav .ikon { width: 1.35em; height: 1.35em; }
+  .nav .ikon { width: 24px; height: 24px; }
   .nav .badge-hitung { font-size: 0.72rem; margin-left: var(--s1); }
 
   /* Tombol cari jadi ikon saja supaya kotak ketik tetap lega. */
   .cari button { padding: 0 var(--s3); font-size: 0; }
-  .cari button .ikon { width: 1.3em; height: 1.3em; }
-  /* Kotak ketik tidak boleh menyusut di bawah 120px, walau merek
-     dan navigasi sedang lebar-lebarnya. */
-  .cari input { min-width: 120px; }
+  .cari button .ikon { width: 22px; height: 22px; }
 
   .sorot img { width: 100%; }
   /* Foto hero dipendekkan di HP supaya teksnya cepat terlihat. */
@@ -1794,7 +1798,7 @@ footer a:hover { text-decoration: underline; }
   .kaki-bawah { flex-direction: column; align-items: flex-start; }
 }
 
-/* Layar sangat sempit: merek jadi ikon saja supaya kotak cari lega. */
+/* Layar sangat sempit: merek jadi ikon saja supaya baris atas lega. */
 @media (max-width: 400px) {
   .grup { grid-template-columns: 1fr 1fr; }
   .merek { font-size: 0; gap: 0; }
