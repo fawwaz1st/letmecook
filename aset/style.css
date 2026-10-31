@@ -1,3 +1,49 @@
+/* ---------- 0) FONT LOKAL ---------------------------------- */
+/* Font diunduh dari Google Fonts lalu disimpan di repo (subset latin):
+   lebih cepat, tanpa pihak ketiga, dan ikut tersimpan service worker
+   supaya tetap tampil saat offline. font-display: swap membuat teks
+   tampil lebih dulu dengan font cadangan selama berkas font diunduh. */
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/fraunces-600.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Fraunces";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/fraunces-700.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("fonts/pjs-400.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("fonts/pjs-600.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: "Plus Jakarta Sans";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("fonts/pjs-700.woff2") format("woff2");
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
 /* ============================================================
    LetMeCook — tampilan
    Susunan: 1 token · 2 dasar · 3 kepala · 4 tombol · 5 kartu
@@ -1803,4 +1849,49 @@ footer a:hover { text-decoration: underline; }
   .grup { grid-template-columns: 1fr 1fr; }
   .merek { font-size: 0; gap: 0; }
   .merek .ikon { width: 28px; height: 28px; }
+}
+/* ---------- 19) MODE GELAP & TRANSISI HALAMAN -------------- */
+/* Mode gelap mengikuti pengaturan sistem (prefers-color-scheme). Karena
+   seluruh warna halaman diambil dari token bagian 1, versi gelapnya
+   cukup mengganti token di :root. Rule tambahan di bawah hanya
+   meluruskan sedikit warna yang ditulis langsung (tag dan kotak tips)
+   supaya kontrasnya tetap lolos WCAG di latar gelap. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg:         oklch(0.17 0.012 155);
+    --kartu:      oklch(0.215 0.014 155);
+    --tinta:      oklch(0.93 0.008 155);
+    --redup:      oklch(0.68 0.015 155);
+    --garis:      oklch(0.31 0.02 155);
+    /* --merek tidak diterangkan terlalu jauh supaya teks putih di
+       tombol (.tb-isi) dan kepala tetap terbaca. */
+    --merek:      oklch(0.52 0.095 155);
+    --merek-tua:  oklch(0.26 0.05 155);
+    --merek-muda: oklch(0.27 0.035 155);
+    --aksen:      oklch(0.75 0.13 75);
+    --aksen-muda: oklch(0.29 0.05 85);
+    --aksen-teks: oklch(0.82 0.115 75);
+    --bahaya:     oklch(0.70 0.16 27);
+    --bayang:     0 1px 3px rgb(0 0 0 / 0.35);
+    --bayang-naik: 0 6px 16px rgb(0 0 0 / 0.45);
+  }
+
+  /* Tag: teks default dan varian warnanya ditulis langsung untuk
+     latar terang, jadi versi gelapnya ditulis di sini. */
+  .tag { color: var(--aksen-teks); }
+  .tag.hijau { color: oklch(0.80 0.09 155); }
+  .tag.merah { background: oklch(0.30 0.06 27); color: oklch(0.78 0.13 27); }
+  .stepper button { color: var(--merek); }
+  .tb { color: oklch(0.72 0.09 155); }
+  /* Kotak tips: hanya garis dan latar .biru yang ditulis langsung. */
+  .kotak.kuning { border-color: oklch(0.40 0.08 85); }
+  .kotak.hijau  { border-color: oklch(0.38 0.06 155); }
+  .kotak.biru   { background: oklch(0.24 0.02 250); border-color: oklch(0.36 0.04 250); }
+}
+
+/* Transisi antarhalaman: saat pindah .html, konten lama melembut ke
+   yang baru (cross-document view transition). Browser tanpa dukungan,
+   atau pengguna yang mematikan animasi, langsung membuka tanpa transisi. */
+@media (prefers-reduced-motion: no-preference) {
+  @view-transition { navigation: auto; }
 }

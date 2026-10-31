@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>LetMeCook — Resep Masakan Indonesia Bertakar Gram</title>
   <meta name="description" content="Resep masakan Indonesia dengan takaran gram, tanda matang di tiap langkah, timer, dan daftar belanja otomatis.">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://www.youtube.com; style-src 'self' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: https://upload.wikimedia.org https://i.ytimg.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'inline-speculation-rules' https://www.youtube.com; style-src 'self'; font-src 'self'; img-src 'self' data: https://upload.wikimedia.org https://i.ytimg.com; frame-src https://www.youtube.com https://www.youtube-nocookie.com; connect-src 'self' https://www.youtube.com; object-src 'none'; base-uri 'self'; form-action 'self'">
   <link rel="canonical" href="https://fawwaz1st.github.io/letmecook/">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="LetMeCook">
@@ -16,14 +16,18 @@
   <meta property="og:locale" content="id_ID">
   <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E%F0%9F%8D%B2%3C/text%3E%3C/svg%3E">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Plus+Jakarta+Sans:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="aset/style.css">
+  <link rel="preload" href="aset/fonts/pjs-400.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="aset/fonts/pjs-700.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="aset/fonts/fraunces-700.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="manifest" href="manifest.webmanifest">
-  <meta name="color-scheme" content="light">
+  <meta name="color-scheme" content="light dark">
   <meta name="robots" content="max-image-preview:large">
   <meta name="theme-color" content="#0d5c34" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#0d1411" media="(prefers-color-scheme: dark)">
+  <script type="speculationrules">
+  {"prefetch":[{"source":"document","where":{"href_matches":"/*"},"eagerness":"moderate"}]}
+  </script>
 </head>
 <body data-halaman="index">
 

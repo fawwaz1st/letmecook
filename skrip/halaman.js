@@ -25,7 +25,7 @@ function halamanIndex() {
   const hari = RESEP[new Date().getDate() % RESEP.length];
   document.getElementById("hariIni").innerHTML =
     '<div class="sorot">'
-    + '<img src="' + esc(hari.foto) + '" alt="" width="440" height="330">'
+    + '<img src="' + esc(hari.foto) + '" alt="" width="440" height="330" fetchpriority="high" decoding="async">'
     + '<div class="teks">'
     + "<h3>" + esc(hari.nama) + "</h3>"
     + '<p class="lega">' + esc(hari.deskripsi) + "</p>"
@@ -59,6 +59,24 @@ function halamanIndex() {
   // Empat resep yang videonya punya penanda bagian.
   isiKartu(document.getElementById("babGrup"),
     RESEP.filter((r) => Array.isArray(r.bab) && r.bab.length).slice(0, 4));
+
+  // Data terstruktur WebSite + SearchAction: kotak cari di beranda
+  // terdaftar sebagai tindakan pencarian situs di hasil mesin pencari.
+  const ldSitus = document.createElement("script");
+  ldSitus.type = "application/ld+json";
+  ldSitus.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "LetMeCook",
+    url: "https://fawwaz1st.github.io/letmecook/",
+    inLanguage: "id",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: { "@type": "EntryPoint", urlTemplate: "https://fawwaz1st.github.io/letmecook/katalog.html?q={search_term_string}" },
+      "query-input": "required name=search_term_string",
+    },
+  });
+  document.head.appendChild(ldSitus);
 
   siapkanHalaman();
 }
@@ -225,7 +243,7 @@ function halamanResep() {
 
   area.innerHTML =
     '<article class="panel"><div class="kepala-resep">'
-    + '<img src="' + esc(r.foto) + '" alt="' + esc(r.nama) + ", " + esc(r.daerah) + '" width="900" height="562">'
+    + '<img src="' + esc(r.foto) + '" alt="' + esc(r.nama) + ", " + esc(r.daerah) + '" width="900" height="562" fetchpriority="high" decoding="async">'
     + '<div class="teks">'
     + '<div class="tag-baris">' + label.join("") + "</div>"
     + "<h1>" + esc(r.nama) + "</h1>"
@@ -544,6 +562,20 @@ function halamanResep() {
     },
   });
   document.head.appendChild(ld);
+
+  // Remah navigasi (BreadcrumbList): jalur Katalog > resep ini dipahami
+  // mesin pencari sebagai susunan halaman situs.
+  const ldRemah = document.createElement("script");
+  ldRemah.type = "application/ld+json";
+  ldRemah.textContent = JSON.stringify({
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Katalog", item: "https://fawwaz1st.github.io/letmecook/katalog.html" },
+      { "@type": "ListItem", position: 2, name: r.nama },
+    ],
+  });
+  document.head.appendChild(ldRemah);
 
   // Hentikan timer kalau halaman ditinggalkan, supaya tidak jalan
   // diam-diam di latar belakang.
@@ -932,3 +964,10 @@ function halamanFavorit() {
 
   if (fn) fn();
 })();
+
+// Service worker: situs tetap bisa dibuka saat offline (sw.js).
+// Hanya lewat http/https — dibuka langsung dari berkas (file://)
+// dilewati, karena browser tidak mengizinkan service worker di sana.
+if ("serviceWorker" in navigator && (location.protocol === "https:" || ["localhost", "127.0.0.1"].includes(location.hostname))) {
+  navigator.serviceWorker.register("sw.js").catch(() => {});
+}

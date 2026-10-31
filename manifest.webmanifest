@@ -4,8 +4,11 @@
   "description": "Resep masakan Indonesia bertakar gram, dengan tanda matang, timer, mode masak, dan daftar belanja.",
   "lang": "id",
   "start_url": "index.html",
+  "id": "/letmecook/",
   "scope": ".",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
+  "launch_handler": { "client_mode": "navigate-existing" },
   "background_color": "#faf8f3",
   "theme_color": "#0d5c34",
   "icons": [
@@ -27,5 +30,10 @@
       "type": "image/png",
       "purpose": "maskable"
     }
+  ],
+  "shortcuts": [
+    { "name": "Katalog resep", "short_name": "Katalog", "url": "katalog.html" },
+    { "name": "Rencana makan 7 hari", "short_name": "Rencana", "url": "mealplan.html" },
+    { "name": "Resep tersimpan", "short_name": "Favorit", "url": "favorit.html" }
   ]
 }

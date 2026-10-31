@@ -74,6 +74,32 @@ seluruh 67 resep punya bab yang bisa diklik dan selalu nyambung.
 tersusun sendiri dari resep yang kamu isi, digabung kalau bahan dan satuannya
 sama. Bisa juga menambah bahan sendiri, dan itu tersimpan.
 
+## Pembaruan 2026
+
+Peningkatan yang ditambahkan setelah riset ulang praktik web terbaru:
+
+- **Offline.** Situs punya service worker (`sw.js`): halaman, skrip, gaya,
+  dan font disimpan, jadi bisa dibuka tanpa internet — resep tetap
+  terbaca, hanya videonya butuh jaringan. Naikkan `VERSI` di `sw.js`
+  saat berkas situs berubah supaya pengunjung lama dapat yang baru.
+- **Mode gelap.** Ikut pengaturan sistem (`prefers-color-scheme`). Warna
+  tetap dari token bagian 1, jadi cukup satu blok token versi gelap.
+- **Font lokal.** Fraunces dan Plus Jakarta Sans diunduh ke `aset/fonts/`
+  (subset latin, ±150 KB total): lebih cepat, tanpa pihak ketiga, dan
+  ikut tersimpan untuk offline.
+- **Prefetch saat kursor.** Speculation Rules (`eagerness: "moderate"`)
+  mengunduh halaman berikutnya saat tautan diarahkan kursor, sehingga
+  pindah halaman nyaris seketika di browser yang mendukung.
+- **Transisi antarhalaman.** Cross-document view transition: konten
+  lama melembut ke yang baru di browser yang mendukung.
+- **Prioritas unduh.** Foto utama beranda & resep memakai
+  `fetchpriority="high"` supaya LCP tidak menunggu unduhan lain.
+- **Data terstruktur tambahan.** `WebSite` + `SearchAction` (kotak cari
+  terdaftar sebagai tindakan pencarian) dan `BreadcrumbList` di halaman
+  resep.
+- **Manifest lebih matang.** `id`, `display_override`, `launch_handler`,
+  dan pintasan Katalog / Rencana / Favorit.
+
 ## Cara memasang
 
 **1. Lewat server lokal.** Ini cara paling gampang kalau mau videonya jalan:
@@ -120,7 +146,8 @@ letmecook/
 │
 │  ── Tampilan ─────────────────────────────────────────────
 ├── aset/
-│   ├── style.css         Seluruh tampilan (18 bagian bernomor)
+│   ├── style.css         Seluruh tampilan (19 bagian bernomor)
+│   ├── fonts/            Font lokal woff2 (Fraunces, Plus Jakarta Sans)
 │   ├── icons.svg         Sprite 31 ikon garis 24px
 │   ├── ikon-192.png      Ikon aplikasi 192px (manifest)
 │   └── ikon-512.png      Ikon aplikasi 512px (manifest)
@@ -129,6 +156,7 @@ letmecook/
 ├── robots.txt            Izin untuk robot pencari + menunjuk sitemap
 ├── sitemap.xml           Daftar 72 URL situs (5 halaman + 67 resep)
 ├── manifest.webmanifest  Info aplikasi (nama, ikon, warna)
+├── sw.js                 Service worker: cache untuk offline (PWA)
 │
 │  ── Dokumentasi (tidak ikut ter-deploy) ───────────────────
 ├── README.md             Berkas yang sedang kamu baca
@@ -191,11 +219,14 @@ memanggil fungsi yang cocok dengan `<body data-halaman="...">`.
 ## Keamanan
 
 Setiap halaman memasang **Content-Security-Policy** lewat meta tag: kode
-hanya boleh dimuat dari domain sendiri, ditambah YouTube, Google Fonts, dan
-Wikimedia. Karena CSP ketat memblokir skrip dan gaya yang ditulis langsung di
+hanya boleh dimuat dari domain sendiri, ditambah YouTube dan Wikimedia.
+Font kini dihost sendiri di `aset/fonts/`, jadi `style-src` dan `font-src`
+cukup `'self'`. Karena CSP ketat memblokir skrip dan gaya yang ditulis langsung di
 HTML, seluruh skrip halaman berada di `skrip/halaman.js` dan seluruh gaya berada di
 `aset/style.css`. Galat gambar ditangani satu pendengar di fase tangkap, bukan
-atribut `onerror` di tiap `<img>`.
+atribut `onerror` di tiap `<img>`. Keyword `'inline-speculation-rules'`
+pada `script-src` hanya membolehkan JSON Speculation Rules — tetap tanpa
+`unsafe-inline`.
 
 Catatan: GitHub Pages tidak bisa mengatur header HTTP, jadi beberapa direktif
 CSP (`frame-ancestors`, `sandbox`) tidak tersedia. Itu batasan host.

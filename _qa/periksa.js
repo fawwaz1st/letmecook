@@ -18,7 +18,7 @@ const BERKAS_SITUS = [
   "index.html", "katalog.html", "resep.html", "mealplan.html",
   "favorit.html", "tentang.html", "404.html",
   "skrip/resep-data.js", "skrip/store.js", "skrip/halaman.js",
-  "aset/style.css", "manifest.webmanifest",
+  "aset/style.css", "manifest.webmanifest", "sw.js",
 ];
 
 let adaMasalah = false;
