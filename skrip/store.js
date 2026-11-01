@@ -14,6 +14,33 @@ const KEY = {
   prog: "letmecook:prog",
 };
 
+// Pengganti bahan yang sering hilang di dapur (ide 2026: "bahan habis,
+// ganti apa?"). Kunci dinormalisasi ke huruf kecil; pencarian juga
+// mencoba token pertama ("santan kental" -> "santan").
+const PENGANTI = {
+  "santan": "susu UHT 1:1 + 1 sdm minyak per 200 ml",
+  "kemiri": "kacang mede atau kacang tanah, sangrai dulu",
+  "daun jeruk": "daun salam + perasan nipis 1/2 sdt",
+  "daun salam": "daun jeruk (aroma beda, cukup untuk wangi)",
+  "terasi": "petis udang atau pasta udang 1/2 sdt",
+  "gula merah": "gula pasir + 1 sdt kecap manis",
+  "asam jawa": "air jeruk nipis 1 sdt + 1/2 sdt gula",
+  "lengkuas": "jahe 1:1 (aroma lebih tajam)",
+  "serai": "kulit jeruk + 1/2 sdt jahe parut",
+  "kunyit": "kunyit bubuk 1/2 sdt",
+  "jahe": "lengkuas atau jahe bubuk 1/4 sdt",
+  "bawang merah": "bawang bombay 1:3 (rasa lebih manis)",
+  "daun bawang": "kucai atau seledri (aroma beda)",
+  "jeruk nipis": "jeruk lemon atau asam jawa",
+};
+
+function cariPengganti(nama) {
+  const n = String(nama || "").toLowerCase().trim();
+  if (PENGANTI[n]) return PENGANTI[n];
+  const tok = n.split(/\s+/)[0];
+  return PENGANTI[tok] || null;
+}
+
 // Baca dari localStorage. Kalau isinya rusak, pakai nilai cadangan.
 function baca(kunci, cadangan) {
   try {

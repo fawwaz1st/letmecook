@@ -373,7 +373,15 @@ function halamanResep() {
       const sp = document.createElement("span");
       sp.textContent = teksBahan(b, porsiKini / r.porsi);
 
-      li.append(cb, sp);
+      const pengganti = cariPengganti(b.nama);
+      if (pengganti) {
+        const pg = document.createElement("small");
+        pg.className = "pengganti";
+        pg.textContent = "Ganti: " + pengganti;
+        li.append(cb, sp, pg);
+      } else {
+        li.append(cb, sp);
+      }
       bahanList.appendChild(li);
     });
   }

@@ -753,6 +753,7 @@ p:last-child { margin-bottom: 0; }
   cursor: pointer;
 }
 .bahan li.selesai span { text-decoration: line-through; color: var(--redup); }
+.pengganti { display: block; font-size: 0.78rem; font-style: italic; color: var(--redup); margin-top: 2px; line-height: 1.4; }
 
 .baris-porsi {
   display: flex;
