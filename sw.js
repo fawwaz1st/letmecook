@@ -13,7 +13,7 @@
 //
 // PENTING: naikkan VERSI setiap kali berkas situs berubah, supaya tab
 // lama mengunduh berkas yang baru.
-const VERSI = "letmecook-v3";
+const VERSI = "letmecook-v4";
 const GAMBAR = "letmecook-gambar";
 const GAMBAR_MAKS = 90;
 const INTI = [
@@ -87,7 +87,15 @@ self.addEventListener("fetch", (e) => {
   // Pihak ketiga: hanya gambar yang dipakai situs yang disimpan.
   if (url.origin !== location.origin) {
     if (!adalahGambarLuar(url)) return;
+    // DEBUG: catat invokasi handler
+    caches.open(GAMBAR).then(c => c.put("__debug_handler", new Response(JSON.stringify({ url: req.url, mode: req.mode, destination: req.destination, ts: Date.now() }), { headers: { "Content-Type": "application/json" } })).catch(() => {}));
     const janjiGambar = simpanLaluSegarkan(req, GAMBAR, GAMBAR_MAKS);
+    // DEBUG: catat hasil fetch
+    janjiGambar.then(res => {
+      caches.open(GAMBAR).then(c => c.put("__debug_result", new Response(JSON.stringify({ url: req.url, type: res?.type, status: res?.status, ok: res?.ok, ts: Date.now() }), { headers: { "Content-Type": "application/json" } })).catch(() => {});
+    }).catch(e => {
+      caches.open(GAMBAR).then(c => c.put("__debug_result", new Response(JSON.stringify({ url: req.url, err: e.message, ts: Date.now() }), { headers: { "Content-Type": "application/json" } })).catch(() => {});
+    });
     e.respondWith(janjiGambar);
     e.waitUntil(janjiGambar.catch(() => {}));
     return;
