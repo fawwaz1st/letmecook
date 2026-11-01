@@ -13,7 +13,7 @@
 //
 // PENTING: naikkan VERSI setiap kali berkas situs berubah, supaya tab
 // lama mengunduh berkas yang baru.
-const VERSI = "letmecook-v1";
+const VERSI = "letmecook-v3";
 const GAMBAR = "letmecook-gambar";
 const GAMBAR_MAKS = 90;
 const INTI = [
@@ -31,11 +31,38 @@ self.addEventListener("install", (e) => {
     const cache = await caches.open(VERSI);
     // cache:"reload": lewati cache HTTP (GitHub Pages memakai
     // max-age 600), supaya yang tersimpan memang versi terbaru.
-    await Promise.all(INTI.map((u) =>
-      cache.add(new Request(u, { cache: "reload" })).catch(() => {})
+    const hasil = await Promise.allSettled(INTI.map((u) =>
+      cache.add(new Request(u, { cache: "reload" }))
     ));
+    const gagalInti = hasil.filter((h, i) => h.status === "rejected" && (INTI[i] === "index.html" || INTI[i] === "aset/style.css" || INTI[i].startsWith("skrip/")));
+    if (gagalInti.length) throw new Error("precache inti gagal");
     await self.skipWaiting();
   })());
+});
+
+// ---------- PESAN DARI HALAMAN ------------------------------
+// Timer di halaman meminta notifikasi saat tab di latar belakang, dan
+// pengguna bisa langsung kembali ke resep lewat klik notifikasi itu.
+self.addEventListener("message", (e) => {
+  const data = e.data || {};
+  if (data.jenis !== "notifikasi-timer") return;
+  e.waitUntil(self.registration.showNotification(data.judul || "Waktunya habis", {
+    body: data.isi || "",
+    tag: "letmecook-timer",
+    renotify: true,
+    data: { url: data.url || "./" },
+  }).catch(() => {}));
+});
+
+self.addEventListener("notificationclick", (e) => {
+  e.notification.close();
+  const tujuan = (e.notification.data && e.notification.data.url) || "./";
+  e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((daftar) => {
+    for (const c of daftar) {
+      if (c.url.includes(tujuan.split("?")[0]) && "focus" in c) return c.focus();
+    }
+    return self.clients.openWindow(tujuan);
+  }));
 });
 
 // ---------- AKTIF: buang cache versi lama -------------------
@@ -60,7 +87,9 @@ self.addEventListener("fetch", (e) => {
   // Pihak ketiga: hanya gambar yang dipakai situs yang disimpan.
   if (url.origin !== location.origin) {
     if (!adalahGambarLuar(url)) return;
-    e.respondWith(simpanLaluSegarkan(req, GAMBAR, GAMBAR_MAKS));
+    const janjiGambar = simpanLaluSegarkan(req, GAMBAR, GAMBAR_MAKS);
+    e.respondWith(janjiGambar);
+    e.waitUntil(janjiGambar.catch(() => {}));
     return;
   }
 
@@ -70,8 +99,18 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // Aset satu asal: cache dulu, segarkan di belakang.
-  e.respondWith(simpanLaluSegarkan(req, VERSI));
+  // Skrip dan gaya: jaringan dulu. Kalau HTML baru dipasangkan dengan JS
+  // lama dari cache, halaman bisa berhenti bekerja ("tombol tidak jalan")
+  // dan penyebabnya sulit dilacak. Aset lain tetap cache dulu supaya cepat.
+  if (req.destination === "script" || req.destination === "style" || req.destination === "worker") {
+    e.respondWith(jaringanDulu(req));
+    return;
+  }
+
+  // Aset satu asal lainnya: cache dulu, segarkan di belakang.
+  const janjiSegar = simpanLaluSegarkan(req, VERSI);
+  e.respondWith(janjiSegar);
+  e.waitUntil(janjiSegar.catch(() => {}));
 });
 
 // Jaringan dengan batas waktu; kegagalannya ditangkap pemanggil.
@@ -89,12 +128,13 @@ async function jaringanDulu(req) {
       const cache = await caches.open(VERSI);
       // Pakai req.url (string), bukan req-nya langsung: cache.put
       // menolak permintaan bermode navigate di sebagian browser.
-      cache.put(req.url, jaringan.clone()).catch(() => {});
+      cache.put(req.url.split("?")[0], jaringan.clone()).catch(() => {});
+      return jaringan;
     }
-    return jaringan;
   }
   const cache = await caches.open(VERSI);
-  return (await cache.match(req))
+  const kunciNav = req.url.split("?")[0];
+  return (await cache.match(kunciNav))
     || (await cache.match(req, { ignoreSearch: true }))
     || (await cache.match("404.html"))
     || Response.error();
@@ -104,8 +144,8 @@ async function simpanLaluSegarkan(req, nama, maks = 0) {
   const cache = await caches.open(nama);
   const dariCache = await cache.match(req);
   const dariJaringan = fetch(req).then((res) => {
-    if (res && res.ok) {
-      cache.put(req.url, res.clone()).then(() => potong(cache, maks)).catch(() => {});
+    if (res && res.ok || res.type === "opaque") {
+      cache.delete(req.url).then(() => cache.put(req.url, res.clone())).then(() => potong(cache, maks)).catch(() => {});
     }
     return res;
   }).catch(() => null);

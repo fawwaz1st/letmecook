@@ -69,6 +69,8 @@
   /* Versi lebih gelap khusus untuk teks. --aksen terlalu terang di atas
      putih (2.54:1). Yang ini 4.95:1, lolos WCAG AA. */
   --aksen-teks: oklch(0.55 0.145 75);
+  --masak-bg:   oklch(0.22 0.015 155);
+  --merek-teks: oklch(0.42 0.098 155);
   --bahaya:     oklch(0.48 0.185 27);
 
   /* Jarak. Naik satu tingkat, makin longgar. */
@@ -219,7 +221,7 @@ p:last-child { margin-bottom: 0; }
   position: relative;
   min-width: 0;
   display: flex;
-  background: #fff;
+  background: var(--kartu);
   border-radius: var(--r-kecil);
 }
 .cari input {
@@ -465,7 +467,7 @@ p:last-child { margin-bottom: 0; }
   inset: -4px;
   border-radius: var(--pil);
 }
-.kartu-simpan:hover { color: var(--bahaya); background: #fff; transform: scale(1.08); }
+.kartu-simpan:hover { color: var(--bahaya); background: var(--kartu); transform: scale(1.08); }
 .kartu-simpan:active { transform: scale(0.96); }
 .kartu-simpan[aria-pressed="true"] { color: var(--bahaya); }
 .kartu-simpan[aria-pressed="true"] .ikon { fill: currentColor; }
@@ -950,7 +952,7 @@ p:last-child { margin-bottom: 0; }
   position: fixed;
   inset: 0;
   z-index: var(--z-lapis);
-  background: var(--tinta);
+  background: var(--masak-bg);
   color: #fff;
   display: none;
   flex-direction: column;
@@ -1016,7 +1018,7 @@ p:last-child { margin-bottom: 0; }
   transition: background var(--dur) var(--gerak);
 }
 .masak-tombol:hover { background: rgb(255 255 255 / 0.14); }
-.masak-tombol.aktif { background: var(--aksen); border-color: var(--aksen); color: var(--tinta); }
+.masak-tombol.aktif { background: var(--aksen); border-color: var(--aksen); color: oklch(0.17 0.012 155); }
 
 .masak-isi {
   display: flex;
@@ -1056,7 +1058,7 @@ p:last-child { margin-bottom: 0; }
   align-items: center;
   gap: var(--s2);
 }
-.masak-timer.jalan { background: var(--aksen); border-color: var(--aksen); color: var(--tinta); font-variant-numeric: tabular-nums; }
+.masak-timer.jalan { background: var(--aksen); border-color: var(--aksen); color: oklch(0.17 0.012 155); font-variant-numeric: tabular-nums; }
 
 .masak-nav {
   display: flex;
@@ -1084,7 +1086,7 @@ p:last-child { margin-bottom: 0; }
 .masak-nav button:disabled { opacity: 0.4; cursor: default; }
 .masak-mundur { background: transparent; border: 1px solid rgb(255 255 255 / 0.5); color: #fff; }
 .masak-mundur:hover:not(:disabled) { background: rgb(255 255 255 / 0.12); }
-.masak-maju { background: var(--aksen); border: none; color: var(--tinta); }
+.masak-maju { background: var(--aksen); border: none; color: oklch(0.17 0.012 155); }
 .masak-maju:hover { background: oklch(0.78 0.15 75); }
 
 /* ---- Tata letak dua kolom saat video terbuka ----
@@ -1397,7 +1399,7 @@ p:last-child { margin-bottom: 0; }
   flex: none;
   background: var(--bg);
 }
-.slot.terisi .waktu { color: var(--merek); }
+.slot.terisi .waktu { color: var(--merek-teks); }
 
 /* Tombol slot: Isi/Ganti. Tetap 44px supaya nyaman ditekan jari. */
 .slot button {
@@ -1417,7 +1419,7 @@ p:last-child { margin-bottom: 0; }
 .slot button:hover { border-color: var(--merek); color: var(--merek); }
 .slot.terisi button:hover { background: var(--merek-muda); }
 .slot .slot-hapus { min-width: 44px; padding: 0; display: inline-flex; align-items: center; justify-content: center; }
-.slot .slot-hapus:hover { border-color: var(--bahaya); color: var(--bahaya); background: #fff; }
+.slot .slot-hapus:hover { border-color: var(--bahaya); color: var(--bahaya); background: var(--kartu); }
 .slot .slot-hapus .ikon { width: 1em; height: 1em; }
 
 .belanja { padding: 0 var(--s4) var(--s4); margin: 0; }
@@ -1431,7 +1433,7 @@ p:last-child { margin-bottom: 0; }
   font-size: 0.9rem;
 }
 .belanja li:last-child { border-bottom: none; }
-.belanja input { width: 20px; height: 20px; accent-color: var(--merek); flex: none; cursor: pointer; }
+.belanja input { width: 24px; height: 24px; accent-color: var(--merek); flex: none; cursor: pointer; }
 .belanja .dari { color: var(--redup); font-size: 0.78rem; display: block; }
 .belanja li.centang span { text-decoration: line-through; color: var(--redup); }
 
@@ -1655,7 +1657,7 @@ p:last-child { margin-bottom: 0; }
    ikut tercatat sebagai pergeseran tata letak (CLS) oleh browser. */
 .muncul {
   opacity: 0;
-  transition: opacity 0.4s var(--gerak) var(--jeda, 0ms);
+  transition: opacity 0.3s var(--gerak);
 }
 .muncul.tampil { opacity: 1; }
 
@@ -1697,7 +1699,7 @@ select:focus-visible {
 
 /* ---------- 17) KAKI HALAMAN ------------------------------ */
 footer {
-  background: var(--tinta);
+  background: var(--masak-bg);
   color: oklch(0.88 0.01 155);
   margin-top: var(--s8);
 }
@@ -1871,7 +1873,9 @@ footer a:hover { text-decoration: underline; }
     --aksen:      oklch(0.75 0.13 75);
     --aksen-muda: oklch(0.29 0.05 85);
     --aksen-teks: oklch(0.82 0.115 75);
-    --bahaya:     oklch(0.70 0.16 27);
+    --bahaya:     oklch(0.55 0.17 27);
+    --masak-bg:   oklch(0.13 0.012 155);
+    --merek-teks: oklch(0.62 0.09 155);
     --bayang:     0 1px 3px rgb(0 0 0 / 0.35);
     --bayang-naik: 0 6px 16px rgb(0 0 0 / 0.45);
   }
@@ -1888,6 +1892,15 @@ footer a:hover { text-decoration: underline; }
   .kotak.hijau  { border-color: oklch(0.38 0.06 155); }
   .kotak.biru   { background: oklch(0.24 0.02 250); border-color: oklch(0.36 0.04 250); }
 }
+  /* Override permukaan yang ditulis langsung untuk latar terang. */
+  .masak-maju, .masak-tombol.aktif, .masak-timer.jalan { color: oklch(0.17 0.012 155); }
+  .badge-matang { color: oklch(0.80 0.09 155); }
+  .badge[data-teknik] { background: oklch(0.26 0.04 155); color: oklch(0.86 0.08 155); }
+  .slot.terisi .waktu { color: oklch(0.62 0.09 155); }
+  .slot .slot-hapus:hover, .kartu-simpan:hover { background: var(--kartu); }
+  .cari button:hover { background: oklch(0.30 0.07 155); }
+  .tanda { border-color: oklch(0.32 0.03 155); }
+
 
 /* Transisi antarhalaman: saat pindah .html, konten lama melembut ke
    yang baru (cross-document view transition). Browser tanpa dukungan,
@@ -1895,3 +1908,5 @@ footer a:hover { text-decoration: underline; }
 @media (prefers-reduced-motion: no-preference) {
   @view-transition { navigation: auto; }
 }
+
+.grup:empty { min-height: 480px; }

@@ -94,7 +94,7 @@ function fmtQty(n) {
 function teksBahan(b, faktor) {
   let q = b.jumlah * faktor;
   if (b.bagi === 0) q = Math.max(1, Math.round(q));
-  else q = Math.round(q * 4) / 4;
+  else q = Math.max(0.25, Math.round(q * 4) / 4);
   const awal = b.bagi === 0 && faktor !== 1 ? "±" : "";
   return awal + fmtQty(q) + " " + b.satuan + " " + b.nama;
 }
@@ -122,19 +122,24 @@ function fmtDetik(detik) {
 // saatTik dipanggil tiap detik dengan sisa detik, saatHabis sekali di
 // akhir. Mengembalikan id interval supaya pemanggil bisa menghentikannya.
 function hitungMundur(detik, saatTik, saatHabis) {
-  let sisa = detik;
+  // Batas waktu absolut, bukan penghitung mundur per tik. Tab yang
+  // di-throttle browser (atau layar HP yang mati) hanya menjalankan
+  // setInterval sekali-sekali; dengan "sisa--" angkanya jadi melenceng.
+  // Dengan membandingkan jam, sisa selalu benar walau tiknya terlambat.
+  const selesai = Date.now() + detik * 1000;
+  const sisaDetik = () => Math.max(0, Math.ceil((selesai - Date.now()) / 1000));
   // Galat di pemanggil tidak boleh membuat interval jalan diam-diam
   // tanpa UI yang berubah. Kalau ada galat, hitungan tetap lanjut.
-  try { saatTik(sisa); } catch { /* abaikan galat tampilan */ }
+  try { saatTik(sisaDetik()); } catch { /* abaikan galat tampilan */ }
   const id = setInterval(() => {
-    sisa--;
+    const sisa = sisaDetik();
     if (sisa <= 0) {
       clearInterval(id);
       try { saatHabis(); } catch { /* abaikan */ }
     } else {
       try { saatTik(sisa); } catch { /* abaikan */ }
     }
-  }, 1000);
+  }, 250);
   return id;
 }
 
@@ -152,15 +157,25 @@ function esc(teks) {
 // atau rentang "2-3 menit". Mengembalikan [teks asli, detik] atau null.
 // Dipakai halaman resep dan mode masak supaya aturannya sama.
 function waktuDiTeks(teks) {
-  // Rentang diambil angka terbesar, supaya timer tidak berhenti
-  // kecepatan saat instruksinya "masak 2-3 menit".
-  const kena = teks.match(/(\d+)(?:\s*[-–—]\s*(\d+))?\s*(jam|menit|detik)/);
-  if (!kena) return null;
-  const angka = Number(kena[2] || kena[1]);
-  // "Detik" di bawah 15 hampir selalu bagian dari tanda matang
-  // ("jejak 2 detik"), bukan durasi memasak. Jangan munculkan timer.
-  if (kena[3] === "detik" && angka < 15) return null;
-  return [kena[0], angka * { jam: 3600, menit: 60, detik: 1 }[kena[3]]];
+  // Kumpulkan SEMUA pasangan "angka satuan" (termasuk pecahan 1/2, 1,5),
+  // lalu jumlahkan ke detik. Sebelumnya hanya angka pertama yang dibaca,
+  // sehingga "1 jam 30 menit" hanya dihitung 1 jam.
+  const re = /(\d+(?:[.,]\d+)?|\d+\/\d+)\s*(jam|menit|detik)/gi;
+  let total = 0, ada = false, pertama = null, m;
+  while ((m = re.exec(teks)) !== null) {
+    const raw = m[1].replace(",", ".");
+    const angka = raw.includes("/") ? Number(raw.split("/")[0]) / Number(raw.split("/")[1]) : Number(raw);
+    if (!Number.isFinite(angka)) continue;
+    const mult = m[2] === "jam" ? 3600 : m[2] === "menit" ? 60 : 1;
+    const detik = angka * mult;
+    // "Detik" di bawah 15 hampir selalu bagian dari tanda matang
+    // ("jejak 2 detik"), bukan durasi memasak. Jangan munculkan timer.
+    if (m[2] === "detik" && detik < 15) continue;
+    if (!pertama) pertama = m[0];
+    total += detik; ada = true;
+  }
+  if (!ada || total < 15) return null;
+  return [pertama, total];
 }
 
 // ID video YouTube selalu 11 karakter.
@@ -277,7 +292,13 @@ function parseLangkah(teks) {
     // di badan langkah, tapi jangan pasang chip.
     if (RE_MATANG.test(teks)) sisa = teks.replace(RE_MATANG, "").trim();
     const hasil = teks.match(RE_HASIL);
-    if (hasil) matang = bersihkanMatang(hasil[2].trim());
+    if (hasil) {
+      // Klausa tujuan ("... hingga meletup kecil agar tidak pecah") bukan
+      // tanda matang: potong di kata tujuan sebelum diperiksa, kalau tidak
+      // chip-nya berbunyi larangan seperti "agar tidak gosong".
+      const klausa = hasil[2].split(/\s+(?:agar|supaya|biar)\s+/i)[0];
+      matang = bersihkanMatang(klausa.trim());
+    }
   }
 
   // Langkah tidak boleh kosong: kalau seluruh teks cuma klausa matang,
@@ -331,7 +352,7 @@ function kartuResepHTML(r, opsi, daftarSimpan) {
   const simpan = opsi.tanpaSimpan
     ? ""
     : '<button class="kartu-simpan" type="button" data-simpan aria-label="Simpan ' + esc(r.nama) + '"'
-      + (disimpan ? ' aria-pressed="true"' : "") + ">"
+      + ' aria-pressed="' + (disimpan ? "true" : "false") + '"' + ">"
       + '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-heart"/></svg></button>';
 
   return '<article class="kartu">'
@@ -348,8 +369,7 @@ function kartuResepHTML(r, opsi, daftarSimpan) {
     + '<span class="kartu-teks">'
     + '<span class="kartu-nama">' + esc(r.nama) + "</span>"
     + '<span class="kartu-meta">' + fmtWaktu(r.waktuTotal) + " · " + esc(r.daerah)
-    + '<span class="kartu-bintang"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-star"/></svg>'
-    + r.rating + "</span></span>"
+    + "</span></span>"
     + "</span></a>"
     + simpan
     + "</article>";
@@ -488,6 +508,8 @@ function pasangDropdown(select) {
     if (!bungkus.contains(e.target)) tutup();
   });
 
+  select.tabIndex = -1;
+  select.setAttribute("aria-hidden", "true");
   select.classList.add("select-asli");
   bungkus.append(tombol, daftar);
   select.insertAdjacentElement("afterend", bungkus);
@@ -511,6 +533,7 @@ function pasangSaranPencarian(input) {
   kotak.setAttribute("aria-label", "Saran resep");
   kotak.hidden = true;
   input.insertAdjacentElement("afterend", kotak);
+  input.setAttribute("role", "combobox");
   input.setAttribute("aria-expanded", "false");
   input.setAttribute("aria-controls", "saranCari");
   input.setAttribute("aria-autocomplete", "list");
@@ -613,6 +636,11 @@ function pasangSaranPencarian(input) {
 // Kalau pengunjung minta "kurangi gerak", animasinya dilewati.
 // ============================================================
 function pasangAnimasi() {
+  // Browser modern (Chrome 115+, Safari 26, Firefox 159) mendukung
+  // CSS scroll-driven animation (animation-timeline: view()): reveal
+  // ditangani CSS di compositor thread, tanpa JavaScript. Hanya fallback
+  // yang memakai IntersectionObserver.
+  if (CSS.supports && CSS.supports("animation-timeline", "view()")) return;
   // Browser lama tanpa IntersectionObserver, atau pengunjung yang minta
   // "kurangi gerak": tampilkan semua tanpa animasi. Kalau tidak, elemen
   // ber-class .muncul tetap transparan selamanya.
@@ -630,13 +658,11 @@ function pasangAnimasi() {
     });
   }, { rootMargin: "0px 0px -5% 0px", threshold: 0.03 });
 
-  let urutan = 0;
-
-  // Amati satu elemen. Jeda berjenjang dihitung dari urutan kemunculan.
+  // Amati satu elemen. Tanpa jeda berjenjang (stagger) — pola itu
+  // terasa "AI-generated"; reveal seragam lebih tenang dan profesional.
   function amatiSatu(el) {
     if (el.nodeType !== 1 || !el.classList || !el.classList.contains("muncul")) return;
     if (el.classList.contains("tampil")) return;
-    el.style.setProperty("--jeda", (urutan++ % 8) * 35 + "ms");
     pengamat.observe(el);
   }
 
@@ -688,7 +714,7 @@ function muatApiYouTube() {
   };
   const s = document.createElement("script");
   s.src = "https://www.youtube.com/iframe_api";
-  s.onerror = () => reject(new Error("gagal memuat API YouTube"));
+  s.onerror = () => { apiYouTube = null; reject(new Error("gagal memuat API YouTube")); };
   document.head.appendChild(s);
   return apiYouTube;
 }
@@ -697,10 +723,12 @@ function muatApiYouTube() {
 // pengunjung menekan tombol Video, API-nya sudah siap — tidak perlu
 // menunggu unduhan 30KB dari YouTube dulu. Kegagalan diabaikan: tombol
 // Video tetap mencoba memuat sendiri saat diklik.
-if ("requestIdleCallback" in window) {
-  requestIdleCallback(() => { muatApiYouTube().catch(() => {}); }, { timeout: 3000 });
-} else {
-  setTimeout(() => { muatApiYouTube().catch(() => {}); }, 2000);
+if (document.body.dataset.halaman === "resep") {
+  if ("requestIdleCallback" in window) {
+    requestIdleCallback(() => { muatApiYouTube().catch(() => {}); }, { timeout: 3000 });
+  } else {
+    setTimeout(() => { muatApiYouTube().catch(() => {}); }, 2000);
+  }
 }
 
 // Bangun kerangka mode masak satu kali.
@@ -730,7 +758,7 @@ function siapkanMasak() {
     + '<p class="masak-teks"></p>'
     + '<div class="masak-tanda"></div>'
     // aria-live: pembaca layar mengumumkan sisa waktu tiap kali berubah.
-    + '<button class="masak-timer" type="button" hidden aria-live="polite"></button>'
+    + '<button class="masak-timer" type="button" hidden role="timer" aria-live="off"></button>'
     // Rincian tambahan, hanya tampil saat panel video TERTUTUP.
     // Saat video terbuka, layarnya jadi dua kolom dan ruangnya sempit,
     // jadi rincian ini disembunyikan supaya teks langkah tetap lega.
@@ -824,7 +852,7 @@ function bukaModeMasak(resep) {
     }, () => {
       masakState.timer = null;
       tombolTimer.classList.remove("jalan");
-      tombolTimer.textContent = "Waktunya habis";
+      tombolTimer.textContent = "Timer selesai";
       if (navigator.vibrate) navigator.vibrate(400);
     });
   }
@@ -849,6 +877,7 @@ function bukaModeMasak(resep) {
   // ---- Video: bangun pemutar untuk resep ini ----
   // Dipanggil sekali per sesi, saat panel video pertama kali dibuka.
   async function bangunPemutar() {
+    const sesi = masakState;
     if (!idVideoValid(resep.video)) {
       tampilkanTautanVideo("Resep ini belum punya video.");
       return;
@@ -876,7 +905,7 @@ function bukaModeMasak(resep) {
     // Sesi bisa sudah ditutup atau diganti resep lain saat API selesai
     // dimuat. Tanpa pemeriksaan ini, callback lama bisa menulis ke
     // pemutar yang sudah dimusnahkan.
-    if (masakState.resep !== resep) return;
+    if (masakState !== sesi) return;
     // Mode masak sudah ditutup sepenuhnya — jangan bangun pemutar di
     // wadah yang sudah dilepas dari halaman.
     if (!el.classList.contains("buka")) return;
@@ -945,7 +974,7 @@ function bukaModeMasak(resep) {
       tombol.addEventListener("click", () => lompatKe(detik));
       kotak.appendChild(tombol);
     });
-    wadah.appendChild(kotak);
+    (wadah.closest(".masak") ? wadah.parentElement : wadah).appendChild(kotak);
     sorotBabAktif(masakState.indeks);
   }
 

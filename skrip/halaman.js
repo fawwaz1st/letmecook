@@ -22,7 +22,7 @@ function halamanIndex() {
   });
 
   // Resep untuk tanggal ini, berganti tiap tanggal.
-  const hari = RESEP[new Date().getDate() % RESEP.length];
+  const hari = RESEP[Math.floor(Date.now() / 86400000) % RESEP.length];
   document.getElementById("hariIni").innerHTML =
     '<div class="sorot">'
     + '<img src="' + esc(hari.foto) + '" alt="" width="440" height="330" fetchpriority="high" decoding="async">'
@@ -54,7 +54,7 @@ function halamanIndex() {
 
   // Empat resep terpopuler.
   isiKartu(document.getElementById("popGrup"),
-    RESEP.toSorted((a, b) => b.dimasak - a.dimasak).slice(0, 4));
+    RESEP.toSorted((a, b) => b.rating - a.rating).slice(0, 4));
 
   // Empat resep yang videonya punya penanda bagian.
   isiKartu(document.getElementById("babGrup"),
@@ -182,14 +182,15 @@ function halamanKatalog() {
   // ---- Data terstruktur: daftar resep untuk mesin pencari ----
   // ItemList membuat Google paham ini halaman daftar, dan tiap butir
   // menunjuk ke alamat resepnya. Posisi harus berurutan mulai dari 1.
+  const daftarLd = saring();
   const ld = document.createElement("script");
   ld.type = "application/ld+json";
   ld.textContent = JSON.stringify({
     "@context": "https://schema.org",
     "@type": "ItemList",
     name: "Katalog resep masakan Indonesia",
-    numberOfItems: RESEP.length,
-    itemListElement: RESEP.map((r, i) => ({
+    numberOfItems: daftarLd.length,
+    itemListElement: daftarLd.map((r, i) => ({
       "@type": "ListItem",
       position: i + 1,
       url: "https://fawwaz1st.github.io/letmecook/resep.html?id=" + encodeURIComponent(r.id),
@@ -209,6 +210,7 @@ function halamanResep() {
   const area = document.getElementById("area");
 
   if (!r) {
+    const mr = document.createElement("meta"); mr.name = "robots"; mr.content = "noindex"; document.head.appendChild(mr);
     area.innerHTML = '<div class="panel"><div class="kosong">'
       + '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-search"/></svg>'
       + "<h1>Resep itu tidak ada</h1>"
@@ -221,7 +223,12 @@ function halamanResep() {
 
   document.title = r.nama + " — LetMeCook";
   const metaDesk = document.querySelector('meta[name="description"]');
-  if (metaDesk) metaDesk.setAttribute("content", r.deskripsi.slice(0, 150));
+  if (metaDesk) {
+    const potong = r.deskripsi.length > 150 ? r.deskripsi.slice(0, 150).replace(/\s+\S*$/, "") : r.deskripsi;
+    metaDesk.setAttribute("content", potong);
+  }
+  const ogUrl = document.querySelector('meta[property="og:url"]');
+  if (ogUrl) ogUrl.setAttribute("content", "https://fawwaz1st.github.io/letmecook/resep.html?id=" + encodeURIComponent(r.id));
   const ogJudul = document.querySelector('meta[property="og:title"]');
   if (ogJudul) ogJudul.setAttribute("content", r.nama + " — LetMeCook");
   const ogGambar = document.querySelector('meta[property="og:image"]');
@@ -243,14 +250,13 @@ function halamanResep() {
 
   area.innerHTML =
     '<article class="panel"><div class="kepala-resep">'
-    + '<img src="' + esc(r.foto) + '" alt="' + esc(r.nama) + ", " + esc(r.daerah) + '" width="900" height="562" fetchpriority="high" decoding="async">'
+    + '<img src="' + esc(r.foto) + '" alt="' + esc(r.nama) + ", " + esc(r.daerah) + '"' + srcsetFoto(r.foto, ["500px", "1280px"]) + ' sizes="(min-width:760px) 50vw, 100vw" width="900" height="562" fetchpriority="high" decoding="async">'
     + '<div class="teks">'
     + '<div class="tag-baris">' + label.join("") + "</div>"
     + "<h1>" + esc(r.nama) + "</h1>"
     + '<p class="sub">'
     + '<span><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-pin"/></svg>' + esc(r.daerah) + "</span>"
-    + '<span class="bintang"><svg class="ikon padat" aria-hidden="true"><use href="aset/icons.svg#i-star"/></svg>' + r.rating + " dari 5</span>"
-    + "<span>dimasak " + r.dimasak.toLocaleString("id-ID") + " kali</span>"
+    + ""
     + "</p>"
     + '<p class="lega">' + esc(r.deskripsi) + "</p>"
 
@@ -320,6 +326,7 @@ function halamanResep() {
 
   document.getElementById("bShare").addEventListener("click", async (e) => {
     const tombol = e.currentTarget;
+    const awal = tombol.innerHTML;
     const teksAwal = tombol.textContent.trim();
     try {
       if (navigator.share) {
@@ -331,7 +338,7 @@ function halamanResep() {
     } catch {
       tombol.textContent = "Tidak bisa menyalin";
     }
-    setTimeout(() => { tombol.textContent = teksAwal; }, 2000);
+    setTimeout(() => { tombol.innerHTML = awal; }, 2000);
   });
 
   // ---- Bahan dan penyesuaian porsi ----
@@ -540,13 +547,14 @@ function halamanResep() {
     "@type": "Recipe",
     name: r.nama,
     description: r.deskripsi,
-    image: [r.foto],
+    image: [r.foto.replace(/\/500px-/, "/1280px-")],
+    url: "https://fawwaz1st.github.io/letmecook/resep.html?id=" + encodeURIComponent(r.id),
     author: { "@type": "Organization", name: "LetMeCook" },
     recipeCuisine: "Indonesia",
     recipeCategory: r.kategori,
     keywords: [r.nama, "resep " + r.nama, "masakan Indonesia"].join(", "),
     totalTime: "PT" + r.waktuTotal + "M",
-    prepTime: "PT" + r.waktuAktif + "M",
+    cookTime: "PT" + r.waktuAktif + "M",
     recipeYield: r.porsi + " porsi",
     recipeIngredient: r.bahan.map((b) => b.jumlah + " " + b.satuan + " " + b.nama),
     recipeInstructions: r.langkah.map((t) => ({ "@type": "HowToStep", text: t })),
@@ -605,15 +613,28 @@ function halamanMealplan() {
     return isi && typeof isi === "object" ? isi : {};
   }
 
-  // Jalankan fn(resep, hari, kode) untuk tiap slot yang sudah terisi.
+  // Jalankan fn(resep, hari, kode, porsi) untuk tiap slot yang sudah terisi.
   // Dipakai gambarRencana dan susunBelanja — dulu keduanya menyalin
   // loop hari x slot yang sama, jadi perbaikan harus ditulis dua kali.
+  //
+  // Slot boleh berisi dua bentuk: id saja (data lama) atau {id, porsi}
+  // (data baru). Data lama tetap terbaca dan memakai porsi bawaan resep.
+  function bacaSlot(nilai) {
+    if (!nilai) return null;
+    if (typeof nilai === "string") return { id: nilai, porsi: null };
+    if (typeof nilai === "object" && typeof nilai.id === "string") {
+      const p = Number(nilai.porsi);
+      return { id: nilai.id, porsi: Number.isFinite(p) && p > 0 ? p : null };
+    }
+    return null;
+  }
+
   function tiapSlot(rencana, fn) {
     HARI.forEach((hari) => {
       SLOT.forEach(([kode]) => {
-        const id = rencana[hari] && rencana[hari][kode];
-        const resep = id ? cariResep(id) : null;
-        if (resep) fn(resep, hari, kode);
+        const slot = bacaSlot(rencana[hari] && rencana[hari][kode]);
+        const resep = slot ? cariResep(slot.id) : null;
+        if (resep) fn(resep, hari, kode, slot.porsi || resep.porsi);
       });
     });
   }
@@ -711,12 +732,24 @@ function halamanMealplan() {
   let slotSasaran = null;
   let fokusPemilih = null;
 
+  // Kategori yang paling masuk akal untuk tiap waktu makan. Dipakai untuk
+  // menaruh saran yang cocok di urutan atas, bukan menyembunyikan yang lain.
+  const KAT_SLOT = { pagi: "sarapan", siang: "siang", malam: "malam" };
+
   function gambarPilihan() {
     const kata = cariPilih.value.trim().toLowerCase();
+    const katCocok = slotSasaran ? KAT_SLOT[slotSasaran.kode] : null;
     const hasil = RESEP.filter((r) => {
       if (!kata) return true;
       return (r.nama + " " + r.daerah + " " + r.kategori).toLowerCase().includes(kata);
-    }).slice(0, 40);
+    })
+      // Dulu dipotong 40 dari 67: 27 resep tidak pernah bisa dipilih sama
+      // sekali. Sekarang semua tampil, yang sesuai waktu makan di atas.
+      .toSorted((a, b) => {
+        const aCocok = katCocok && a.kategori === katCocok ? 0 : 1;
+        const bCocok = katCocok && b.kategori === katCocok ? 0 : 1;
+        return aCocok - bCocok || a.waktuTotal - b.waktuTotal || a.nama.localeCompare(b.nama, "id");
+      });
 
     // Tiap pilihan menampilkan foto, nama, dan keterangan singkat.
     // Foto membuat pemilihan lebih cepat: orang mengenali masakan dari
@@ -739,7 +772,10 @@ function halamanMealplan() {
         if (!slotSasaran) return;
         const baru = ambilRencana();
         if (!baru[slotSasaran.hari]) baru[slotSasaran.hari] = {};
-        baru[slotSasaran.hari][slotSasaran.kode] = btn.dataset.id;
+        // Simpan porsi sekalian: daftar belanja harus ikut skala rumah,
+        // bukan skala bawaan resep.
+        const dipilih = cariResep(btn.dataset.id);
+        baru[slotSasaran.hari][slotSasaran.kode] = { id: btn.dataset.id, porsi: dipilih ? dipilih.porsi : null };
         tutupPemilih();
         simpanRencana(baru);
       });
@@ -809,13 +845,17 @@ function halamanMealplan() {
     const rencana = ambilRencana();
     const gabung = {};
 
-    tiapSlot(rencana, (resep) => {
+    tiapSlot(rencana, (resep, hari, kode, porsi) => {
+      // Jumlah bahan mengikuti porsi yang dipilih di slot, bukan porsi
+      // bawaan resep. Tanpa ini, rumah berdua tetap dibelanjakan
+      // bahan untuk 4 porsi.
+      const faktor = porsi / resep.porsi;
       resep.bahan.forEach((b) => {
         // Spasi ganda di nama tidak boleh memecah kunci: "bawang  merah"
         // dan "bawang merah" harus tetap dianggap bahan yang sama.
         const kunci = b.nama.toLowerCase().replace(/\s+/g, " ").trim() + "|" + b.satuan.toLowerCase().trim();
         if (!gabung[kunci]) gabung[kunci] = { nama: b.nama, satuan: b.satuan, jumlah: 0, dari: [] };
-        gabung[kunci].jumlah += b.jumlah;
+        gabung[kunci].jumlah += b.jumlah * faktor;
         if (!gabung[kunci].dari.includes(resep.nama)) gabung[kunci].dari.push(resep.nama);
       });
     });
@@ -886,15 +926,17 @@ function halamanMealplan() {
         g.nama + "|" + g.satuan, "untuk " + g.dari.join(", "), centang));
     });
 
-    tambahan.forEach((t, i) => {
-      const li = barisBahan(t.teks, "manual|" + i, null, centang);
+    tambahan.forEach((t) => {
+      if (!t.id) t.id = "m" + Date.now().toString(36) + Math.random().toString(36).slice(2);
+      const li = barisBahan(t.teks, "manual|" + t.id, null, centang);
       const hapus = document.createElement("button");
       hapus.type = "button";
       hapus.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-x"/></svg>';
       hapus.setAttribute("aria-label", "Hapus " + t.teks);
       hapus.addEventListener("click", () => {
         const baru = ambilTambahan();
-        baru.splice(i, 1);
+        const idx = baru.findIndex((x) => x.id === t.id);
+        if (idx >= 0) baru.splice(idx, 1);
         tulis(KEY.gmanual, baru);
         gambarBelanja();
       });
@@ -937,8 +979,15 @@ function halamanFavorit() {
       ? daftar.length + " resep tersimpan di browser ini"
       : "Belum ada resep tersimpan";
 
+    const fokusSebelum = document.activeElement;
+    const kartuFokus = fokusSebelum && fokusSebelum.closest ? fokusSebelum.closest(".kartu") : null;
     // Di halaman ini, melepas simpan berarti kartunya harus hilang.
     isiKartu(document.getElementById("grup"), daftar, { setelahSimpan: gambar });
+    const grupBaru = document.getElementById("grup");
+    if (kartuFokus && grupBaru && !grupBaru.contains(document.activeElement)) {
+      const tautan = grupBaru.querySelector(".kartu-tautan");
+      if (tautan) tautan.focus();
+    }
   }
 
   gambar();
