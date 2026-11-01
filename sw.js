@@ -144,7 +144,7 @@ async function simpanLaluSegarkan(req, nama, maks = 0) {
   const cache = await caches.open(nama);
   const dariCache = await cache.match(req);
   const dariJaringan = fetch(req).then((res) => {
-    if (res && res.ok || res.type === "opaque") {
+    if (res && (res.ok || res.type === "opaque")) {
       cache.delete(req.url).then(() => cache.put(req.url, res.clone())).then(() => potong(cache, maks)).catch(() => {});
     }
     return res;
