@@ -347,8 +347,27 @@ const IKON_TEKNIK = {
   simpan: "i-basket", campur: "i-utensils",
 };
 
+// Satu kalimat uraian per teknik, dipakai sebagai tooltip badge.
+const TEKNIK_URAI = {
+  tumis: "Menumis: menumis bumbu dengan minyak panas sampai harum dan layu.",
+  masak: "Masak: merebus atau mengaduk bahan dalam kuah sampai matang.",
+  goreng: "Menggoreng: memasak bahan dalam minyak panas sampai kecokelatan.",
+  rebus: "Merebus: memasak bahan dalam air mendidih sampai empuk atau matang.",
+  kukus: "Mengukus: memasak dengan uap air panas, tanpa minyak.",
+  bakar: "Membakar: memasak di atas bara api sampai berbau panggang.",
+  panggang: "Memanggang: memasak di oven atau di atas bara dengan panas kering.",
+  sangrai: "Menyangrai: menumis tanpa minyak sampai kering dan harum.",
+  ungkep: "Mengungkep: merebus bumbu dan bahan dalam santan sampai meresap.",
+  haluskan: "Menghaluskan: blender atau ulek bumbu sampai lembut.",
+  campur: "Mencampur: mengaduk semua bahan sampai rata.",
+  sajikan: "Menyajikan: menata masakan ke piring dan menambah pelengkap.",
+  tunggu: "Menunggu: membiarkan bahan beberapa saat (diamkan atau simpan).",
+  simpan: "Menyimpan: memasukkan sisa masakan ke wadah dan kulkas.",
+};
+
 function badgeTeknikHTML(urai) {
   if (!urai.teknik) return "";
+  const uraian = TEKNIK_URAI[urai.teknik];
 
   let meter = "";
   if (urai.api) {
@@ -360,7 +379,8 @@ function badgeTeknikHTML(urai) {
     }
   }
 
-  return '<span class="badge" data-teknik="' + esc(urai.teknik) + '">' +
+  return '<span class="badge" data-teknik="' + esc(urai.teknik) + '"' +
+    (uraian ? ' title="' + esc(uraian) + '"' : "") + '>' +
     '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#' + (IKON_TEKNIK[urai.teknik] || "i-cooking-pot") + '"/></svg>' +
     urai.teknik + (urai.api ? " · api " + urai.api : "") + "</span>" + meter;
 }
@@ -829,7 +849,7 @@ function lepasPendengarMasak() {
   document.removeEventListener("visibilitychange", p.layar);
 }
 
-function bukaModeMasak(resep) {
+function bukaModeMasak(resep, indeksAwal) {
   const el = siapkanMasak();
 
   // Bersihkan sisa sesi sebelumnya dulu.
@@ -841,7 +861,7 @@ function bukaModeMasak(resep) {
   masakState = {
     resep, langkah,
     bab: daftarBab(resep, langkah),
-    indeks: 0,
+    indeks: indeksAwal || 0,
     timer: null,
     pemutar: null,
     wakeLock: null,
@@ -871,6 +891,46 @@ function bukaModeMasak(resep) {
     }
   }
 
+  // Bunyi saat timer habis: tiga bip pendek. AudioContext dibuat saat
+  // tombol ditekan (butuh isyarat pengguna), lalu dipakai ulang.
+  let audioTimer = null;
+  function bunyiTimer() {
+    try {
+      const Ctx = window.AudioContext || window.webkitAudioContext;
+      if (!Ctx) return;
+      audioTimer = audioTimer || new Ctx();
+      if (audioTimer.state === "suspended") audioTimer.resume();
+      const bunyi = (t) => {
+        const osil = audioTimer.createOscillator();
+        const gain = audioTimer.createGain();
+        osil.type = "sine";
+        osil.frequency.value = 880;
+        gain.gain.setValueAtTime(0.0001, audioTimer.currentTime + t);
+        gain.gain.exponentialRampToValueAtTime(0.4, audioTimer.currentTime + t + 0.02);
+        gain.gain.exponentialRampToValueAtTime(0.0001, audioTimer.currentTime + t + 0.18);
+        osil.connect(gain).connect(audioTimer.destination);
+        osil.start(audioTimer.currentTime + t);
+        osil.stop(audioTimer.currentTime + t + 0.2);
+      };
+      bunyi(0); bunyi(0.25); bunyi(0.5);
+    } catch { /* audio diblokir, abaikan */ }
+  }
+
+  // Notifikasi saat tab di latar belakang (dipasang ke service worker).
+  function beritahuTimerSelesai(namaResep) {
+    if (!("serviceWorker" in navigator)) return;
+    navigator.serviceWorker.ready.then((reg) => {
+      if (reg.active) {
+        reg.active.postMessage({
+          jenis: "notifikasi-timer",
+          judul: "Waktunya habis — " + namaResep,
+          isi: "Timer di mode masak sudah selesai.",
+          url: "resep.html?id=" + encodeURIComponent(masakState.resep.id),
+        });
+      }
+    }).catch(() => {});
+  }
+
   function jalankanTimer(detik) {
     hentikanTimer();
     tombolTimer.classList.add("jalan");
@@ -881,6 +941,8 @@ function bukaModeMasak(resep) {
       tombolTimer.classList.remove("jalan");
       tombolTimer.textContent = "Timer selesai";
       if (navigator.vibrate) navigator.vibrate(400);
+      bunyiTimer();
+      if (document.hidden) beritahuTimerSelesai(masakState.resep.nama);
     });
   }
 
@@ -1238,6 +1300,7 @@ function bukaModeMasak(resep) {
       masakState.indeks--;
       gambar();
       pindahVideo();
+      simpanIndeks();
     }
   }
 
@@ -1246,9 +1309,23 @@ function bukaModeMasak(resep) {
       masakState.indeks++;
       gambar();
       pindahVideo();
+      simpanIndeks();
     } else {
       tutup();
     }
+  }
+
+  // Catat langkah terakhir supaya pengguna bisa lanjutkan lain kali.
+  function simpanIndeks() {
+    try {
+      const semua = JSON.parse(localStorage.getItem("letmecook:prog") || "{}");
+      semua[masakState.resep.id] = semua[masakState.resep.id] || { bahan: [], langkah: [] };
+      // Tandai langkah yang sudah dilewati supaya tombol "Lanjutkan" tahu posisi.
+      const langkah = semua[masakState.resep.id].langkah || [];
+      for (let i = 0; i < masakState.indeks; i++) langkah[i] = true;
+      semua[masakState.resep.id].langkah = langkah;
+      localStorage.setItem("letmecook:prog", JSON.stringify(semua));
+    } catch { /* abaikan */ }
   }
 
   // ---- Buka dan tutup ----
@@ -1540,4 +1617,44 @@ function siapkanHalaman() {
   document.querySelectorAll("select").forEach(pasangDropdown);
   document.querySelectorAll(".cari input").forEach(pasangSaranPencarian);
   pasangAnimasi();
+  pasangPwa();
+}
+
+// Penanda offline + tombol pasang aplikasi (PWA).
+let promoPasang = null;
+function pasangPwa() {
+  // Banner offline: muncul saat koneksi putus, hilang saat pulih.
+  const bikinBanner = () => {
+    if (document.getElementById("bannerOffline")) return;
+    const b = document.createElement("div");
+    b.id = "bannerOffline";
+    b.className = "banner-offline";
+    b.setAttribute("role", "status");
+    b.textContent = "Kamu sedang offline. Resep tetap terbuka; video butuh internet.";
+    document.body.prepend(b);
+  };
+  const hilangkanBanner = () => {
+    const b = document.getElementById("bannerOffline");
+    if (b) b.remove();
+  };
+  window.addEventListener("offline", bikinBanner);
+  window.addEventListener("online", hilangkanBanner);
+  if (!navigator.onLine) bikinBanner();
+
+  // Tombol pasang: hanya muncul kalau browser menawarkan pemasangan.
+  window.addEventListener("beforeinstallprompt", (e) => {
+    e.preventDefault();
+    promoPasang = e;
+    const b = document.createElement("button");
+    b.id = "tombolPasang";
+    b.className = "tb tb-isi banner-pasang";
+    b.type = "button";
+    b.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-download"/></svg>Pasang ke layar utama';
+    b.addEventListener("click", () => {
+      if (!promoPasang) return;
+      promoPasang.prompt();
+      promoPasang.userChoice.then(() => { promoPasang = null; b.remove(); });
+    });
+    document.body.prepend(b);
+  });
 }

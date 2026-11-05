@@ -529,6 +529,7 @@ p:last-child { margin-bottom: 0; }
   color: var(--redup);
   flex-wrap: wrap;
 }
+.baris-info-aksi { display: flex; gap: var(--s2); flex-wrap: wrap; }
 .baris-info button {
   margin-left: auto;
   border: 1px solid var(--garis);
@@ -754,6 +755,27 @@ p:last-child { margin-bottom: 0; }
 }
 .bahan li.selesai span { text-decoration: line-through; color: var(--redup); }
 .pengganti { display: block; font-size: 0.78rem; font-style: italic; color: var(--redup); margin-top: 2px; line-height: 1.4; }
+
+/* Banner offline & tombol pasang (PWA). */
+.banner-offline {
+  position: sticky;
+  top: var(--kepala);
+  z-index: var(--z-atas);
+  background: var(--aksen-muda);
+  color: var(--tinta);
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: var(--s2) var(--s4);
+  text-align: center;
+  border-bottom: 1px solid var(--garis);
+}
+.banner-pasang {
+  position: fixed;
+  right: var(--s4);
+  bottom: var(--s4);
+  z-index: var(--z-atas);
+  box-shadow: var(--bayang-naik);
+}
 
 .baris-porsi {
   display: flex;

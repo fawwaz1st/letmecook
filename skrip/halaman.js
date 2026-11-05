@@ -268,6 +268,13 @@ function halamanResep() {
     + "</dl>"
 
     + '<div class="aksi-resep">'
+    + (() => {
+        const selesai = prog.langkah.filter(Boolean).length;
+        if (selesai > 0) {
+          return '<button class="tb" id="bLanjut" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-play"/></svg>Lanjutkan dari langkah ' + (selesai + 1) + '</button>';
+        }
+        return "";
+      })()
     + '<button class="tb tb-isi" id="bMasak" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-play"/></svg>Mode masak</button>'
     + '<button class="tb" id="bFav" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-heart"/></svg><span>' + (sudahFav(r.id) ? "Tersimpan" : "Simpan") + "</span></button>"
     + '<button class="tb tb-halus" id="bShare" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-share"/></svg>Salin tautan</button>'
@@ -540,6 +547,11 @@ function halamanResep() {
 
   // ---- Mode masak: langkah besar + video ----
   document.getElementById("bMasak").addEventListener("click", () => bukaModeMasak(r));
+  const bLanjut = document.getElementById("bLanjut");
+  if (bLanjut) bLanjut.addEventListener("click", () => {
+    const selesai = prog.langkah.filter(Boolean).length;
+    bukaModeMasak(r, selesai);
+  });
 
   // ---- Data terstruktur untuk mesin pencari ----
   // Aturan yang dipatuhi (panduan Google 2026):
@@ -619,6 +631,32 @@ function halamanMealplan() {
   function ambilRencana() {
     const isi = baca(KEY.meal, {});
     return isi && typeof isi === "object" ? isi : {};
+  }
+
+  // Susun 21 slot secara deterministik dari katalog: pagi utamakan sarapan,
+  // siang/malam utamakan kategori sejenis, hindari id dobel, dan sebar level
+  // mudah lebih dulu supaya minggu pertama tidak menakutkan.
+  function susunRencana() {
+    const KAT_SLOT = { pagi: "sarapan", siang: "siang", malam: "malam" };
+    const dipakai = new Set();
+    const hasil = {};
+    HARI.forEach((hari) => {
+      hasil[hari] = {};
+      SLOT.forEach(([kode]) => {
+        const kat = KAT_SLOT[kode];
+        const kandidat = RESEP.filter((r) => !dipakai.has(r.id));
+        const cocok = kandidat.filter((r) => r.kategori === kat);
+        const sisa = cocok.length ? cocok : kandidat;
+        // Urutkan: yang paling cepat dulu, supaya minggu ini bisa langsung dicoba.
+        const urut = sisa.toSorted((a, b) => a.waktuTotal - b.waktuTotal || a.nama.localeCompare(b.nama, "id"));
+        const pilih = urut[0];
+        if (pilih) {
+          dipakai.add(pilih.id);
+          hasil[hari][kode] = { id: pilih.id, porsi: pilih.porsi };
+        }
+      });
+    });
+    return hasil;
   }
 
   // Jalankan fn(resep, hari, kode, porsi) untuk tiap slot yang sudah terisi.
@@ -970,6 +1008,15 @@ function halamanMealplan() {
 
   gambarRencana();
   gambarBelanja();
+  const bSusun = document.getElementById("bSusun");
+  if (bSusun) bSusun.addEventListener("click", () => {
+    simpanRencana(susunRencana());
+  });
+  const bKosongkan = document.getElementById("bKosongkan");
+  if (bKosongkan) bKosongkan.addEventListener("click", () => {
+    simpanRencana({});
+  });
+
   siapkanHalaman();
 }
 
