@@ -704,8 +704,9 @@ function halamanMealplan() {
       kotak.innerHTML = '<h3><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-calendar"/></svg>' + hari + "</h3>";
 
       SLOT.forEach(([kode, label]) => {
-        const id = rencana[hari] && rencana[hari][kode];
-        const resep = id ? cariResep(id) : null;
+        // Slot bisa berisi id saja (data lama) atau {id, porsi} (data baru).
+        const slot = bacaSlot(rencana[hari] && rencana[hari][kode]);
+        const resep = slot ? cariResep(slot.id) : null;
         if (resep) terisi++;
 
         const baris = document.createElement("div");
