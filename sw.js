@@ -13,7 +13,7 @@
 //
 // PENTING: naikkan VERSI setiap kali berkas situs berubah, supaya tab
 // lama mengunduh berkas yang baru.
-const VERSI = "letmecook-v4";
+const VERSI = "letmecook-v5";
 const GAMBAR = "letmecook-gambar";
 const GAMBAR_MAKS = 90;
 const INTI = [
@@ -119,7 +119,9 @@ self.addEventListener("fetch", (e) => {
 function jaringanBatas(req, ms) {
   const kendali = new AbortController();
   const t = setTimeout(() => kendali.abort(), ms);
-  return fetch(req, { signal: kendali.signal }).finally(() => clearTimeout(t));
+  // cache:"reload": lewati cache HTTP (GitHub Pages max-age 600) supaya
+  // setelah deploy, skrip/gaya lama tidak tersaji sampai 10 menit.
+  return fetch(req, { signal: kendali.signal, cache: "reload" }).finally(() => clearTimeout(t));
 }
 
 async function jaringanDulu(req) {
