@@ -146,6 +146,7 @@ var RESEP = [
       { nama: "lengkuas geprek", jumlah: 20, satuan: "gram", bagi: 1 },
       { nama: "garam", jumlah: 2, satuan: "sdt", bagi: 1 },
       { nama: "gula merah", jumlah: 10, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 3, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Wajan besar", "Blender", "Pisau", "Talenan", "Sutil kayu", "Tutup panci"],
     langkah: [
@@ -180,6 +181,8 @@ var RESEP = [
       { nama: "gula pasir", jumlah: 2, satuan: "sdt", bagi: 1 },
       { nama: "soun rendam", jumlah: 100, satuan: "gram", bagi: 1 },
       { nama: "jeruk nipis", jumlah: 2, satuan: "buah", bagi: 0 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "kaldu ayam", jumlah: 1, satuan: "bks", bagi: 1 },
     ],
     alat: ["Panci", "Wajan", "Ulekan", "Pisau", "Talenan", "Saringan", "Mangkuk"],
     langkah: [
@@ -248,6 +251,7 @@ var RESEP = [
       { nama: "bawang putih", jumlah: 20, satuan: "gram", bagi: 1 },
       { nama: "garam", jumlah: 2, satuan: "sdt", bagi: 1 },
       { nama: "gula pasir", jumlah: 2, satuan: "sdt", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Panci", "Blender", "Wajan", "Pisau", "Talenan", "Saringan", "Sutil"],
     langkah: [
@@ -451,6 +455,10 @@ var RESEP = [
       { nama: "daun jeruk", jumlah: 7, satuan: "lembar", bagi: 0 },
       { nama: "pala bubuk", jumlah: 5, satuan: "gram", bagi: 1 },
       { nama: "soun kering", jumlah: 100, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "kaldu sapi", jumlah: 500, satuan: "ml", bagi: 1 },
+      { nama: "bawang goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "seledri", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Panci besar", "Wajan", "Blender", "Pisau", "Talenan", "Saringan"],
     langkah: [
@@ -525,6 +533,9 @@ var RESEP = [
       { nama: "jahe", jumlah: 20, satuan: "gram", bagi: 1 },
       { nama: "serai", jumlah: 2, satuan: "batang", bagi: 0 },
       { nama: "daun jeruk", jumlah: 5, satuan: "lembar", bagi: 0 },
+      { nama: "garam", jumlah: 2, satuan: "sdt", bagi: 1 },
+      { nama: "jeruk nipis", jumlah: 2, satuan: "buah", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Wajan besar", "Blender", "Pisau", "Talenan", "Sendok kayu", "Mangkuk"],
     langkah: [
@@ -562,6 +573,7 @@ var RESEP = [
       { nama: "garam", jumlah: 10, satuan: "gram", bagi: 1 },
       { nama: "kaldu jamur", jumlah: 5, satuan: "gram", bagi: 1 },
       { nama: "minyak goreng", jumlah: 500, satuan: "ml", bagi: 1 },
+      { nama: "tomat", jumlah: 1, satuan: "buah", bagi: 1 },
     ],
     alat: ["Panci ungkep", "Wajan", "Cobek", "Pisau", "Talenan", "Penjepit"],
     langkah: [
@@ -600,6 +612,8 @@ var RESEP = [
       { nama: "kol", jumlah: 100, satuan: "gram", bagi: 1 },
       { nama: "tauge", jumlah: 50, satuan: "gram", bagi: 1 },
       { nama: "kaldu sapi", jumlah: 800, satuan: "ml", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "tomat", jumlah: 1, satuan: "buah", bagi: 1 },
     ],
     alat: ["Wajan besar", "Blender", "Pisau", "Talenan", "Sutil", "Mangkuk saji"],
     langkah: [
@@ -637,6 +651,7 @@ var RESEP = [
       { nama: "serai", jumlah: 2, satuan: "batang", bagi: 0 },
       { nama: "kelapa gongseng", jumlah: 50, satuan: "gram", bagi: 1 },
       { nama: "garam", jumlah: 15, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Wajan besar", "Blender", "Pisau", "Talenan", "Sendok kayu", "Mangkuk"],
     langkah: [
@@ -674,6 +689,7 @@ var RESEP = [
       { nama: "serai", jumlah: 3, satuan: "batang", bagi: 0 },
       { nama: "air", jumlah: 700, satuan: "ml", bagi: 1 },
       { nama: "asam gelugur", jumlah: 20, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Kuali cekung", "Blender", "Pisau", "Talenan", "Tutup panci", "Sutil"],
     langkah: [
@@ -711,6 +727,8 @@ var RESEP = [
       { nama: "daun kunyit", jumlah: 1, satuan: "lembar", bagi: 0 },
       { nama: "air", jumlah: 800, satuan: "ml", bagi: 1 },
       { nama: "garam", jumlah: 10, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "jeruk nipis", jumlah: 2, satuan: "buah", bagi: 1 },
     ],
     alat: ["Panci", "Blender", "Pisau", "Talenan", "Sendok kayu", "Mangkuk"],
     langkah: [
@@ -787,6 +805,7 @@ var RESEP = [
       { nama: "air asam jawa", jumlah: 20, satuan: "ml", bagi: 1 },
       { nama: "kangkung rebus", jumlah: 200, satuan: "gram", bagi: 1 },
       { nama: "tauge rebus", jumlah: 200, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Wajan", "Ulekan atau blender", "Panci rebus", "Saringan", "Pisau", "Cobek"],
     langkah: [
@@ -862,6 +881,7 @@ var RESEP = [
       { nama: "air kaldu tulang", jumlah: 2000, satuan: "ml", bagi: 1 },
       { nama: "mi kuning rebus", jumlah: 100, satuan: "gram", bagi: 1 },
       { nama: "pangsit rebus", jumlah: 100, satuan: "gram", bagi: 1 },
+      { nama: "seledri", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Chopper", "Panci besar", "Mangkok es", "Saringan", "Pisau", "Sendok"],
     langkah: [
@@ -899,6 +919,11 @@ var RESEP = [
       { nama: "kayu manis", jumlah: 2, satuan: "cm", bagi: 0 },
       { nama: "garam", jumlah: 15, satuan: "gram", bagi: 1 },
       { nama: "soun seduh", jumlah: 100, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "kaldu ayam", jumlah: 500, satuan: "ml", bagi: 1 },
+      { nama: "telur rebus", jumlah: 2, satuan: "butir", bagi: 1 },
+      { nama: "bawang goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "telur rebus", jumlah: 2, satuan: "butir", bagi: 1 },
     ],
     alat: ["Panci besar", "Wajan", "Ulekan", "Saringan", "Pisau", "Kain rempah"],
     langkah: [
@@ -936,6 +961,7 @@ var RESEP = [
       { nama: "garam", jumlah: 15, satuan: "gram", bagi: 1 },
       { nama: "air asam jawa", jumlah: 10, satuan: "ml", bagi: 1 },
       { nama: "serai memarkan", jumlah: 2, satuan: "batang", bagi: 0 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Wajan", "Panci", "Blender bumbu", "Panggangan", "Pisau", "Sutil"],
     langkah: [
@@ -1046,6 +1072,9 @@ var RESEP = [
       { nama: "kemiri sangrai", jumlah: 10, satuan: "gram", bagi: 1 },
       { nama: "ketumbar sangrai", jumlah: 5, satuan: "gram", bagi: 1 },
       { nama: "garam", jumlah: 10, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "bawang goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "daun bawang", jumlah: 2, satuan: "batang", bagi: 1 },
     ],
     alat: ["Panci besar", "Wajan", "Blender", "Pisau", "Talenan", "Saringan"],
     langkah: [
@@ -1083,6 +1112,7 @@ var RESEP = [
       { nama: "gula merah", jumlah: 10, satuan: "gram", bagi: 1 },
       { nama: "garam", jumlah: 15, satuan: "gram", bagi: 1 },
       { nama: "kecap manis", jumlah: 30, satuan: "ml", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Panci presto", "Wajan", "Blender", "Panggangan arang", "Kuas oles", "Pisau"],
     langkah: [
@@ -1120,6 +1150,8 @@ var RESEP = [
       { nama: "jintan sangrai", jumlah: 5, satuan: "gram", bagi: 1 },
       { nama: "garam", jumlah: 10, satuan: "gram", bagi: 1 },
       { nama: "telur ayam mentah", jumlah: 1, satuan: "butir", bagi: 0 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "kaldu sapi", jumlah: 500, satuan: "ml", bagi: 1 },
     ],
     alat: ["Panci besar", "Wajan", "Blender", "Ulekan", "Pisau", "Mangkuk saji"],
     langkah: [
@@ -1157,6 +1189,7 @@ var RESEP = [
       { nama: "garam", jumlah: 10, satuan: "gram", bagi: 1 },
       { nama: "bawang merah goreng", jumlah: 20, satuan: "gram", bagi: 1 },
       { nama: "kemangi", jumlah: 10, satuan: "gram", bagi: 1 },
+      { nama: "bawang goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Panci besar", "Pisau", "Talenan", "Sendok kayu", "Mangkuk", "Kompor"],
     langkah: [
@@ -1194,6 +1227,9 @@ var RESEP = [
       { nama: "serai", jumlah: 30, satuan: "gram", bagi: 1 },
       { nama: "daun kemangi", jumlah: 30, satuan: "gram", bagi: 1 },
       { nama: "garam", jumlah: 10, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "jeruk nipis", jumlah: 2, satuan: "buah", bagi: 1 },
+      { nama: "daun bawang", jumlah: 2, satuan: "batang", bagi: 1 },
     ],
     alat: ["Wajan dalam", "Blender", "Pisau", "Talenan", "Spatula", "Tutup wajan"],
     langkah: [
@@ -1343,6 +1379,10 @@ var RESEP = [
       { nama: "daun jeruk", jumlah: 6, satuan: "lembar", bagi: 0 },
       { nama: "tomat merah", jumlah: 2, satuan: "buah", bagi: 0 },
       { nama: "air", jumlah: 500, satuan: "ml", bagi: 1 },
+      { nama: "garam", jumlah: 2, satuan: "sdt", bagi: 1 },
+      { nama: "jeruk nipis", jumlah: 2, satuan: "buah", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "daun bawang", jumlah: 2, satuan: "batang", bagi: 1 },
     ],
     alat: ["Panci", "Wajan", "Pisau", "Talenan", "Sendok kayu", "Mangkuk"],
     langkah: [
@@ -1380,6 +1420,7 @@ var RESEP = [
       { nama: "gula pasir", jumlah: 10, satuan: "gram", bagi: 1 },
       { nama: "daun salam", jumlah: 3, satuan: "lembar", bagi: 0 },
       { nama: "air", jumlah: 500, satuan: "ml", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Wajan", "Pisau", "Talenan", "Cobek", "Mangkuk", "Spatula"],
     langkah: [
@@ -1417,6 +1458,8 @@ var RESEP = [
       { nama: "bawang merah", jumlah: 5, satuan: "butir", bagi: 0 },
       { nama: "cabai rawit", jumlah: 10, satuan: "buah", bagi: 0 },
       { nama: "garam", jumlah: 10, satuan: "gram", bagi: 1 },
+      { nama: "terasi", jumlah: 1, satuan: "sdt", bagi: 1 },
+      { nama: "kencur", jumlah: 1, satuan: "cm", bagi: 1 },
     ],
     alat: ["Kukusan", "Cobek", "Pisau", "Talenan", "Mangkuk besar", "Saringan"],
     langkah: [
@@ -1489,6 +1532,7 @@ var RESEP = [
       { nama: "daun kemangi", jumlah: 10, satuan: "gram", bagi: 1 },
       { nama: "jeruk limau", jumlah: 4, satuan: "buah", bagi: 0 },
       { nama: "minyak panas", jumlah: 50, satuan: "ml", bagi: 1 },
+      { nama: "garam", jumlah: 2, satuan: "sdt", bagi: 1 },
     ],
     alat: ["Panggangan", "Cobek", "Pisau", "Talenan", "Kuas oles", "Mangkuk"],
     langkah: [
@@ -1669,6 +1713,7 @@ var RESEP = [
       { nama: "kemiri", jumlah: 4, satuan: "butir", bagi: 0 },
       { nama: "andaliman", jumlah: 1, satuan: "sdt", bagi: 1 },
       { nama: "daun bawang", jumlah: 2, satuan: "batang", bagi: 0 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["panci", "wajan", "cobek atau blender", "sutil", "saringan", "pisau", "mangkuk"],
     langkah: [
@@ -1708,6 +1753,9 @@ var RESEP = [
       { nama: "serai", jumlah: 2, satuan: "batang", bagi: 0 },
       { nama: "daun kunyit", jumlah: 1, satuan: "lembar", bagi: 0 },
       { nama: "asam kandis", jumlah: 3, satuan: "buah", bagi: 0 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "daun salam", jumlah: 2, satuan: "lembar", bagi: 1 },
+      { nama: "daun salam", jumlah: 2, satuan: "lembar", bagi: 1 },
     ],
     alat: ["panci presto", "wajan", "blender atau cobek", "sutil kayu", "mangkuk", "pisau", "saringan"],
     langkah: [
@@ -1747,6 +1795,7 @@ var RESEP = [
       { nama: "kunyit", jumlah: 3, satuan: "cm", bagi: 0 },
       { nama: "asam jawa", jumlah: 1, satuan: "sdm", bagi: 1 },
       { nama: "serai", jumlah: 2, satuan: "batang", bagi: 0 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["wajan", "blender atau cobek", "sutil", "mangkuk", "pisau", "talenan", "sendok"],
     langkah: [
@@ -1786,6 +1835,13 @@ var RESEP = [
       { nama: "serai", jumlah: 2, satuan: "batang", bagi: 0 },
       { nama: "kecap manis", jumlah: 3, satuan: "sdm", bagi: 1 },
       { nama: "nanas", jumlah: 100, satuan: "gram", bagi: 1 },
+      { nama: "kaldu sapi", jumlah: 1500, satuan: "ml", bagi: 1 },
+      { nama: "terasi", jumlah: 1, satuan: "sdt", bagi: 1 },
+      { nama: "daun salam", jumlah: 2, satuan: "lembar", bagi: 1 },
+      { nama: "kemangi", jumlah: 1, satuan: "ikat", bagi: 1 },
+      { nama: "daun bawang", jumlah: 2, satuan: "batang", bagi: 1 },
+      { nama: "tomat", jumlah: 1, satuan: "buah", bagi: 1 },
+      { nama: "daun salam", jumlah: 2, satuan: "lembar", bagi: 1 },
     ],
     alat: ["panci presto", "wajan", "cobek", "sutil", "pisau", "talenan", "mangkuk"],
     langkah: [
@@ -1826,6 +1882,12 @@ var RESEP = [
       { nama: "kemiri sangrai", jumlah: 6, satuan: "butir", bagi: 0 },
       { nama: "kencur", jumlah: 2, satuan: "cm", bagi: 0 },
       { nama: "jahe", jumlah: 3, satuan: "cm", bagi: 0 },
+      { nama: "garam", jumlah: 2, satuan: "sdt", bagi: 1 },
+      { nama: "kunyit", jumlah: 3, satuan: "cm", bagi: 1 },
+      { nama: "serai", jumlah: 1, satuan: "batang", bagi: 1 },
+      { nama: "daun jeruk", jumlah: 2, satuan: "lembar", bagi: 1 },
+      { nama: "daun bawang", jumlah: 2, satuan: "batang", bagi: 1 },
+      { nama: "daun jeruk", jumlah: 2, satuan: "lembar", bagi: 1 },
     ],
     alat: ["kukusan", "wajan", "cobek atau blender", "sutil", "mangkuk", "pisau", "talenan"],
     langkah: [
@@ -1904,6 +1966,8 @@ var RESEP = [
       { nama: "bawang putih", jumlah: 4, satuan: "siung", bagi: 0 },
       { nama: "kecap manis", jumlah: 3, satuan: "sdm", bagi: 1 },
       { nama: "daun pisang", jumlah: 12, satuan: "lembar", bagi: 0 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "kaldu ayam", jumlah: 200, satuan: "ml", bagi: 1 },
     ],
     alat: ["Rice cooker", "Wajan 26 cm", "Panci kecil", "Sutil", "Pisau dan talenan", "Teflon pembakar", "Piring saji"],
     langkah: [
@@ -1944,6 +2008,12 @@ var RESEP = [
       { nama: "daun salam", jumlah: 3, satuan: "lembar", bagi: 0 },
       { nama: "gula merah", jumlah: 30, satuan: "gram", bagi: 1 },
       { nama: "kecap manis", jumlah: 3, satuan: "sdm", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "daun pisang", jumlah: 2, satuan: "lembar", bagi: 1 },
+      { nama: "telur", jumlah: 2, satuan: "butir", bagi: 1 },
+      { nama: "bawang goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "telur", jumlah: 2, satuan: "butir", bagi: 1 },
+      { nama: "daun pisang", jumlah: 2, satuan: "lembar", bagi: 1 },
     ],
     alat: ["Panci 3 liter", "Wajan", "Ulekan", "Sutil kayu", "Pisau dan talenan", "Sendok sayur", "Piring beralas daun pisang"],
     langkah: [
@@ -1983,6 +2053,8 @@ var RESEP = [
       { nama: "tauge", jumlah: 100, satuan: "gram", bagi: 1 },
       { nama: "kentang", jumlah: 200, satuan: "gram", bagi: 1 },
       { nama: "kerupuk udang", jumlah: 80, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 4, satuan: "sdm", bagi: 1 },
+      { nama: "garam", jumlah: 1, satuan: "sdt", bagi: 1 },
     ],
     alat: ["Wajan", "Cobek dan ulekan", "Sutil", "Pisau dan talenan", "Panci kecil", "Piring saji"],
     langkah: [
@@ -2022,6 +2094,8 @@ var RESEP = [
       { nama: "serai", jumlah: 2, satuan: "batang", bagi: 0 },
       { nama: "soun", jumlah: 100, satuan: "gram", bagi: 1 },
       { nama: "bawang goreng", jumlah: 40, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "kaldu sapi", jumlah: 2500, satuan: "ml", bagi: 1 },
     ],
     alat: ["Panci presto atau panci besar", "Wajan", "Ulekan atau blender", "Saringan", "Pisau dan talenan", "Mangkuk saji"],
     langkah: [
@@ -2100,6 +2174,9 @@ var RESEP = [
       { nama: "kunyit bakar", jumlah: 3, satuan: "cm", bagi: 0 },
       { nama: "cabai merah keriting", jumlah: 3, satuan: "buah", bagi: 0 },
       { nama: "kemangi", jumlah: 30, satuan: "gram", bagi: 1 },
+      { nama: "garam", jumlah: 2, satuan: "sdt", bagi: 1 },
+      { nama: "gula pasir", jumlah: 1, satuan: "sdt", bagi: 1 },
+      { nama: "cabai merah keriting", jumlah: 3, satuan: "buah", bagi: 1 },
     ],
     alat: ["Panci 3 liter", "Wajan", "Blender", "Saringan", "Sutil", "Mangkuk saji"],
     langkah: [
@@ -2139,6 +2216,7 @@ var RESEP = [
       { nama: "lengkuas", jumlah: 2, satuan: "cm", bagi: 0 },
       { nama: "serai", jumlah: 1, satuan: "batang", bagi: 0 },
       { nama: "kecap manis", jumlah: 3, satuan: "sdm", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Panci 3 liter", "Wajan", "Blender atau ulekan", "Saringan", "Sutil", "Mangkuk saji"],
     langkah: [
@@ -2178,6 +2256,7 @@ var RESEP = [
       { nama: "garam", jumlah: 2, satuan: "sdt", bagi: 1 },
       { nama: "gula pasir", jumlah: 1, satuan: "sdt", bagi: 1 },
       { nama: "bawang goreng", jumlah: 30, satuan: "gram", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Panci besar 6 liter", "Wajan untuk menumis bumbu", "Ulekan", "Sendok sayur berlubang", "Pisau dan talenan", "Mangkuk saji"],
     langkah: [
@@ -2217,6 +2296,8 @@ var RESEP = [
       { nama: "asam jawa", jumlah: 1, satuan: "sdm", bagi: 1 },
       { nama: "kemangi", jumlah: 30, satuan: "gram", bagi: 1 },
       { nama: "garam", jumlah: 1.5, satuan: "sdt", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 3, satuan: "sdm", bagi: 1 },
+      { nama: "cabai merah keriting", jumlah: 3, satuan: "buah", bagi: 1 },
     ],
     alat: ["Wajan 28 cm", "Ulekan", "Pisau dan talenan", "Spatula kayu", "Mangkuk saji", "Sendok sayur"],
     langkah: [
@@ -2293,6 +2374,7 @@ var RESEP = [
       { nama: "serbuk kayu atau tempurung kelapa", jumlah: 100, satuan: "gram", bagi: 1 },
       { nama: "arang", jumlah: 1000, satuan: "gram", bagi: 1 },
       { nama: "jeruk nipis", jumlah: 1, satuan: "buah", bagi: 0 },
+      { nama: "sambal lu'at", jumlah: 2, satuan: "sdm", bagi: 1 },
     ],
     alat: ["Wajan datar atau panggangan tertutup", "Aluminium foil", "Penjepit daging", "Pisau tajam", "Talenan", "Wadah marinasi", "Kuas"],
     langkah: [
@@ -2371,6 +2453,8 @@ var RESEP = [
       { nama: "lengkuas", jumlah: 2, satuan: "cm", bagi: 0 },
       { nama: "serai", jumlah: 2, satuan: "batang", bagi: 0 },
       { nama: "garam", jumlah: 1.5, satuan: "sdt", bagi: 1 },
+      { nama: "minyak goreng", jumlah: 2, satuan: "sdm", bagi: 1 },
+      { nama: "cabai merah keriting", jumlah: 3, satuan: "buah", bagi: 1 },
     ],
     alat: ["Panci 3 liter", "Wajan", "Ulekan", "Spatula kayu", "Pisau dan talenan", "Mangkuk saji"],
     langkah: [
@@ -2486,6 +2570,7 @@ var RESEP = [
       { nama: "kangkung", jumlah: 200, satuan: "gram", bagi: 1 },
       { nama: "kemangi", jumlah: 20, satuan: "gram", bagi: 1 },
       { nama: "jeruk nipis", jumlah: 2, satuan: "buah", bagi: 0 },
+      { nama: "timun", jumlah: 1, satuan: "buah", bagi: 1 },
     ],
     alat: ["panggangan", "cobek", "pisau", "talenan", "panci", "sutil", "mangkuk"],
     langkah: [
