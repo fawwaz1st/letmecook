@@ -211,6 +211,19 @@ function halamanResep() {
 
   if (!r) {
     const mr = document.createElement("meta"); mr.name = "robots"; mr.content = "noindex"; document.head.appendChild(mr);
+  // ---- Bahan dan penyesuaian porsi ----
+  // Porsi berubah berurutan: 1, 2, 3, 4, ... dari nilai asli resep.
+  // Tombol + menambah satu porsi, tombol − mengurangi satu porsi.
+  const bahanList = document.getElementById("bahanList");
+  const semuaProg = baca(KEY.prog, {});
+  // Normalisasi: data dari localStorage bisa saja rusak atau setengah,
+  // jadi pastikan bentuknya selalu lengkap sebelum dipakai.
+  const tersimpan = semuaProg[r.id];
+  const prog = {
+    bahan: Array.isArray(tersimpan && tersimpan.bahan) ? tersimpan.bahan : [],
+    langkah: Array.isArray(tersimpan && tersimpan.langkah) ? tersimpan.langkah : [],
+  };
+
     area.innerHTML = '<div class="panel"><div class="kosong">'
       + '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-search"/></svg>'
       + "<h1>Resep itu tidak ada</h1>"
@@ -348,18 +361,6 @@ function halamanResep() {
     setTimeout(() => { tombol.innerHTML = awal; }, 2000);
   });
 
-  // ---- Bahan dan penyesuaian porsi ----
-  // Porsi berubah berurutan: 1, 2, 3, 4, ... dari nilai asli resep.
-  // Tombol + menambah satu porsi, tombol − mengurangi satu porsi.
-  const bahanList = document.getElementById("bahanList");
-  const semuaProg = baca(KEY.prog, {});
-  // Normalisasi: data dari localStorage bisa saja rusak atau setengah,
-  // jadi pastikan bentuknya selalu lengkap sebelum dipakai.
-  const tersimpan = semuaProg[r.id];
-  const prog = {
-    bahan: Array.isArray(tersimpan && tersimpan.bahan) ? tersimpan.bahan : [],
-    langkah: Array.isArray(tersimpan && tersimpan.langkah) ? tersimpan.langkah : [],
-  };
 
   function gambarBahan() {
     bahanList.innerHTML = "";
