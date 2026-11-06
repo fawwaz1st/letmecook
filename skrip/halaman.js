@@ -54,7 +54,7 @@ function halamanIndex() {
 
   // Empat resep terpopuler.
   isiKartu(document.getElementById("popGrup"),
-    RESEP.toSorted((a, b) => b.rating - a.rating).slice(0, 4));
+    RESEP.slice().sort((a, b) => b.rating - a.rating).slice(0, 4));
 
   // Empat resep yang videonya punya penanda bagian.
   isiKartu(document.getElementById("babGrup"),
@@ -142,8 +142,11 @@ function halamanKatalog() {
         gambar();
       }
     });
+    let jedaKulkas = null;
     kulkasInput.addEventListener("input", () => {
       if (!modeKulkas) return;
+      clearTimeout(jedaKulkas);
+      jedaKulkas = setTimeout(() => {
       const milik = kulkasInput.value.split(/[,\n]/).map((s) => s.trim().toLowerCase()).filter(Boolean);
       jumlahBahan = milik.length;
       skorKulkas = new Map();
@@ -157,6 +160,7 @@ function halamanKatalog() {
         skorKulkas.set(r.id, { cocok, total: r.bahan.length });
       }
       gambar();
+      }, 120);
     });
   }
 
@@ -187,7 +191,7 @@ function halamanKatalog() {
       daftar = daftar.filter((r) => {
         const s = skorKulkas.get(r.id);
         return s && s.cocok >= ambang && s.total > 0 && s.cocok / s.total >= 0.2;
-      }).toSorted((a, b) => {
+      }).slice().sort((a, b) => {
         const sa = skorKulkas.get(a.id), sb = skorKulkas.get(b.id);
         return sb.cocok - sa.cocok || (sb.cocok / sb.total) - (sa.cocok / sa.total) || a.waktuTotal - b.waktuTotal;
       });
@@ -470,8 +474,15 @@ function halamanResep() {
   }
 
   function simpanProg() {
-    semuaProg[r.id] = prog;
-    tulis(KEY.prog, semuaProg);
+    // Baca ulang supaya tulisan mode masak (simpanIndeks) tidak tertimpa.
+    const ulang = baca(KEY.prog, {});
+    if (!ulang || typeof ulang !== "object") return;
+    ulang[r.id] = ulang[r.id] || {};
+    ulang[r.id].bahan = prog.bahan;
+    // Jaga indeks eksplisit mode masak bila ada.
+    if (prog.indeks !== null && prog.indeks !== undefined) ulang[r.id].indeks = prog.indeks;
+    tulis(KEY.prog, ulang);
+    semuaProg = ulang;
     gambarProg();
   }
 
@@ -598,6 +609,10 @@ function halamanResep() {
   }
 
   function mulaiTimer(tombol, detik) {
+    // Minta izin notifikasi (isyarat pengguna) sebelum timer dijalankan.
+    if ("Notification" in window && Notification.permission === "default") {
+      try { Notification.requestPermission().catch(() => {}); } catch { /* abaikan */ }
+    }
     // Satu timer saja supaya tidak ada dua hitungan bersamaan.
     if (timerAktif) {
       clearInterval(timerAktif);
@@ -642,6 +657,20 @@ function halamanResep() {
       if (status) status.textContent = ok ? "Tersimpan " + new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "Gagal menyimpan di peramban ini";
     });
   }
+
+  // Kalau mode masak menulis kemajuan, segarkan label tombol "Lanjutkan".
+  window.addEventListener("data-ubah", (e) => {
+    if (!e || !e.detail || e.detail !== KEY.prog) return;
+    const ulang = baca(KEY.prog, {}) || {};
+    const tersimpan = ulang[r.id];
+    if (!tersimpan) return;
+    prog.indeks = Number.isFinite(tersimpan.indeks) ? tersimpan.indeks : null;
+    const bL = document.getElementById("bLanjut");
+    if (bL) {
+      const indeks = prog.indeks !== null ? prog.indeks : prog.langkah.filter(Boolean).length;
+      bL.textContent = "Lanjutkan dari langkah " + (indeks + 1);
+    }
+  });
 
   // ---- Data terstruktur untuk mesin pencari ----
   // Aturan yang dipatuhi (panduan Google 2026):
@@ -738,7 +767,7 @@ function halamanMealplan() {
         const cocok = kandidat.filter((r) => r.kategori === kat);
         const sisa = cocok.length ? cocok : kandidat;
         // Urutkan: yang paling cepat dulu, supaya minggu ini bisa langsung dicoba.
-        const urut = sisa.toSorted((a, b) => a.waktuTotal - b.waktuTotal || a.nama.localeCompare(b.nama, "id"));
+        const urut = sisa.slice().sort((a, b) => a.waktuTotal - b.waktuTotal || a.nama.localeCompare(b.nama, "id"));
         const pilih = urut[0];
         if (pilih) {
           dipakai.add(pilih.id);
@@ -882,7 +911,7 @@ function halamanMealplan() {
     })
       // Dulu dipotong 40 dari 67: 27 resep tidak pernah bisa dipilih sama
       // sekali. Sekarang semua tampil, yang sesuai waktu makan di atas.
-      .toSorted((a, b) => {
+      .slice().sort((a, b) => {
         const aCocok = katCocok && a.kategori === katCocok ? 0 : 1;
         const bCocok = katCocok && b.kategori === katCocok ? 0 : 1;
         return aCocok - bCocok || a.waktuTotal - b.waktuTotal || a.nama.localeCompare(b.nama, "id");
@@ -1100,6 +1129,15 @@ function halamanMealplan() {
   gambarRencana();
   gambarBelanja();
 
+  // Kalau data diubah di tab lain, gambar ulang rencana & belanja.
+  window.addEventListener("data-ubah", (e) => {
+    if (!e || !e.detail) return;
+    if (e.detail === KEY.meal || e.detail === KEY.gcheck || e.detail === KEY.gmanual) {
+      gambarRencana();
+      gambarBelanja();
+    }
+  });
+
   // Bagikan daftar belanja: pakai Web Share bila ada, jatuh ke salin teks.
   const bBagikan = document.getElementById("bBagikan");
   if (bBagikan) bBagikan.addEventListener("click", async () => {
@@ -1127,6 +1165,8 @@ function halamanMealplan() {
   });
   const bKosongkan = document.getElementById("bKosongkan");
   if (bKosongkan) bKosongkan.addEventListener("click", () => {
+    const terisi = document.querySelectorAll(".slot.terisi").length;
+    if (terisi > 0 && !confirm("Kosongkan " + terisi + " slot rencana?")) return;
     simpanRencana({});
   });
 
@@ -1159,6 +1199,9 @@ function halamanFavorit() {
   }
 
   gambar();
+
+  // Agar tab lain yang mengubah favorit bisa memuat ulang daftar ini.
+  window.__halamanFavorit = gambar;
 
   // ---- Cadangkan / impor data (tanpa akun, tanpa server) ----
   // Berkas JSON disalin via textarea (CSP memblokir Blob URL).
@@ -1232,6 +1275,9 @@ function halamanFavorit() {
         } catch (e) {
           if (imporStatus) imporStatus.textContent = "Gagal impor: berkas tidak valid (" + e.message + ")";
         }
+      };
+      pembaca.onerror = () => {
+        if (imporStatus) imporStatus.textContent = "Gagal membaca berkas cadangan.";
       };
       pembaca.readAsText(file);
       fImpor.value = "";

@@ -19,7 +19,7 @@ const GAMBAR_MAKS = 90;
 const INTI = [
   "./", "index.html", "katalog.html", "resep.html", "favorit.html",
   "mealplan.html", "tentang.html", "404.html", "manifest.webmanifest",
-  "aset/style.css", "aset/icons.svg", "aset/ikon-192.png", "aset/ikon-512.png",
+  "aset/style.css", "aset/icons.svg", "aset/ikon-192.png", "aset/ikon-512.png", "aset/ikon-maskable-512.png",
   "aset/fonts/fraunces-600.woff2", "aset/fonts/fraunces-700.woff2",
   "aset/fonts/pjs-400.woff2", "aset/fonts/pjs-600.woff2", "aset/fonts/pjs-700.woff2",
   "skrip/resep-data.js", "skrip/store.js", "skrip/halaman.js",
@@ -57,9 +57,14 @@ self.addEventListener("message", (e) => {
 self.addEventListener("notificationclick", (e) => {
   e.notification.close();
   const tujuan = (e.notification.data && e.notification.data.url) || "./";
+  const urlTujuan = new URL(tujuan, location.origin);
   e.waitUntil(self.clients.matchAll({ type: "window", includeUncontrolled: true }).then((daftar) => {
     for (const c of daftar) {
-      if (c.url.includes(tujuan.split("?")[0]) && "focus" in c) return c.focus();
+      const urlC = new URL(c.url);
+      // Bandingkan pathname + id resep di query, bukan sekadar includes.
+      if (urlC.pathname === urlTujuan.pathname && urlC.searchParams.get("id") === urlTujuan.searchParams.get("id")) {
+        if ("focus" in c) return c.focus();
+      }
     }
     return self.clients.openWindow(tujuan);
   }));

@@ -74,6 +74,7 @@ function tulis(kunci, nilai) {
 }
 
 function cariResep(id) {
+  if (typeof RESEP === "undefined") return null;
   return RESEP.find((r) => r.id === id);
 }
 
@@ -200,33 +201,34 @@ function esc(teks) {
 // atau rentang "2-3 menit". Mengembalikan [teks asli, detik] atau null.
 // Dipakai halaman resep dan mode masak supaya aturannya sama.
 function waktuDiTeks(teks) {
-  // Ambil DURASI UTAMA langkah ini saja: pasangan "angka satuan" pertama
-  // yang didahului kata durasi (selama/jangan/ada/tuang/masak/rebus/goreng/
-  // panggang/tumis/diamkan/dinginkan/tiriskan/siapkan/rendam/sejukkan/
-  // diam/enter masukkan). Mencegah "aduk tiap 5 menit" atau "atau presto
-  // 30 menit" dijumlahkan berkali-kali (timer 2x lipat).
+  // Ambil DURASI UTAMA: pasangan "angka satuan" pertama yang valid.
+  // Lewati interval ("tiap 5 menit") dan tanda matang ("jejak 2 detik").
+  // Rentang "2-3 menit" memakai yang terbesar.
   const re = /(\d+(?:[.,]\d+)?|\d+\/\d+)\s*(jam|menit|detik)/gi;
-  let m, pertama = null, total = 0, ada = false;
+  let m;
   while ((m = re.exec(teks)) !== null) {
-    const sebelum = teks.slice(Math.max(0, m.index - 30), m.index).toLowerCase();
-    const kata = sebelum.split(/\s+/).pop();
-    const pancing = /^(selama|jangan|ada|tuang|tuang|tuang|masak|rebus|goreng|panggang|tumis|bakar|kukus|sangrai|ungkep|haluskan|campur|sajikan|tunggu|simpan|diamkan|dinginkan|tiriskan|siapkan|rendam|sejukkan|diam|masukkan|aduk|biarkan|tutup|buka|tata|siram|taburi|lumuri|cuci|potong|iris|panaskan|pukul|kocok|tusuk|angkt|angkat|tiriskan)$/;
-    if (!pancing.test(kata)) continue;
+    // Kata tepat sebelum angka: "tiap"/"setiap" menandakan interval, bukan durasi.
+    const kata = teks.slice(Math.max(0, m.index - 20), m.index).trim().split(/\s+/).pop().toLowerCase();
+    if (kata === "tiap" || kata === "setiap") continue;
     const raw = m[1].replace(",", ".");
     const angka = raw.includes("/") ? Number(raw.split("/")[0]) / Number(raw.split("/")[1]) : Number(raw);
     if (!Number.isFinite(angka)) continue;
-    const mult = m[2] === "jam" ? 3600 : m[2] === "menit" ? 60 : 1;
-    const detik = angka * mult;
+    const satuan = m[2].toLowerCase();
+    let detik = angka * (satuan === "jam" ? 3600 : satuan === "menit" ? 60 : 1);
+    // Rentang "2-3 menit": pakai angka terbesar.
+    const sisa = teks.slice(m.index + m[0].length, m.index + m[0].length + 24);
+    const rentang = sisa.match(/^\s*[-–—]\s*(\d+(?:[.,]\d+)?)\s*(jam|menit|detik)/i);
+    if (rentang) {
+      const b = Number(rentang[1].replace(",", "."));
+      const rb = b * (rentang[2].toLowerCase() === "jam" ? 3600 : rentang[2].toLowerCase() === "menit" ? 60 : 1);
+      detik = Math.max(detik, rb);
+    }
     // "Detik" di bawah 15 hampir selalu bagian dari tanda matang
     // ("jejak 2 detik"), bukan durasi memasak. Jangan munculkan timer.
-    if (m[2] === "detik" && detik < 15) continue;
-    if (!pertama) pertama = m[0];
-    total += detik; ada = true;
-    // Hanya durasi UTAMA: berhenti setelah satu hitungan.
-    break;
+    if (satuan === "detik" && detik < 15) continue;
+    return [m[0], detik];
   }
-  if (!ada || total < 15) return null;
-  return [pertama, total];
+  return null;
 }
 
 // ID video YouTube selalu 11 karakter.
@@ -767,7 +769,8 @@ let apiYouTube = null;
 // Muat API pemutar YouTube sekali saja, saat benar-benar dibutuhkan.
 function muatApiYouTube() {
   if (apiYouTube) return apiYouTube;
-  const { promise, resolve, reject } = Promise.withResolvers();
+  let resolve, reject;
+  const promise = new Promise((res, rej) => { resolve = res; reject = rej; });
   apiYouTube = promise;
 
   if (window.YT && window.YT.Player) {
@@ -904,6 +907,16 @@ function bukaModeMasak(resep, indeksAwal) {
   const tombolVideo = $("[data-video]");
 
   // ---- Timer ----
+  // Minta izin notifikasi hanya sekali, dan hanya lewat isyarat pengguna.
+  let izinDiminta = false;
+  function mintaIzinNotifikasi() {
+    if (izinDiminta || !("Notification" in window)) return;
+    izinDiminta = true;
+    try {
+      if (Notification.permission === "default") Notification.requestPermission().catch(() => {});
+    } catch { /* abaikan */ }
+  }
+
   function hentikanTimer() {
     if (masakState.timer) {
       clearInterval(masakState.timer);
@@ -952,6 +965,8 @@ function bukaModeMasak(resep, indeksAwal) {
   }
 
   function jalankanTimer(detik) {
+    // Minta izin notifikasi sekali saat timer pertama dijalankan (butuh isyarat pengguna).
+    mintaIzinNotifikasi();
     hentikanTimer();
     tombolTimer.classList.add("jalan");
     masakState.timer = hitungMundur(detik, (sisa) => {
@@ -1591,7 +1606,7 @@ function pasangKeAtas() {
 // Semua angka yang muncul di halaman diisi dari data, bukan ditulis
 // manual di HTML. Jadi menambah resep cukup di satu tempat: larik RESEP.
 // ============================================================
-const JUMLAH_RESEP = RESEP.length;
+const JUMLAH_RESEP = typeof RESEP !== "undefined" ? RESEP.length : 0;
 
 // Isi semua tempat di halaman yang perlu angka resep.
 // Cara pakai di HTML: <span data-jumlah></span>
