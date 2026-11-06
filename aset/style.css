@@ -787,6 +787,18 @@ p:last-child { margin-bottom: 0; }
 .catatan-simpan { margin: 0; font-size: 0.8rem; color: var(--redup); min-height: 1.2em; }
 
 /* Banner offline & tombol pasang (PWA). */
+.banner-simpan {
+  position: sticky;
+  top: var(--kepala);
+  z-index: var(--z-atas);
+  background: var(--bahaya);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: var(--s2) var(--s4);
+  text-align: center;
+  border-bottom: 1px solid var(--garis);
+}
 .banner-offline {
   position: sticky;
   top: var(--kepala);
@@ -1968,8 +1980,10 @@ footer a:hover { text-decoration: underline; }
 @media print {
   /* Cetak resep: sembunyikan navigasi, video, tombol, dan mode masak.
      Tampilkan bahan + langkah dalam hitam-putih hemat tinta. */
-  .kepala, .kaki, .cari, .nav, .chip, .masak, .banner-offline, .banner-pasang,
-  .masak-video, .aksi-resep button, .saring, .saran, .skip { display: none !important; }
+  .kepala, footer, .cari, .nav, .chip, .masak, .banner-offline, .banner-pasang,
+  .banner-simpan, .masak-video, .aksi-resep, .saring, .saran, .skip,
+  .ke-atas, .baris-aksi, .mode-kulkas, .data-panel { display: none !important; }
+  .bahan input { /* kotak centang tetap tercetak, bukan kotak bolong */ accent-color: #000; }
   body { background: #fff; color: #000; font-size: 12pt; }
   .panel, .kartu { background: #fff; border: 1px solid #999; box-shadow: none; }
   .wrap { max-width: 100%; padding: 0; }

@@ -67,6 +67,8 @@ function tulis(kunci, nilai) {
     localStorage.setItem(kunci, JSON.stringify(nilai));
     return true;
   } catch {
+    // Beri tahu halaman: penyimpanan gagal (kuota penuh / mode privat).
+    window.dispatchEvent(new CustomEvent("penyimpanan-gagal", { detail: kunci }));
     return false;
   }
 }
@@ -97,8 +99,21 @@ function segarkanBadge() {
   if (el) el.textContent = ambilFav().length;
 }
 
+// Sinkron antar-tab: ubah dari tab lain membuat tampilan tab ini basi.
 window.addEventListener("storage", (e) => {
-  if (e.key === KEY.fav) segarkanBadge();
+  if (!e.key) return;
+  if (e.key === KEY.fav) {
+    segarkanBadge();
+    // Kalau halaman favorit sedang terbuka, gambar ulang daftarnya.
+    if (document.body.dataset.halaman === "favorit") {
+      const fn = window.__halamanFavorit;
+      if (fn) fn();
+    }
+  }
+  if (e.key === KEY.meal || e.key === KEY.gcheck || e.key === KEY.gmanual || e.key === KEY.prog || e.key === KEY.catatan) {
+    // Beri tahu halaman agar memuat ulang data yang berubah.
+    window.dispatchEvent(new CustomEvent("data-ubah", { detail: e.key }));
+  }
 });
 
 // ============================================================
@@ -185,12 +200,18 @@ function esc(teks) {
 // atau rentang "2-3 menit". Mengembalikan [teks asli, detik] atau null.
 // Dipakai halaman resep dan mode masak supaya aturannya sama.
 function waktuDiTeks(teks) {
-  // Kumpulkan SEMUA pasangan "angka satuan" (termasuk pecahan 1/2, 1,5),
-  // lalu jumlahkan ke detik. Sebelumnya hanya angka pertama yang dibaca,
-  // sehingga "1 jam 30 menit" hanya dihitung 1 jam.
+  // Ambil DURASI UTAMA langkah ini saja: pasangan "angka satuan" pertama
+  // yang didahului kata durasi (selama/jangan/ada/tuang/masak/rebus/goreng/
+  // panggang/tumis/diamkan/dinginkan/tiriskan/siapkan/rendam/sejukkan/
+  // diam/enter masukkan). Mencegah "aduk tiap 5 menit" atau "atau presto
+  // 30 menit" dijumlahkan berkali-kali (timer 2x lipat).
   const re = /(\d+(?:[.,]\d+)?|\d+\/\d+)\s*(jam|menit|detik)/gi;
-  let total = 0, ada = false, pertama = null, m;
+  let m, pertama = null, total = 0, ada = false;
   while ((m = re.exec(teks)) !== null) {
+    const sebelum = teks.slice(Math.max(0, m.index - 30), m.index).toLowerCase();
+    const kata = sebelum.split(/\s+/).pop();
+    const pancing = /^(selama|jangan|ada|tuang|tuang|tuang|masak|rebus|goreng|panggang|tumis|bakar|kukus|sangrai|ungkep|haluskan|campur|sajikan|tunggu|simpan|diamkan|dinginkan|tiriskan|siapkan|rendam|sejukkan|diam|masukkan|aduk|biarkan|tutup|buka|tata|siram|taburi|lumuri|cuci|potong|iris|panaskan|pukul|kocok|tusuk|angkt|angkat|tiriskan)$/;
+    if (!pancing.test(kata)) continue;
     const raw = m[1].replace(",", ".");
     const angka = raw.includes("/") ? Number(raw.split("/")[0]) / Number(raw.split("/")[1]) : Number(raw);
     if (!Number.isFinite(angka)) continue;
@@ -201,6 +222,8 @@ function waktuDiTeks(teks) {
     if (m[2] === "detik" && detik < 15) continue;
     if (!pertama) pertama = m[0];
     total += detik; ada = true;
+    // Hanya durasi UTAMA: berhenti setelah satu hitungan.
+    break;
   }
   if (!ada || total < 15) return null;
   return [pertama, total];
@@ -1313,14 +1336,17 @@ function bukaModeMasak(resep, indeksAwal) {
   }
 
   // Catat langkah terakhir supaya pengguna bisa lanjutkan lain kali.
+  // Simpan INDEKS EKSPLISIT (bukan cuma checklist) supaya mundur ke langkah
+  // sebelumnya benar-benar menggeser posisi resume.
   function simpanIndeks() {
     try {
       const semua = JSON.parse(localStorage.getItem("letmecook:prog") || "{}");
       semua[masakState.resep.id] = semua[masakState.resep.id] || { bahan: [], langkah: [] };
-      // Tandai langkah yang sudah dilewati supaya tombol "Lanjutkan" tahu posisi.
       const langkah = semua[masakState.resep.id].langkah || [];
-      for (let i = 0; i < masakState.indeks; i++) langkah[i] = true;
+      // Hanya tandai langkah yang benar-benar dilewati; mundur = copot tanda.
+      for (let i = 0; i < langkah.length; i++) langkah[i] = i < masakState.indeks;
       semua[masakState.resep.id].langkah = langkah;
+      semua[masakState.resep.id].indeks = masakState.indeks;
       localStorage.setItem("letmecook:prog", JSON.stringify(semua));
     } catch { /* abaikan */ }
   }
@@ -1611,6 +1637,20 @@ function siapkanHalaman() {
 
   segarkanAngka();
   pasangKeAtas();
+  // Banner saat penyimpanan lokal gagal (kuota penuh / mode privat).
+  if (!document.getElementById("bannerSimpan")) {
+    window.addEventListener("penyimpanan-gagal", () => {
+      let b = document.getElementById("bannerSimpan");
+      if (!b) {
+        b = document.createElement("div");
+        b.id = "bannerSimpan";
+        b.className = "banner-simpan";
+        b.setAttribute("role", "alert");
+        document.body.prepend(b);
+      }
+      b.textContent = "Peramban menolak menyimpan data (kuota penuh atau mode privat). Favorit, rencana, dan catatanmu belum tersimpan.";
+    });
+  }
   // Tandai navigasi kepala yang sedang aktif untuk pembaca layar.
   (function () {
     const halaman = document.body.dataset.halaman;

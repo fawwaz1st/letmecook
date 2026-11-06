@@ -94,6 +94,11 @@ function halamanKatalog() {
   const fLevel = document.getElementById("fLevel");
   const fWaktu = document.getElementById("fWaktu");
   const fDiet = document.getElementById("fDiet");
+  // Saringan juga ikut di URL supaya tautan yang dibagikan mereproduksi hasil.
+  const url = new URL(location.href);
+  if (url.searchParams.get("level")) fLevel.value = url.searchParams.get("level");
+  if (url.searchParams.get("waktu")) fWaktu.value = url.searchParams.get("waktu");
+  if (url.searchParams.get("diet")) fDiet.value = url.searchParams.get("diet");
   const grup = document.getElementById("grup");
   const kosong = document.getElementById("kosong");
   const jumlahTeks = document.getElementById("jumlahTeks");
@@ -199,6 +204,15 @@ function halamanKatalog() {
 
   function gambar() {
     const daftar = saring();
+
+    // Simpan saringan ke URL (tanpa memicu reload) supaya bisa dibagikan.
+    const urlBaru = new URL(location.href);
+    urlBaru.searchParams.set("kat", kat);
+    if (q) urlBaru.searchParams.set("q", q); else urlBaru.searchParams.delete("q");
+    if (fLevel.value) urlBaru.searchParams.set("level", fLevel.value); else urlBaru.searchParams.delete("level");
+    if (fWaktu.value) urlBaru.searchParams.set("waktu", fWaktu.value); else urlBaru.searchParams.delete("waktu");
+    if (fDiet.value) urlBaru.searchParams.set("diet", fDiet.value); else urlBaru.searchParams.delete("diet");
+    history.replaceState(null, "", urlBaru.toString());
 
     // NAMA_KAT dibaca lewat Object.hasOwn supaya nilai seperti "constructor"
     // di alamat halaman tidak bocor dari rantai prototipe bawaan JavaScript.
@@ -308,6 +322,8 @@ function halamanResep() {
   const prog = {
     bahan: Array.isArray(tersimpan && tersimpan.bahan) ? tersimpan.bahan : [],
     langkah: Array.isArray(tersimpan && tersimpan.langkah) ? tersimpan.langkah : [],
+    // Indeks eksplisit (bukan cuma checklist) supaya resume akurat.
+    indeks: Number.isFinite(tersimpan && tersimpan.indeks) ? tersimpan.indeks : null,
   };
 
   area.innerHTML =
@@ -331,9 +347,10 @@ function halamanResep() {
 
     + '<div class="aksi-resep">'
     + (() => {
-        const selesai = prog.langkah.filter(Boolean).length;
-        if (selesai > 0) {
-          return '<button class="tb" id="bLanjut" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-play"/></svg>Lanjutkan dari langkah ' + (selesai + 1) + '</button>';
+        // Prioritaskan indeks eksplisit; fallback ke checklist lama.
+        const indeks = prog.indeks !== null ? prog.indeks : prog.langkah.filter(Boolean).length;
+        if (indeks > 0) {
+          return '<button class="tb" id="bLanjut" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-play"/></svg>Lanjutkan dari langkah ' + (indeks + 1) + '</button>';
         }
         return "";
       })()
@@ -608,8 +625,8 @@ function halamanResep() {
   document.getElementById("bMasak").addEventListener("click", () => bukaModeMasak(r));
   const bLanjut = document.getElementById("bLanjut");
   if (bLanjut) bLanjut.addEventListener("click", () => {
-    const selesai = prog.langkah.filter(Boolean).length;
-    bukaModeMasak(r, selesai);
+    const indeks = prog.indeks !== null ? prog.indeks : prog.langkah.filter(Boolean).length;
+    bukaModeMasak(r, indeks);
   });
 
   // Catatan pribadi: dimuat dari localStorage, disimpan otomatis saat diketik.
@@ -620,9 +637,9 @@ function halamanResep() {
     isiCatatan.addEventListener("input", () => {
       const baru = baca(KEY.catatan, {}) || {};
       baru[r.id] = isiCatatan.value;
-      tulis(KEY.catatan, baru);
+      const ok = tulis(KEY.catatan, baru);
       const status = document.getElementById("catatanStatus");
-      if (status) status.textContent = "Tersimpan " + new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+      if (status) status.textContent = ok ? "Tersimpan " + new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" }) : "Gagal menyimpan di peramban ini";
     });
   }
 
@@ -1175,17 +1192,43 @@ function halamanFavorit() {
       const file = fImpor.files && fImpor.files[0];
       if (!file) return;
       const pembaca = new FileReader();
+      if (file.size > 500 * 1024) { if (imporStatus) imporStatus.textContent = "Gagal impor: berkas terlalu besar (>500KB)."; return; }
       pembaca.onload = () => {
         try {
           const data = JSON.parse(pembaca.result);
-          if (!data || typeof data !== "object") throw new Error("bukan objek JSON");
-          ["fav", "meal", "gcheck", "gmanual", "prog", "catatan"].forEach((kunci) => {
-            const val = data[kunci];
-            if (val === undefined || val === null) return;
-            tulis(KEY[kunci], val);
-          });
-          if (imporStatus) imporStatus.textContent = "Cadangan diimpor. Halaman dimuat ulang...";
-          setTimeout(() => location.reload(), 600);
+          if (!data || typeof data !== "object" || Array.isArray(data)) throw new Error("bukan objek JSON");
+          const dikenal = new Set(RESEP.map((r) => r.id));
+          let diabaikan = 0;
+          // Validasi bentuk tiap kunci sebelum tulis, supaya data situs rusak
+          // tidak tertimpa diam-diam lalu dilaporkan "sukses".
+          const bersih = {};
+          if (Array.isArray(data.fav)) {
+            bersih.fav = data.fav.filter((id) => { if (typeof id !== "string" || !dikenal.has(id)) { diabaikan++; return false; } return true; });
+          }
+          if (data.meal && typeof data.meal === "object" && !Array.isArray(data.meal)) {
+            const meal = {};
+            for (const [hari, slot] of Object.entries(data.meal)) {
+              if (!slot || typeof slot !== "object") continue;
+              for (const [kode, val] of Object.entries(slot)) {
+                const id = typeof val === "string" ? val : (val && val.id);
+                if (typeof id === "string" && dikenal.has(id)) (meal[hari] = meal[hari] || {})[kode] = val;
+                else diabaikan++;
+              }
+            }
+            bersih.meal = meal;
+          }
+          if (data.gcheck && typeof data.gcheck === "object" && !Array.isArray(data.gcheck)) bersih.gcheck = data.gcheck;
+          if (Array.isArray(data.gmanual)) bersih.gmanual = data.gmanual.filter((t) => t && typeof t.teks === "string");
+          if (data.prog && typeof data.prog === "object" && !Array.isArray(data.prog)) bersih.prog = data.prog;
+          if (data.catatan && typeof data.catatan === "object" && !Array.isArray(data.catatan)) bersih.catatan = data.catatan;
+          if (!Object.keys(bersih).length) throw new Error("tidak ada data valid di berkas");
+          for (const [kunci, val] of Object.entries(bersih)) tulis(KEY[kunci], val);
+          if (imporStatus) {
+            imporStatus.textContent = "Diimpor: " + Object.keys(bersih).length + " kunci." +
+              (diabaikan ? " " + diabaikan + " entri diabaikan (id tak dikenal)." : "") +
+              " Halaman dimuat ulang...";
+          }
+          setTimeout(() => location.reload(), 800);
         } catch (e) {
           if (imporStatus) imporStatus.textContent = "Gagal impor: berkas tidak valid (" + e.message + ")";
         }
