@@ -116,6 +116,43 @@ function halamanKatalog() {
     location.href = "katalog.html" + (bagian.length ? "?" + bagian.join("&") : "");
   });
 
+  // ---- Mode kulkas ----
+  // Kullan textarea "bahan yang kupunya" (pisahkan koma), skor tiap resep
+  // dari berapa bahan resep yang cocok, tampilkan yang >= 60%.
+  const fKulkas = document.getElementById("fKulkas");
+  const kulkasIsi = document.getElementById("kulkasIsi");
+  const kulkasInput = document.getElementById("kulkasInput");
+  let modeKulkas = false;
+  let skorKulkas = null; // Map(id -> {cocok, total})
+  if (fKulkas && kulkasIsi && kulkasInput) {
+    fKulkas.addEventListener("change", () => {
+      modeKulkas = fKulkas.checked;
+      kulkasIsi.hidden = !modeKulkas;
+      if (modeKulkas) {
+        kulkasInput.focus();
+        gambar();
+      } else {
+        skorKulkas = null;
+        gambar();
+      }
+    });
+    kulkasInput.addEventListener("input", () => {
+      if (!modeKulkas) return;
+      const milik = kulkasInput.value.split(/[,\n]/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+      skorKulkas = new Map();
+      for (const r of RESEP) {
+        let cocok = 0;
+        for (const b of r.bahan) {
+          const nama = b.nama.toLowerCase().split("(")[0].trim();
+          const kata = nama.split(/\s+/);
+          if (milik.some((m) => m === nama || kata.some((k) => k.length > 2 && m.includes(k)) || nama.includes(m))) cocok++;
+        }
+        skorKulkas.set(r.id, { cocok, total: r.bahan.length });
+      }
+      gambar();
+    });
+  }
+
   // Kata kunci dicocokkan ke nama, daerah, deskripsi, dan nama bahan.
   function cocokKata(r, kata) {
     if (!kata) return true;
@@ -135,6 +172,17 @@ function halamanKatalog() {
   function saring() {
     let daftar = RESEP.filter((r) => !kat || r.kategori === kat);
     daftar = daftar.filter((r) => cocokKata(r, q));
+
+    // Mode kulkas: hanya resep yang bahan cocoknya >= 60%, urut skor tertinggi.
+    if (modeKulkas && skorKulkas) {
+      daftar = daftar.filter((r) => {
+        const s = skorKulkas.get(r.id);
+        return s && s.total > 0 && s.cocok / s.total >= 0.6;
+      }).toSorted((a, b) => {
+        const sa = skorKulkas.get(a.id), sb = skorKulkas.get(b.id);
+        return (sb.cocok / sb.total) - (sa.cocok / sa.total) || a.waktuTotal - b.waktuTotal;
+      });
+    }
 
     if (fLevel.value) daftar = daftar.filter((r) => r.level === fLevel.value);
     if (fWaktu.value) daftar = daftar.filter((r) => r.waktuTotal <= Number(fWaktu.value));
@@ -1090,6 +1138,59 @@ function halamanFavorit() {
   }
 
   gambar();
+
+  // ---- Cadangkan / impor data (tanpa akun, tanpa server) ----
+  // Berkas JSON disalin via textarea (CSP memblokir Blob URL).
+  const bEkspor = document.getElementById("bEkspor");
+  const hasilEkspor = document.getElementById("hasilEkspor");
+  const imporStatus = document.getElementById("imporStatus");
+  if (bEkspor && hasilEkspor) {
+    bEkspor.addEventListener("click", async () => {
+      const data = {
+        fav: baca(KEY.fav, []),
+        meal: baca(KEY.meal, {}),
+        gcheck: baca(KEY.gcheck, {}),
+        gmanual: baca(KEY.gmanual, []),
+        prog: baca(KEY.prog, {}),
+        catatan: baca(KEY.catatan, {}),
+      };
+      const json = JSON.stringify(data, null, 2);
+      hasilEkspor.value = json;
+      hasilEkspor.hidden = false;
+      try {
+        await navigator.clipboard.writeText(json);
+        imporStatus.textContent = "Dicadangkan. JSON tersalin; simpan sebagai berkas di perangkatmu.";
+      } catch {
+        imporStatus.textContent = "JSON ditampilkan di kotak teks. Salin manual (Ctrl+C).";
+      }
+    });
+  }
+  const fImpor = document.getElementById("fImpor");
+  if (fImpor) {
+    fImpor.addEventListener("change", () => {
+      const file = fImpor.files && fImpor.files[0];
+      if (!file) return;
+      const pembaca = new FileReader();
+      pembaca.onload = () => {
+        try {
+          const data = JSON.parse(pembaca.result);
+          if (!data || typeof data !== "object") throw new Error("bukan objek JSON");
+          ["fav", "meal", "gcheck", "gmanual", "prog", "catatan"].forEach((kunci) => {
+            const val = data[kunci];
+            if (val === undefined || val === null) return;
+            tulis(KEY[kunci], val);
+          });
+          if (imporStatus) imporStatus.textContent = "Cadangan diimpor. Halaman dimuat ulang...";
+          setTimeout(() => location.reload(), 600);
+        } catch (e) {
+          if (imporStatus) imporStatus.textContent = "Gagal impor: berkas tidak valid (" + e.message + ")";
+        }
+      };
+      pembaca.readAsText(file);
+      fImpor.value = "";
+    });
+  }
+
   siapkanHalaman();
 }
 

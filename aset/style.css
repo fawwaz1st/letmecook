@@ -763,6 +763,11 @@ p:last-child { margin-bottom: 0; }
 .bahan li.selesai span { text-decoration: line-through; color: var(--redup); }
 .pengganti { display: block; font-size: 0.78rem; font-style: italic; color: var(--redup); margin-top: 2px; line-height: 1.4; }
 
+/* Mode kulkas di katalog. */
+.mode-kulkas { display: grid; gap: var(--s2); margin-bottom: var(--s3); }
+.kulkas-label { display: inline-flex; align-items: center; gap: var(--s2); font-size: 0.88rem; font-weight: 600; cursor: pointer; }
+.mode-kulkas input[type="checkbox"] { width: 20px; height: 20px; accent-color: var(--merek); cursor: pointer; }
+
 /* Catatan pribadi di halaman resep. */
 .catatan-panel .isi { display: grid; gap: var(--s2); }
 .catatan-label { font-size: 0.85rem; color: var(--redup); }
@@ -778,6 +783,7 @@ p:last-child { margin-bottom: 0; }
   resize: vertical;
 }
 .catatan:focus { outline: 2px solid var(--merek); outline-offset: 1px; }
+.data-panel .isi { display: grid; gap: var(--s2); }
 .catatan-simpan { margin: 0; font-size: 0.8rem; color: var(--redup); min-height: 1.2em; }
 
 /* Banner offline & tombol pasang (PWA). */

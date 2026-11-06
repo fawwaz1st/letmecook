@@ -53,6 +53,17 @@
 
       <div class="isi-grup"><div class="grup" id="grup"></div></div>
 
+      <div class="isi data-panel">
+        <p class="catatan-label">Cadangkan favorit, rencana, centang, dan kemajuan masakmu ke berkas JSON, atau impor kembali dari berkas cadangan. Tanpa akun, tanpa server.</p>
+        <div class="baris-info-aksi">
+          <button class="tb" id="bEkspor" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-copy"/></svg>Unduh cadangan</button>
+          <label class="tb" for="fImpor"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-upload"/></svg>Pilih berkas cadangan</label>
+          <input type="file" id="fImpor" accept="application/json,.json" hidden>
+        </div>
+        <textarea id="hasilEkspor" class="catatan" rows="4" readonly hidden aria-label="Isi cadangan JSON"></textarea>
+        <p class="catatan-simpan"><span id="imporStatus" role="status"></span></p>
+      </div>
+
       <div class="kosong" id="kosong" hidden>
         <svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-heart"/></svg>
         <strong>Daftarnya masih kosong</strong>
