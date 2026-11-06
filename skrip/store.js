@@ -12,6 +12,7 @@ const KEY = {
   gcheck: "letmecook:gcheck",
   gmanual: "letmecook:gmanual",
   prog: "letmecook:prog",
+  catatan: "letmecook:catatan",
 };
 
 // Pengganti bahan yang sering hilang di dapur (ide 2026: "bahan habis,
@@ -1614,6 +1615,16 @@ function siapkanHalaman() {
 
   segarkanAngka();
   pasangKeAtas();
+  // Tandai navigasi kepala yang sedang aktif untuk pembaca layar.
+  (function () {
+    const halaman = document.body.dataset.halaman;
+    document.querySelectorAll(".nav a").forEach((a) => {
+      const href = a.getAttribute("href") || "";
+      if ((halaman === "favorit" && href === "favorit.html") || (halaman === "mealplan" && href === "mealplan.html")) {
+        a.setAttribute("aria-current", "page");
+      }
+    });
+  })();
   document.querySelectorAll("select").forEach(pasangDropdown);
   document.querySelectorAll(".cari input").forEach(pasangSaranPencarian);
   pasangAnimasi();

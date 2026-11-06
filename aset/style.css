@@ -107,10 +107,17 @@
 * { box-sizing: border-box; }
 
 html {
+  /* Scroll halus hanya untuk yang tidak meminta kurangi gerak (a11y). */
   scroll-behavior: smooth;
   /* Kepala bersifat lekat, jadi beri jarak supaya sasaran gulir
      tidak tertutup olehnya. */
   scroll-padding-top: calc(var(--kepala) + 8px);
+}
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  /* Reveal .muncul dimatikan: semua langsung terlihat. */
+  .muncul { opacity: 1 !important; }
+  *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
 }
 
 body {
@@ -755,6 +762,23 @@ p:last-child { margin-bottom: 0; }
 }
 .bahan li.selesai span { text-decoration: line-through; color: var(--redup); }
 .pengganti { display: block; font-size: 0.78rem; font-style: italic; color: var(--redup); margin-top: 2px; line-height: 1.4; }
+
+/* Catatan pribadi di halaman resep. */
+.catatan-panel .isi { display: grid; gap: var(--s2); }
+.catatan-label { font-size: 0.85rem; color: var(--redup); }
+.catatan {
+  font: inherit;
+  font-size: 0.95rem;
+  padding: var(--s2) var(--s3);
+  border: 1px solid var(--garis);
+  border-radius: var(--r-kecil);
+  background: var(--kartu);
+  color: var(--tinta);
+  width: 100%;
+  resize: vertical;
+}
+.catatan:focus { outline: 2px solid var(--merek); outline-offset: 1px; }
+.catatan-simpan { margin: 0; font-size: 0.8rem; color: var(--redup); min-height: 1.2em; }
 
 /* Banner offline & tombol pasang (PWA). */
 .banner-offline {
@@ -1933,3 +1957,18 @@ footer a:hover { text-decoration: underline; }
 }
 
 .grup:empty { min-height: 480px; }
+
+/* ---------- 21) CETAK ---------- */
+@media print {
+  /* Cetak resep: sembunyikan navigasi, video, tombol, dan mode masak.
+     Tampilkan bahan + langkah dalam hitam-putih hemat tinta. */
+  .kepala, .kaki, .cari, .nav, .chip, .masak, .banner-offline, .banner-pasang,
+  .masak-video, .aksi-resep button, .saring, .saran, .skip { display: none !important; }
+  body { background: #fff; color: #000; font-size: 12pt; }
+  .panel, .kartu { background: #fff; border: 1px solid #999; box-shadow: none; }
+  .wrap { max-width: 100%; padding: 0; }
+  a { color: #000; text-decoration: none; }
+  .muncul { opacity: 1 !important; }
+  .kepala-resep { display: block; }
+  .kepala-resep img { max-width: 40%; }
+}

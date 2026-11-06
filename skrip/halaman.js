@@ -101,9 +101,9 @@ function halamanKatalog() {
 
   document.getElementById("inputCari").value = q;
 
-  // Tandai chip kategori yang sedang aktif.
+  // Tandai chip kategori yang sedang aktif (visual + aria-current).
   document.querySelectorAll("#chipKategori a").forEach((a) => {
-    if (a.dataset.kat === kat) a.classList.add("aktif");
+    if (a.dataset.kat === kat) { a.classList.add("aktif"); a.setAttribute("aria-current", "page"); }
   });
 
   // Pencarian berikutnya tetap membawa kategori yang sedang dipilih.
@@ -289,6 +289,13 @@ function halamanResep() {
     + '<button class="tb" id="bFav" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-heart"/></svg><span>' + (sudahFav(r.id) ? "Tersimpan" : "Simpan") + "</span></button>"
     + '<button class="tb tb-halus" id="bShare" type="button"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-share"/></svg>Salin tautan</button>'
     + "</div></div></div></article>"
+    + '<section class="panel catatan-panel" aria-labelledby="judulCatatan">'
+    + '<div class="panel-kepala"><h2 id="judulCatatan"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-notes"/></svg>Catatan saya</h2></div>'
+    + '<div class="isi">'
+    + '<label class="catatan-label" for="isiCatatan">Tulis catatan pribadi untuk resep ini (mis. "lain kali kurangi garam"). Tersimpan di browser ini saja.</label>'
+    + '<textarea id="isiCatatan" class="catatan" rows="3" placeholder="Tulis catatan di sini..."></textarea>'
+    + '<p class="catatan-simpan"><span id="catatanStatus" role="status"></span></p>'
+    + '</div></section>'
 
     + '<div class="dua-kolom jarak-atas">'
 
@@ -552,6 +559,20 @@ function halamanResep() {
     const selesai = prog.langkah.filter(Boolean).length;
     bukaModeMasak(r, selesai);
   });
+
+  // Catatan pribadi: dimuat dari localStorage, disimpan otomatis saat diketik.
+  const isiCatatan = document.getElementById("isiCatatan");
+  if (isiCatatan) {
+    const semuaCatatan = baca(KEY.catatan, {});
+    if (semuaCatatan && typeof semuaCatatan === "object") isiCatatan.value = semuaCatatan[r.id] || "";
+    isiCatatan.addEventListener("input", () => {
+      const baru = baca(KEY.catatan, {}) || {};
+      baru[r.id] = isiCatatan.value;
+      tulis(KEY.catatan, baru);
+      const status = document.getElementById("catatanStatus");
+      if (status) status.textContent = "Tersimpan " + new Date().toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+    });
+  }
 
   // ---- Data terstruktur untuk mesin pencari ----
   // Aturan yang dipatuhi (panduan Google 2026):
@@ -1009,6 +1030,28 @@ function halamanMealplan() {
 
   gambarRencana();
   gambarBelanja();
+
+  // Bagikan daftar belanja: pakai Web Share bila ada, jatuh ke salin teks.
+  const bBagikan = document.getElementById("bBagikan");
+  if (bBagikan) bBagikan.addEventListener("click", async () => {
+    const dariResep = susunBelanja();
+    const tambahan = ambilTambahan();
+    if (!dariResep.length && !tambahan.length) return;
+    const baris = dariResep.map((g) => "- " + fmtQty(Math.round(g.jumlah * 4) / 4) + " " + g.satuan + " " + g.nama + (g.dari && g.dari.length ? " (untuk " + g.dari.join(", ") + ")" : ""));
+    tambahan.forEach((t) => baris.push("- " + t.teks));
+    const teks = "Daftar belanja LetMeCook:\n" + baris.join("\n");
+    if (navigator.share) {
+      try { await navigator.share({ title: "Daftar belanja", text: teks }); return; } catch { /* batal */ }
+    }
+    try {
+      await navigator.clipboard.writeText(teks);
+      bBagikan.textContent = "Daftar tersalin";
+      setTimeout(() => { bBagikan.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-share"/></svg>Bagikan daftar'; }, 1800);
+    } catch {
+      bBagikan.textContent = "Gagal menyalin";
+      setTimeout(() => { bBagikan.innerHTML = '<svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-share"/></svg>Bagikan daftar'; }, 1800);
+    }
+  });
   const bSusun = document.getElementById("bSusun");
   if (bSusun) bSusun.addEventListener("click", () => {
     simpanRencana(susunRencana());
