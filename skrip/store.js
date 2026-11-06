@@ -684,11 +684,7 @@ function pasangSaranPencarian(input) {
 // Kalau pengunjung minta "kurangi gerak", animasinya dilewati.
 // ============================================================
 function pasangAnimasi() {
-  // Browser modern (Chrome 115+, Safari 26, Firefox 159) mendukung
-  // CSS scroll-driven animation (animation-timeline: view()): reveal
-  // ditangani CSS di compositor thread, tanpa JavaScript. Hanya fallback
-  // yang memakai IntersectionObserver.
-  if (CSS.supports && CSS.supports("animation-timeline", "view()")) return;
+  // Reveal memakai IntersectionObserver + transisi opacity (CLS-safe).
   // Browser lama tanpa IntersectionObserver, atau pengunjung yang minta
   // "kurangi gerak": tampilkan semua tanpa animasi. Kalau tidak, elemen
   // ber-class .muncul tetap transparan selamanya.
