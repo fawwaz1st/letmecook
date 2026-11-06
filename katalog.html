@@ -41,15 +41,6 @@
         <button type="submit"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-search"/></svg>Cari</button>
       </form>
 
-      <div class="mode-kulkas">
-        <label class="kulkas-label">
-          <input type="checkbox" id="fKulkas"> Cari dari bahan yang kupunya
-        </label>
-        <div id="kulkasIsi" hidden>
-          <label class="catatan-label" for="kulkasInput">Ketik bahan yang ada di kulkasmu, pisahkan koma (mis. beras, ayam, bawang merah, kunyit).</label>
-          <textarea id="kulkasInput" class="catatan" rows="2" placeholder="beras, ayam, bawang merah, kunyit"></textarea>
-        </div>
-      </div>
 
       <nav class="nav" aria-label="Navigasi utama">
         <a href="favorit.html"><svg class="ikon" aria-hidden="true"><use href="aset/icons.svg#i-heart"/></svg>Favorit <span class="badge-hitung" id="favCount">0</span></a>
@@ -103,6 +94,16 @@
           </select>
         </div>
       </form>
+
+      <div class="mode-kulkas">
+        <label class="kulkas-label">
+          <input type="checkbox" id="fKulkas"> Cari dari bahan yang kupunya
+        </label>
+        <div id="kulkasIsi" hidden>
+          <label class="catatan-label" for="kulkasInput">Ketik bahan yang ada di kulkasmu, pisahkan koma (mis. beras, ayam, bawang merah, kunyit).</label>
+          <textarea id="kulkasInput" class="catatan" rows="2" placeholder="beras, ayam, bawang merah, kunyit"></textarea>
+        </div>
+      </div>
 
       <div class="baris-info">
         <span id="jumlahTeks" role="status">Memuat resep…</span>
