@@ -322,3 +322,9 @@ Aturan kecil yang perlu diikuti:
 ## Kontak
 
 Koreksi takaran atau usulan resep: halo@letmecook.id
+## QA otomatis
+```sh
+node _qa/periksa.js     # mojibake, kode mati, ikon, data resep
+node _qa/uji-dom.js     # render tiap halaman + fitur (DOM-mock, 11 gerbang)
+node --check skrip/store.js && node --check skrip/halaman.js
+```
