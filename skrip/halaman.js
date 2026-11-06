@@ -124,6 +124,7 @@ function halamanKatalog() {
   const kulkasInput = document.getElementById("kulkasInput");
   let modeKulkas = false;
   let skorKulkas = null; // Map(id -> {cocok, total})
+  let jumlahBahan = 0;
   if (fKulkas && kulkasIsi && kulkasInput) {
     fKulkas.addEventListener("change", () => {
       modeKulkas = fKulkas.checked;
@@ -139,6 +140,7 @@ function halamanKatalog() {
     kulkasInput.addEventListener("input", () => {
       if (!modeKulkas) return;
       const milik = kulkasInput.value.split(/[,\n]/).map((s) => s.trim().toLowerCase()).filter(Boolean);
+      jumlahBahan = milik.length;
       skorKulkas = new Map();
       for (const r of RESEP) {
         let cocok = 0;
@@ -173,14 +175,16 @@ function halamanKatalog() {
     let daftar = RESEP.filter((r) => !kat || r.kategori === kat);
     daftar = daftar.filter((r) => cocokKata(r, q));
 
-    // Mode kulkas: hanya resep yang bahan cocoknya >= 60%, urut skor tertinggi.
+    // Mode kulkas: hanya resep yang memakai setidaknya 3 bahan milik user
+    // (atau semua bila masukan < 3), urut yang paling cocok dulu.
     if (modeKulkas && skorKulkas) {
+      const ambang = Math.min(3, jumlahBahan || 1);
       daftar = daftar.filter((r) => {
         const s = skorKulkas.get(r.id);
-        return s && s.total > 0 && s.cocok / s.total >= 0.6;
+        return s && s.cocok >= ambang && s.total > 0 && s.cocok / s.total >= 0.2;
       }).toSorted((a, b) => {
         const sa = skorKulkas.get(a.id), sb = skorKulkas.get(b.id);
-        return (sb.cocok / sb.total) - (sa.cocok / sa.total) || a.waktuTotal - b.waktuTotal;
+        return sb.cocok - sa.cocok || (sb.cocok / sb.total) - (sa.cocok / sa.total) || a.waktuTotal - b.waktuTotal;
       });
     }
 
